@@ -24,12 +24,15 @@ public class Master : MonoBehaviour
     [SerializeField] private GameObject TowerPrefab;
     [SerializeField] private GameObject BaseMarkerPrefab;
     [SerializeField] private GameObject BasePrefab;
+    [SerializeField] private GameObject GamePlanePrefab;
 
     private GameObject m_PlaneSelectionMarker;
     private DetectedPlane m_MarkedPlane;
+    private Pose m_MarkedPlaneCenterPose;
     private Vector3[] m_BindingVectors;
     private GameObject[] m_BindingWalls;
     private GameObject[] m_BindingTowers;
+    private GameObject m_GamePlane;
     private GameObject m_BaseMarker;
     private GameObject m_HomeBase;
 
@@ -90,6 +93,7 @@ public class Master : MonoBehaviour
                 break;
             case GameState.GAME_SPACE_INSTANTIATION:
                 m_GameState = GameState.PATH_GENERATION;
+                _InitializePathGeneration();
                 break;
             case GameState.PATH_GENERATION:
                 m_GameState = GameState.GAME_LOOP;
@@ -143,16 +147,23 @@ public class Master : MonoBehaviour
         List<Vector3> boundaryPolygons = new List<Vector3>();
         m_MarkedPlane.GetBoundaryPolygon(boundaryPolygons);
         m_BindingVectors = boundaryPolygons.ToArray();
+        m_MarkedPlaneCenterPose = m_MarkedPlane.CenterPose;
 
         foreach (Vector3 boundaryPolygon in boundaryPolygons)
         {
             Console.WriteLine("( " + boundaryPolygon.x + ", " + boundaryPolygon.y + ", " + boundaryPolygon.z + " )");
         }
 
-        //ARCoreDevice.GetComponent<ARCoreSessionConfig>().PlaneFindingMode = DetectedPlaneFindingMode.Vertical;
         GridGenerator.SetActive(false);
         PointCloud.SetActive(false);
         Debug.Log("Grid generation disabled");
+        AdvanceStateButton.SetActive(false);
+        Debug.Log("ConfirmButton disabled");
+    }
+
+    private void _InitializePathGeneration()
+    {
+        _SpawnHomeBase();
         AdvanceStateButton.SetActive(false);
         Debug.Log("ConfirmButton disabled");
     }
@@ -192,8 +203,6 @@ public class Master : MonoBehaviour
 
         if (Frame.Raycast(touch.position.x, touch.position.y, raycastFilter, out hit))
         {
-            if (IsPointerOverUIObject()) return;
-
             Debug.Log("Plane intersection found");
 
             if ((hit.Trackable is DetectedPlane) &&
@@ -234,20 +243,24 @@ public class Master : MonoBehaviour
             _SpawnBoundaries();
         }
 
+        if (m_GamePlane == null)
+        {
+            _SpawnGamePlane();
+        }
 
         _PlaceBaseMarker();
-        //BaseMarkerManipulator.SetActive(true);
-
-
-        //if (m_HomeBase == null)
-        //{
-        //    _SpawnHomeBase();
-        //}
     }
 
+    // TODO: place anchors
     private void _SpawnBoundaries()
     {
+        Transform anchorTransform = m_MarkedPlane.CreateAnchor(m_MarkedPlaneCenterPose).transform;
+
         m_BindingTowers = m_BindingVectors.Select(v => Instantiate(TowerPrefab, v, Quaternion.identity)).ToArray();
+        foreach (GameObject bindingTower in m_BindingTowers)
+        {
+            bindingTower.transform.parent = anchorTransform;
+        }
 
         m_BindingWalls = new GameObject[m_BindingVectors.Length];
         for (int i = 0; i < m_BindingVectors.Length; i++)
@@ -257,6 +270,7 @@ public class Master : MonoBehaviour
                 Quaternion.identity);
             m_BindingWalls[i].transform.localScale += new Vector3(
                 Vector3.Distance(m_BindingVectors[i], m_BindingVectors[(i + 1) % m_BindingVectors.Length]), 0, 0);
+            m_BindingWalls[i].transform.parent = anchorTransform;
         }
 
         for (int i = 0; i < m_BindingVectors.Length; i++)
@@ -280,76 +294,167 @@ public class Master : MonoBehaviour
         }
     }
 
-    private void _PlaceBaseMarker()
+    private void _PlaceGameObject(GameObject prefab)
     {
-        if (Input.touchCount > 0)
+        Touch touch;
+        touch = Input.GetTouch(0);
+        TrackableHit hit;
+        TrackableHitFlags raycastFilter = TrackableHitFlags.PlaneWithinPolygon |
+                                          TrackableHitFlags.FeaturePointWithSurfaceNormal;
+        
+        if (touch.phase == TouchPhase.Began)
         {
-            Touch touch = Input.GetTouch(0);
-            TrackableHit hit;
-            TrackableHitFlags raycastFilter = TrackableHitFlags.PlaneWithinPolygon |
-                                              TrackableHitFlags.FeaturePointWithSurfaceNormal;
-            if (EventSystem.current.IsPointerOverGameObject()) return;
-
+            Debug.Log("Touch began");
             if (Frame.Raycast(touch.position.x, touch.position.y, raycastFilter, out hit))
             {
                 if ((hit.Trackable is DetectedPlane) &&
                     Vector3.Dot(FirstPersonCamera.transform.position - hit.Pose.position,
                         hit.Pose.rotation * Vector3.up) < 0)
                 {
-                    Debug.LogError("Hit at back of current DetectedPlane");
+                    Debug.Log("Hit at back of current detected plane");
+                }
+                else if (_IsWithinBoundaries(hit.Pose.position))
+                {
+                    GameObject newGameObject = Instantiate(prefab, hit.Pose.position, hit.Pose.rotation);
+                    var anchor = hit.Trackable.CreateAnchor(hit.Pose);
+                    newGameObject.transform.parent = anchor.transform;
                 }
                 else
                 {
-                    if (hit.Trackable is DetectedPlane plane)
-                    {
-                        Debug.Log("The raycast hit a horizontal plane");
-                        if (plane.PlaneType == DetectedPlaneType.HorizontalUpwardFacing)
-                        {
-                            if (m_BaseMarker != null)
-                            {
-                                Destroy(m_BaseMarker);
-                            }
-
-                            m_BaseMarker = Instantiate(BaseMarkerPrefab, hit.Pose.position, hit.Pose.rotation);
-
-                            //Anchor anchor = hit.Trackable.CreateAnchor(hit.Pose);
-                            //gameObject.transform.parent = anchor.transform;
-                            //m_MarkedPlane = plane;
-                            //Debug.Log("New base marker placed");
-                            //AdvanceStateButton.SetActive(true);
-                            //Debug.Log("ConfirmButton activated");
-                        }
-                    }
+                    Debug.Log("Hit outside the game boundaries");
                 }
             }
-
-            //Vector3 touchPosition = Camera.main.ScreenToWorldPoint(touch.position);
-            //touchPosition.y = 0;
-            //m_BaseMarker = Instantiate(BaseMarkerPrefab, touchPosition, Quaternion.identity);
         }
     }
 
-    private bool IsPointerOverUIObject()
+    private void _SpawnGamePlane()
     {
-        PointerEventData eventDataCurrentPosition = new PointerEventData(EventSystem.current);
-        eventDataCurrentPosition.position = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
-        List<RaycastResult> results = new List<RaycastResult>();
-        EventSystem.current.RaycastAll(eventDataCurrentPosition, results);
-        return results.Count > 0;
+        m_GamePlane = Instantiate(GamePlanePrefab, m_MarkedPlaneCenterPose.position, Quaternion.identity,
+            m_MarkedPlane.CreateAnchor(m_MarkedPlaneCenterPose).transform);
+
+        float maxX = m_BindingVectors.Select(v => v.x).Max();
+        float minX = m_BindingVectors.Select(v => v.x).Min();
+        float maxZ = m_BindingVectors.Select(v => v.z).Max();
+        float minZ = m_BindingVectors.Select(v => v.z).Min();
+
+        float distanceX = Math.Abs(maxX) + Math.Abs(minX);
+        float distanceZ = Math.Abs(maxZ) + Math.Abs(minZ);
+
+        float maxDistance = distanceX > distanceZ ? distanceX : distanceZ;
+
+        m_GamePlane.transform.localScale = new Vector3(maxDistance, maxDistance, 1);
+        m_GamePlane.transform.Rotate(90, 0 ,0);
+
+        //Mesh mesh = new Mesh();
+        //Anchor anchor = m_MarkedPlane.CreateAnchor(m_MarkedPlaneCenterPose);
+        //m_GamePlane = Instantiate(GamePlanePrefab, Vector3.zero, Quaternion.identity, anchor.transform);
+        //m_GamePlane.transform.position = m_BindingVectors[0];
+        //m_GamePlane.GetComponent<MeshFilter>().sharedMesh = mesh;
+        //m_GamePlane.GetComponent<MeshCollider>().sharedMesh = mesh;
+
+        //mesh.vertices = m_BindingVectors;
+        //List<int> indexesOrder = new List<int>();
+        //int pointsCount = m_BindingVectors.Length;
+
+        //for (int inc = 2; ; inc *= 2)
+        //{
+        //    if (pointsCount <= inc) break;
+
+        //    for (int i = inc / 2; i < pointsCount; i += inc)
+        //    {
+        //        indexesOrder.Add(i - inc / 2);
+        //        indexesOrder.Add(i);
+        //        indexesOrder.Add((i + inc / 2) % pointsCount);
+        //    }
+        //}
+
+        //mesh.triangles = indexesOrder.ToArray();
+    }
+
+    private void _PlaceBaseMarker()
+    {
+        if (Input.touchCount > 0)
+        {
+            if (EventSystem.current.IsPointerOverGameObject()) return;
+
+            Touch touch = Input.GetTouch(0);
+            if (touch.phase != TouchPhase.Ended) return;
+            Ray ray = FirstPersonCamera.ScreenPointToRay(touch.position);
+            var hits = Physics.RaycastAll(ray);
+
+            if (hits.Length == 0)
+            {
+                Debug.Log("Hit no object on touch");
+            }
+            else if (hits.Length != 1)
+            {
+                Debug.Log("Hit multiple objects on touch");
+            }
+            else
+            {
+                Vector3 spawnPoint = ray.GetPoint(hits[0].distance);
+
+                if (hits[0].collider.tag != "GamePlane" || !_IsWithinBoundaries(spawnPoint)) return;
+                Debug.Log("Hit the GamePlane on touch");
+
+                if (m_BaseMarker != null)
+                {
+                    Destroy(m_BaseMarker);
+                }
+
+                m_BaseMarker = Instantiate(BaseMarkerPrefab, spawnPoint, Quaternion.identity,
+                    m_MarkedPlane.CreateAnchor(m_MarkedPlaneCenterPose).transform);
+
+                AdvanceStateButton.SetActive(true);
+            }
+
+            //if (Frame.Raycast(touch.position.x, touch.position.y, raycastFilter, out hit))
+            //{
+            //    if ((hit.Trackable is DetectedPlane) &&
+            //        Vector3.Dot(FirstPersonCamera.transform.position - hit.Pose.position,
+            //            hit.Pose.rotation * Vector3.up) < 0)
+            //    {
+            //        Debug.LogError("Hit at back of current DetectedPlane");
+            //    }
+            //    else
+            //    {
+            //        if (hit.Trackable is DetectedPlane plane && _IsWithinPlane(hit.Pose.position))
+            //        {
+            //            Debug.Log("The raycast hit a horizontal plane");
+            //            if (plane.PlaneType == DetectedPlaneType.HorizontalUpwardFacing)
+            //            {
+            //                if (m_BaseMarker != null)
+            //                {
+            //                    Destroy(m_BaseMarker);
+            //                }
+
+            //                m_BaseMarker = Instantiate(BaseMarkerPrefab, hit.Pose.position, hit.Pose.rotation);
+            //            }
+            //        }
+            //    }
+            //}
+        }
+    }
+
+    private bool _IsWithinBoundaries(Vector3 position)
+    {
+        position.y = m_BindingWalls[0].transform.position.y;
+        RaycastHit[] hits = Physics.RaycastAll(position, Vector3.right, Mathf.Infinity);
+        return hits.Count(hit => hit.collider.tag.Equals("GameWall")) == 1;
     }
 
     private void _SpawnHomeBase()
     {
-        Vector3 basePosition = m_PlaneSelectionMarker.transform.position;
-        m_HomeBase = Instantiate(BaseMarkerPrefab, basePosition, Quaternion.identity);
+        Vector3 basePosition = m_BaseMarker.transform.position;
+        m_HomeBase = Instantiate(BasePrefab, basePosition, Quaternion.identity,
+            m_MarkedPlane.CreateAnchor(m_MarkedPlaneCenterPose).transform);
+        Destroy(m_BaseMarker);
     }
 
     private void _SpawnPath() { }
 
     private void _PathGenerationLogic()
     {
-        _SpawnBoundaries();
-        //_SpawnHomeBase();
     }
 
     private bool ColliderContainsPoint(Transform colliderTransform, Vector3 point)

@@ -298,7 +298,10 @@ MonoBehaviour:
     type: 3}
   BaseMarkerPrefab: {fileID: 1533428177928048, guid: 1b7ddcd7a55c51640b03f6e4949052e2,
     type: 3}
-  BasePrefab: {fileID: 1770514590405088, guid: 1cace56ba420dd64c9171c422c8e9aaa, type: 3}
+  BasePrefab: {fileID: 2678552160550302294, guid: f94295e6b2c49cc40a56ca91e7cfbd62,
+    type: 3}
+  GamePlanePrefab: {fileID: 2571624567956541521, guid: fc6219a69d819aa45a74a8763fd62055,
+    type: 3}
 --- !u!4 &353786333
 Transform:
   m_ObjectHideFlags: 0
