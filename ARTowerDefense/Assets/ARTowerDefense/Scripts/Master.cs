@@ -251,7 +251,6 @@ public class Master : MonoBehaviour
         _PlaceBaseMarker();
     }
 
-    // TODO: place anchors
     private void _SpawnBoundaries()
     {
         Transform anchorTransform = m_MarkedPlane.CreateAnchor(m_MarkedPlaneCenterPose).transform;
@@ -337,38 +336,13 @@ public class Master : MonoBehaviour
         float maxZ = m_BindingVectors.Select(v => v.z).Max();
         float minZ = m_BindingVectors.Select(v => v.z).Min();
 
-        float distanceX = Math.Abs(maxX) + Math.Abs(minX);
-        float distanceZ = Math.Abs(maxZ) + Math.Abs(minZ);
+        float distanceX = maxX - minX;
+        float distanceZ = maxZ - minZ;
 
         float maxDistance = distanceX > distanceZ ? distanceX : distanceZ;
 
         m_GamePlane.transform.localScale = new Vector3(maxDistance, maxDistance, 1);
         m_GamePlane.transform.Rotate(90, 0 ,0);
-
-        //Mesh mesh = new Mesh();
-        //Anchor anchor = m_MarkedPlane.CreateAnchor(m_MarkedPlaneCenterPose);
-        //m_GamePlane = Instantiate(GamePlanePrefab, Vector3.zero, Quaternion.identity, anchor.transform);
-        //m_GamePlane.transform.position = m_BindingVectors[0];
-        //m_GamePlane.GetComponent<MeshFilter>().sharedMesh = mesh;
-        //m_GamePlane.GetComponent<MeshCollider>().sharedMesh = mesh;
-
-        //mesh.vertices = m_BindingVectors;
-        //List<int> indexesOrder = new List<int>();
-        //int pointsCount = m_BindingVectors.Length;
-
-        //for (int inc = 2; ; inc *= 2)
-        //{
-        //    if (pointsCount <= inc) break;
-
-        //    for (int i = inc / 2; i < pointsCount; i += inc)
-        //    {
-        //        indexesOrder.Add(i - inc / 2);
-        //        indexesOrder.Add(i);
-        //        indexesOrder.Add((i + inc / 2) % pointsCount);
-        //    }
-        //}
-
-        //mesh.triangles = indexesOrder.ToArray();
     }
 
     private void _PlaceBaseMarker()

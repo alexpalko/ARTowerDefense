@@ -47,13 +47,11 @@ public class GeometryGenerator : MonoBehaviour
         for (int i = 0; i < m_BindingVectors.Count - 1; i++)
         {
             field = Instantiate(BindingPlanePrefab, Vector3.Lerp(m_BindingVectors[i], m_BindingVectors[i + 1], 0.5f), Quaternion.identity);
-            //field.transform.Rotate(0, Vector3.Angle(m_BindingVectors[i], m_BindingVectors[i + 1]), 0);
             field.transform.localScale +=
                 new Vector3(Vector3.Distance(m_BindingVectors[i], m_BindingVectors[i + 1]), 0, 0);
             fields.Add(field);
         }
         field = Instantiate(BindingPlanePrefab, Vector3.Lerp(m_BindingVectors.First(), m_BindingVectors.Last(), 0.5f), Quaternion.identity);
-        //field.transform.Rotate(0, Vector3.Angle(m_BindingVectors[i], m_BindingVectors[i + 1]), 0);
         field.transform.localScale +=
             new Vector3(Vector3.Distance(m_BindingVectors.First(), m_BindingVectors.Last()), 0, 0);
         fields.Add(field);
@@ -110,7 +108,5 @@ public class GeometryGenerator : MonoBehaviour
         }
 
         mesh.triangles = indexesOrder.ToArray();
-
-       // GetComponent<MeshFilter>().mesh = mesh;
     }
 }
