@@ -1262,7 +1262,7 @@ GameObject:
   - component: {fileID: 4072828905429358}
   - component: {fileID: 33829433565276502}
   - component: {fileID: 23788206743257480}
-  - component: {fileID: 3271556746688803735}
+  - component: {fileID: 2783948438265628029}
   m_Layer: 0
   m_Name: ForestTower_Blue
   m_TagString: GameTower
@@ -1337,8 +1337,8 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!64 &3271556746688803735
-MeshCollider:
+--- !u!65 &2783948438265628029
+BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -1347,10 +1347,9 @@ MeshCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  serializedVersion: 3
-  m_Convex: 0
-  m_CookingOptions: 14
-  m_Mesh: {fileID: 4300000, guid: 31e91474d696aac42a8e41c3cba06388, type: 3}
+  serializedVersion: 2
+  m_Size: {x: 4, y: 50, z: 4}
+  m_Center: {x: -0.022491872, y: 2.6025288, z: -0.14614522}
 --- !u!1 &1805820199700862
 GameObject:
   m_ObjectHideFlags: 0

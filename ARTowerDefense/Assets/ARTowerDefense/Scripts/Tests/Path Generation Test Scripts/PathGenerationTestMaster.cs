@@ -1,27 +1,24 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Configuration;
-using System.Runtime.CompilerServices;
-using System.Security;
 using Assets.ARTowerDefense.Scripts;
 using UnityEngine;
+using UnityEngine.Experimental.XR;
 using Random = System.Random;
 
 public class PathGenerationTestMaster : MonoBehaviour
 {
     private List<Vector3> m_BindingVectors = new List<Vector3>
     {
-        new Vector3(0f, 0f, 5f),
-        new Vector3(5f, 0f, 7.5f),
-        new Vector3(10f, 0f, 10f),
-        new Vector3(12.5f, 0f, 0f),
-        new Vector3(15f, 0f, -10f),
-        new Vector3(0f, 0f, -15f),
-        new Vector3(-5f, 0f, -10f),
-        new Vector3(-7f, 0f, -7f),
-        new Vector3(-5f, 0f, 0f),
+        //new Vector3(0f, 0f, 5f),
+        //new Vector3(5f, 0f, 7.5f),
+        //new Vector3(10f, 0f, 10f),
+        //new Vector3(12.5f, 0f, 0f),
+        //new Vector3(15f, 0f, -10f),
+        //new Vector3(0f, 0f, -15f),
+        //new Vector3(-5f, 0f, -10f),
+        //new Vector3(-7f, 0f, -7f),
+        //new Vector3(-5f, 0f, 0f),
 
         //new Vector3(5f, 0f, 5f),
         //new Vector3(5f, 0f, -5f),
@@ -33,7 +30,6 @@ public class PathGenerationTestMaster : MonoBehaviour
         //new Vector3(-3f, 0f, -3f),
         //new Vector3(-5f, 0f, 5f),
 
-
         //new Vector3(-2f, 0f, -4f),
         //new Vector3(6f, 0f, 0f),
         //new Vector3(4f, 0f, 4f),
@@ -41,6 +37,17 @@ public class PathGenerationTestMaster : MonoBehaviour
         //new Vector3(-1f, 0f, 4f),
         //new Vector3(-2f, 0f, 2f),
         //new Vector3(-2f, 0f, 0f),
+        //new Vector3(-2f, 0f, -0.01f),
+        //new Vector3(-2f, 0f, -0.03f),
+
+
+        new Vector3(42f, 0f, 5f),
+        new Vector3(-10f, 0f, -20f),
+        new Vector3(-10f, 0f, 0f),
+        new Vector3(-10f, 0f, 10f),
+        new Vector3(-5f, 0f, 20f),
+        new Vector3(10f, 0f, 25f),
+        new Vector3(39f, 0f, 20f),
     };
 
     public GameObject BindingPlanePrefab;
@@ -73,6 +80,7 @@ public class PathGenerationTestMaster : MonoBehaviour
     // Update is called once per frame
     void Start()
     {
+        _ConsolidateBoundaries();
         _GeneratePlane(m_BindingVectors);
         _GenerateBoundaries();
         state = GameState.SPLITTING_PLANE;
@@ -85,6 +93,7 @@ public class PathGenerationTestMaster : MonoBehaviour
         switch (state)
         {
             case GameState.SPLITTING_PLANE:
+                m_BindingVectors = m_BindingVectors.ToList();
                 _SplitPlane();
                 break;
             case GameState.PLACING_BASE:
@@ -98,9 +107,12 @@ public class PathGenerationTestMaster : MonoBehaviour
                 state = GameState.GENERATING_PATH;
                 break;
             case GameState.GENERATING_PATH:
-                while (_GeneratePath() == null) {}
-                _BuildPath();
-                state = GameState.END;
+                if (_GeneratePath() != null)
+                {
+                    _BuildPath();
+                    state = GameState.END;
+                }
+
                 break;
             case GameState.END:
                 break;
@@ -108,6 +120,40 @@ public class PathGenerationTestMaster : MonoBehaviour
                 throw new ArgumentOutOfRangeException();
         }
 
+    }
+
+    private void _ConsolidateBoundaries()
+    {
+        for (int i = 0; i < m_BindingVectors.Count; i++)
+        {
+            var closeByVectorsIndexes = new List<int>();
+            for (int j = i + 1; j < m_BindingVectors.Count; j++)
+            {
+                if (Vector3.Distance(m_BindingVectors[i], m_BindingVectors[j]) < .1f)
+                {
+                    closeByVectorsIndexes.Add(j);
+                }
+            }
+
+            if (closeByVectorsIndexes.Count != 0)
+            {
+                var newVector = m_BindingVectors[i];
+                foreach (int index in closeByVectorsIndexes)
+                {
+                    newVector += m_BindingVectors[index];
+                }
+
+                newVector /= closeByVectorsIndexes.Count + 1;
+
+                m_BindingVectors.Remove(m_BindingVectors[i]);
+                //m_BindingVectors[i] = newVector;
+                m_BindingVectors.Insert(i, newVector);
+                m_BindingVectors.RemoveAll(vect =>
+                    closeByVectorsIndexes.Select(idx => m_BindingVectors[idx]).Contains(vect));
+                _ConsolidateBoundaries();
+                return;
+            }
+        }
     }
 
     private void _GenerateBoundaries()
@@ -172,7 +218,6 @@ public class PathGenerationTestMaster : MonoBehaviour
 
     private void _GeneratePlane(List<Vector3> points)
     {
-        m_GamePlane = Instantiate(GamePlanePrefab, GetBarrycenter(), Quaternion.identity);
 
         float maxX = m_BindingVectors.Select(v => v.x).Max();
         float minX = m_BindingVectors.Select(v => v.x).Min();
@@ -184,9 +229,16 @@ public class PathGenerationTestMaster : MonoBehaviour
 
         float maxDistance = distanceX > distanceZ ? distanceX : distanceZ;
 
+        float middleX = (maxX + minX) / 2;
+        float middleZ = (maxZ + minZ) / 2;
+
+        m_GamePlane = Instantiate(GamePlanePrefab, new Vector3(middleX, m_BindingVectors[0].y, middleZ), Quaternion.identity);
+        
         m_GamePlane.transform.localScale = new Vector3(maxDistance, maxDistance, 1);
         m_GamePlane.transform.Rotate(90, 0, 0);
     }
+
+    private const float m_DivisionLength = 1f;
 
     private void _SplitPlane()
     {
@@ -208,11 +260,11 @@ public class PathGenerationTestMaster : MonoBehaviour
 
         List<Division> divisions = new List<Division>();
 
-        for (float x = rend.bounds.min.x; x < rend.bounds.max.x; x++)
+        for (float x = rend.bounds.min.x; x < rend.bounds.max.x; x+= m_DivisionLength)
         {
-            for (float z = rend.bounds.min.z; z < rend.bounds.max.z; z++)
+            for (float z = rend.bounds.min.z; z < rend.bounds.max.z; z+= m_DivisionLength)
             {
-                divisions.Add(new Division(new Vector3(x, y, z), new Vector3(x + 1, y, z + 1)));
+                divisions.Add(new Division(new Vector3(x, y, z), new Vector3(x + m_DivisionLength, y, z + m_DivisionLength)));
             }
         }
 
@@ -236,37 +288,43 @@ public class PathGenerationTestMaster : MonoBehaviour
     {
         divisions.RemoveAll(div =>
         {
-
             var raycastHits = Physics.RaycastAll(div.Point1, Vector3.right, Mathf.Infinity);
 
-            if (raycastHits.Length != 1)
+            if (!_IsWithinBoundaries(raycastHits))
             {
                 return true;
             }
 
             raycastHits = Physics.RaycastAll(div.Point2, Vector3.right, Mathf.Infinity);
             
-            if (raycastHits.Length != 1)
+            if (!_IsWithinBoundaries(raycastHits))
             {
                 return true;
             }
 
             raycastHits = Physics.RaycastAll(new Vector3(div.Point1.x, div.Point1.y, div.Point2.z), Vector3.right, Mathf.Infinity);
 
-            if (raycastHits.Length != 1)
+            if (!_IsWithinBoundaries(raycastHits))
             {
                 return true;
             }
 
             raycastHits = Physics.RaycastAll(new Vector3(div.Point2.x, div.Point1.y, div.Point1.z), Vector3.right, Mathf.Infinity);
 
-            if (raycastHits.Length != 1)
+            if (!_IsWithinBoundaries(raycastHits))
             {
                 return true;
             }
 
             return false;
         });
+    }
+
+    private bool _IsWithinBoundaries(RaycastHit[] hits)
+    {
+        if (hits.Length == 1) return true;
+        if (hits.Length != 3) return false;
+        return hits.Any(hit => hit.collider.tag.Equals("GameTower"));
     }
 
     private void _PlaceBase()
@@ -426,7 +484,6 @@ public class PathGenerationTestMaster : MonoBehaviour
 
     private float availableDivisionsThreshold = .3f;
     private float increaseThresholdCount = 1;
-
 
     private Division _GenerateRandomPath(Division currentDivision)
     {

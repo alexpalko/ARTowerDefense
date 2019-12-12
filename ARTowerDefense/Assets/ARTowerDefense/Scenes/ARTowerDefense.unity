@@ -302,6 +302,14 @@ MonoBehaviour:
     type: 3}
   GamePlanePrefab: {fileID: 2571624567956541521, guid: fc6219a69d819aa45a74a8763fd62055,
     type: 3}
+  DivisionMarkerPrefab: {fileID: 8337470342546997709, guid: 69f0ebf8b99b7fc45a960de1740b46be,
+    type: 3}
+  PlaneCornerMarkerPrefab: {fileID: 6502130868382146949, guid: 4ef433d39cb67544590a824c864da46a,
+    type: 3}
+  SpawnerPrefab: {fileID: 1533428177928048, guid: 1b7ddcd7a55c51640b03f6e4949052e2,
+    type: 3}
+  PathPrefab: {fileID: 6840769798798230452, guid: 62dcfad445b863545ab174af05f3b665,
+    type: 3}
 --- !u!4 &353786333
 Transform:
   m_ObjectHideFlags: 0
