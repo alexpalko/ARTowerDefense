@@ -1,0 +1,5 @@
+sceneSetups:
+- path: Assets/ARTowerDefense/Scenes/ARTowerDefense.unity
+  isLoaded: 1
+  isActive: 1
+  isSubScene: 0
