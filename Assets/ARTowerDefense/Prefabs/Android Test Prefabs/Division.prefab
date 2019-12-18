@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1431615645188852433}
   m_Layer: 0
-  m_Name: ValidDivisionMarker
+  m_Name: Division
   m_TagString: DivisionVisualizer
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -45,7 +45,7 @@ GameObject:
   - component: {fileID: 6935798321740853203}
   m_Layer: 0
   m_Name: Quad
-  m_TagString: Untagged
+  m_TagString: Division
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -79,7 +79,7 @@ MeshRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8400734985299660931}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
