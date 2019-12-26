@@ -15,7 +15,7 @@ public class WheelController : MonoBehaviour {
 		if(isRotating)
 		{
 			//Rotate the selected wheel in the direction
-			//chosen at rotateSpeed Speed
+			//chosen at rotateSpeed MovementSpeed
 			//if isRotating is checked in the inspector.
 			transform.Rotate(rotateDirection * rotateSpeed * Time.deltaTime);
 		}

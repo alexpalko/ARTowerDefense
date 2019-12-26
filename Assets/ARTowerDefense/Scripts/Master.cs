@@ -21,6 +21,8 @@ namespace ARTowerDefense
         [SerializeField] private GameObject AdvanceStateButton;
         [SerializeField] private GameObject PlacePrefabButton;
         [SerializeField] private GameObject Crosshair;
+        [SerializeField] private GameObject ShowBuildingsPanelButton;
+        [SerializeField] private GameObject BuildingsPanel;
 
         [SerializeField] private GameObject PlaneMarkerPrefab;
         [SerializeField] private GameObject WallPrefab;
@@ -30,18 +32,22 @@ namespace ARTowerDefense
         [SerializeField] private GameObject DivisionPrefab;
         [SerializeField] private GameObject SpawnerPrefab;
         [SerializeField] private GameObject PathPrefab;
+        [SerializeField] private GameObject CannonTowerPrefab;
+        [SerializeField] private GameObject EnemyPrefab;
 
         private const float k_DivisionLength = .1f;
 
         private GameObject m_PlaneSelectionMarker;
         private DetectedPlane m_MarkedPlane;
-        private Pose m_MarkedPlaneCenterPose;
+        public static Pose MarkedPlaneCenterPose { get; private set; }
         private Vector3[] m_BindingVectors;
         private GameObject[] m_BindingWalls;
         private GameObject[] m_BindingTowers;
         private GameObject m_GamePlane;
         private GameObject m_HomeBase;
         private Division m_HomeBaseDivision;
+        private GameObject m_Spawner;
+        private Division m_SpawnerDivision;
 
         /// <summary>
         /// Represents the current free division to which the camera center is pointing.
@@ -63,10 +69,11 @@ namespace ARTowerDefense
         /// Denotes whether the plane splitting has finished
         /// </summary>
         private bool m_PlaneSplit;
+
         /// <summary>
         /// An anchor to the center of the marked plane
         /// </summary>
-        private Transform m_AnchorTransform;
+        public static Transform AnchorTransform { get; private set; }
         /// <summary>
         /// A set of all divisions that contain no game object
         /// </summary>
@@ -118,15 +125,18 @@ namespace ARTowerDefense
         /// </summary>
         private Vector3[] m_Moves;
 
+        public static Transform[] PathWaypoints { get; private set; }
+
         private enum GameState
         {
             STARTED,
             GRID_DETECTION,
             GAME_SPACE_INSTANTIATION,
+            BASE_PLACEMENT,
             PATH_GENERATION,
-            GAME_LOOP,
             GAME_OVER,
-            PAUSED
+            PAUSED,
+            GAME_LOOP
         }
 
         private GameState m_GameState = GameState.GRID_DETECTION;
@@ -154,7 +164,7 @@ namespace ARTowerDefense
                     _GameSpaceInitializationLogic();
                     AdvanceGameState();
                     break;
-                case GameState.PATH_GENERATION:
+                case GameState.BASE_PLACEMENT:
                     if (!m_PlaneSplit)
                     {
                         _SplitPlane();
@@ -162,7 +172,7 @@ namespace ARTowerDefense
                     else
                     {
                         m_GameObjectToBePlaced = HomeBasePrefab;
-                        _SetPlaceButtonState();
+                        _UpdatePlaceButtonState();
                         if (m_PlacedGameObject != null)
                         {
                             m_HomeBase = m_PlacedGameObject;
@@ -172,7 +182,7 @@ namespace ARTowerDefense
                     }
 
                     break;
-                case GameState.GAME_LOOP:
+                case GameState.PATH_GENERATION:
                     if (m_Moves == null)
                     {
                         _InitializeMoves();
@@ -181,10 +191,11 @@ namespace ARTowerDefense
                     if (_GeneratePath() != null)
                     {
                         _BuildPath();
-                        m_GameState = GameState.PAUSED;
-                        Debug.Log("Application went into paused state.");
+                        AdvanceGameState();
                     }
-
+                    break;
+                case GameState.GAME_LOOP:
+                    _GameLoopLogic();
                     break;
                 case GameState.PAUSED:
                     break;
@@ -194,6 +205,51 @@ namespace ARTowerDefense
                     throw new InvalidOperationException(
                         $"The session is in an undefined state. Current state: {m_GameState}");
             }
+        }
+        
+        public void AdvanceGameState()
+        {
+            m_PlacedGameObject = null;
+            PlacePrefabButton.SetActive(false);
+            switch (m_GameState)
+            {
+                case GameState.STARTED:
+                    m_GameState = GameState.GRID_DETECTION;
+                    break;
+                case GameState.GRID_DETECTION:
+                    m_GameState = GameState.GAME_SPACE_INSTANTIATION;
+                    _InitializeGameSpaceInstantiation();
+                    break;
+                case GameState.GAME_SPACE_INSTANTIATION:
+                    m_GameState = GameState.BASE_PLACEMENT;
+                    _InitializeBasePlacement();
+                    break;
+                case GameState.BASE_PLACEMENT:
+                    m_GameState = GameState.PATH_GENERATION;
+                    _InitializePathGeneration();
+                    break;
+                case GameState.PATH_GENERATION:
+                    m_GameState = GameState.GAME_LOOP;
+                    _InitializeGameLoop();
+                    break;
+                case GameState.GAME_LOOP:
+                    m_GameState = GameState.GAME_OVER;
+                    _InitializeGameOver();
+                    break;
+                case GameState.GAME_OVER:
+                    m_GameState = GameState.GRID_DETECTION;
+                    _InitializeGridDetection();
+                    break;
+                case GameState.PAUSED:
+                    throw new InvalidOperationException(
+                        "Method should not be accessed when the session is in PAUSED state.");
+                default:
+                    throw new InvalidOperationException(
+                        "The session is in an undefined state. Current state: {m_GameStage}");
+            }
+
+            AdvanceStateButton.SetActive(false);
+            Debug.Log($"Game stage changed to {m_GameState}");
         }
 
         /// <summary>
@@ -205,7 +261,7 @@ namespace ARTowerDefense
         /// Disabled: otherwise.
         /// </para>
         /// </summary>
-        private void _SetPlaceButtonState()
+        private void _UpdatePlaceButtonState()
         {
             var ray = new Ray(FirstPersonCamera.transform.position, FirstPersonCamera.transform.forward);
             var hits = Physics.RaycastAll(ray);
@@ -251,53 +307,28 @@ namespace ARTowerDefense
             }
 
             GameObject newGameObject = Instantiate(m_GameObjectToBePlaced,
-                m_DivisionToPlaceOn.Center, Quaternion.identity);
-            newGameObject.transform.parent = m_DivisionGameObjectDictionary[m_DivisionToPlaceOn].transform;
+                m_DivisionToPlaceOn.Center, Quaternion.identity,
+                m_DivisionGameObjectDictionary[m_DivisionToPlaceOn].transform);
             m_AvailableDivisions.Remove(m_DivisionToPlaceOn);
             m_PlacedGameObject = newGameObject;
             m_DivisionPlacedOn = m_DivisionToPlaceOn;
             Debug.Log("Placed game object");
         }
 
-        public void AdvanceGameState()
+        public void SetBuildingToBePlaced(int x)
         {
-            m_PlacedGameObject = null;
-            PlacePrefabButton.SetActive(false);
-            switch (m_GameState)
+            switch (x)
             {
-                case GameState.STARTED:
-                    m_GameState = GameState.GRID_DETECTION;
+                case 1:
+                    m_GameObjectToBePlaced = CannonTowerPrefab;
                     break;
-                case GameState.GRID_DETECTION:
-                    m_GameState = GameState.GAME_SPACE_INSTANTIATION;
-                    _InitializeGameSpaceInstantiation();
-                    break;
-                case GameState.GAME_SPACE_INSTANTIATION:
-                    m_GameState = GameState.PATH_GENERATION;
-                    _InitializePathGeneration();
-                    break;
-                case GameState.PATH_GENERATION:
-                    m_GameState = GameState.GAME_LOOP;
-                    _InitializeGameLoop();
-                    break;
-                case GameState.GAME_LOOP:
-                    m_GameState = GameState.GAME_OVER;
-                    _InitializeGameOver();
-                    break;
-                case GameState.GAME_OVER:
-                    m_GameState = GameState.GRID_DETECTION;
-                    _InitializeGridDetection();
-                    break;
-                case GameState.PAUSED:
-                    throw new InvalidOperationException(
-                        "Method should not be accessed when the session is in PAUSED state.");
-                default:
-                    throw new InvalidOperationException(
-                        "The session is in an undefined state. Current state: {m_GameStage}");
             }
+        }
 
-            AdvanceStateButton.SetActive(false);
-            Debug.Log($"Game stage changed to {m_GameState}");
+        public void UpdateBuildingPanelStatus()
+        {
+            BuildingsPanel.SetActive(!BuildingsPanel.activeSelf);
+            Debug.Log($"Set buildings panel status to: {BuildingsPanel.activeSelf}");
         }
 
         public void ToStartState()
@@ -312,12 +343,12 @@ namespace ARTowerDefense
 
         public void ToPathGenerationState()
         {
-            m_GameState = GameState.PATH_GENERATION;
+            m_GameState = GameState.BASE_PLACEMENT;
         }
 
         public void ToGameLoopState()
         {
-            m_GameState = GameState.PATH_GENERATION;
+            m_GameState = GameState.BASE_PLACEMENT;
         }
 
         public void ToPausedState()
@@ -332,7 +363,7 @@ namespace ARTowerDefense
             List<Vector3> boundaryPolygons = new List<Vector3>();
             m_MarkedPlane.GetBoundaryPolygon(boundaryPolygons);
             m_BindingVectors = boundaryPolygons.ToArray();
-            m_MarkedPlaneCenterPose = m_MarkedPlane.CenterPose;
+            MarkedPlaneCenterPose = m_MarkedPlane.CenterPose; // TODO: REMOVE ???
 
             foreach (Vector3 boundaryPolygon in boundaryPolygons)
             {
@@ -347,16 +378,23 @@ namespace ARTowerDefense
             Debug.Log("ConfirmButton disabled");
         }
 
-        private void _InitializePathGeneration()
+        private void _InitializeBasePlacement()
         {
             Crosshair.SetActive(true);
             AdvanceStateButton.SetActive(false);
             Debug.Log("ConfirmButton disabled");
         }
 
-        private void _InitializeGameLoop()
+        private void _InitializePathGeneration()
         {
             _GeneratePathEnd();
+        }
+
+        private void _InitializeGameLoop()
+        {
+            ShowBuildingsPanelButton.SetActive(true);
+            m_GameObjectToBePlaced = null;
+            Debug.Log("Game loop initialized");
         }
 
         private void _InitializeGameOver()
@@ -410,12 +448,14 @@ namespace ARTowerDefense
                                 Destroy(m_PlaneSelectionMarker);
                             }
 
+
+                            Anchor anchor = hit.Trackable.CreateAnchor(plane.CenterPose);
                             m_PlaneSelectionMarker =
                                 Instantiate(PlaneMarkerPrefab, hit.Pose.position, hit.Pose.rotation);
-                            Anchor anchor = hit.Trackable.CreateAnchor(hit.Pose);
                             gameObject.transform.parent = anchor.transform;
                             m_MarkedPlane = plane;
-                            m_AnchorTransform = m_MarkedPlane.CreateAnchor(m_MarkedPlaneCenterPose).transform;
+                            //AnchorTransform = m_MarkedPlane.CreateAnchor(MarkedPlaneCenterPose).transform;
+                            AnchorTransform = anchor.transform;
                             Debug.Log("New base marker placed");
                             AdvanceStateButton.SetActive(true);
                             Debug.Log("ConfirmButton activated");
@@ -480,22 +520,17 @@ namespace ARTowerDefense
 
         private void _SpawnBoundaries()
         {
-
-            m_BindingTowers = m_BindingVectors.Select(v => Instantiate(TowerPrefab, v, Quaternion.identity)).ToArray();
-            foreach (GameObject bindingTower in m_BindingTowers)
-            {
-                bindingTower.transform.parent = m_AnchorTransform;
-            }
+            m_BindingTowers = m_BindingVectors
+                .Select(v => Instantiate(TowerPrefab, v, Quaternion.identity, AnchorTransform)).ToArray();
 
             m_BindingWalls = new GameObject[m_BindingVectors.Length];
             for (int i = 0; i < m_BindingVectors.Length; i++)
             {
                 m_BindingWalls[i] = Instantiate(WallPrefab,
                     Vector3.Lerp(m_BindingVectors[i], m_BindingVectors[(i + 1) % m_BindingVectors.Length], 0.5f),
-                    Quaternion.identity);
+                    Quaternion.identity, AnchorTransform);
                 m_BindingWalls[i].transform.localScale += new Vector3(
                     Vector3.Distance(m_BindingVectors[i], m_BindingVectors[(i + 1) % m_BindingVectors.Length]), 0, 0);
-                m_BindingWalls[i].transform.parent = m_AnchorTransform;
             }
 
             for (int i = 0; i < m_BindingVectors.Length; i++)
@@ -535,7 +570,7 @@ namespace ARTowerDefense
             float middleZ = (maxZ + minZ) / 2;
 
             m_GamePlane = Instantiate(GamePlanePrefab, new Vector3(middleX, m_BindingVectors[0].y, middleZ),
-                Quaternion.identity, m_AnchorTransform);
+                Quaternion.identity, AnchorTransform);
             m_GamePlane.transform.localScale = new Vector3(maxDistance, maxDistance, 1);
             m_GamePlane.transform.Rotate(90, 0, 0);
             Debug.Log(m_GamePlane.transform.localScale);
@@ -570,7 +605,7 @@ namespace ARTowerDefense
             foreach (var division in divisions)
             {
                 var divisionObject =
-                    Instantiate(DivisionPrefab, division.Center, Quaternion.identity, m_AnchorTransform);
+                    Instantiate(DivisionPrefab, division.Center, Quaternion.identity, AnchorTransform);
                 Debug.Log("Spawned division marker.");
                 m_DivisionGameObjectDictionary.Add(division, divisionObject);
             }
@@ -629,7 +664,7 @@ namespace ARTowerDefense
             Debug.Log($"Division count after trimming: {divisions.Count}");
         }
 
-        private bool _IsWithinBoundaries(RaycastHit[] hits)
+        public bool _IsWithinBoundaries(RaycastHit[] hits)
         {
             if (hits.Length == 1 && hits[0].collider.CompareTag("GameWall")) return true;
             if (hits.Length > 3) return false;
@@ -654,8 +689,6 @@ namespace ARTowerDefense
 
         private void _GeneratePathEnd()
         {
-            //m_HomeBase = Instantiate(HomeBasePrefab, m_HomeBaseDivision.Center, Quaternion.identity, m_AnchorTransform);
-
             Vector3 front = m_HomeBaseDivision.Center - m_HomeBase.transform.forward * k_DivisionLength;
             m_PathEnd = m_DivisionGameObjectDictionary.SingleOrDefault(div => div.Key.Includes(front)).Key;
             
@@ -770,11 +803,12 @@ namespace ARTowerDefense
         {
             Division previousDivision = m_PathDivisions.Peek();
             var direction = currentDivision.Center - previousDivision.Center;
-            Division spawnerPosition =
+            m_SpawnerDivision =
                 m_AvailableDivisionsForPathGeneration.FirstOrDefault(div => div.Includes(currentDivision.Center + direction));
-            if (spawnerPosition != null)
+            if (m_SpawnerDivision != null)
             {
-                Instantiate(SpawnerPrefab, spawnerPosition.Center, Quaternion.identity);
+                m_Spawner = Instantiate(SpawnerPrefab, m_SpawnerDivision.Center, Quaternion.identity, m_DivisionGameObjectDictionary[m_SpawnerDivision].transform);
+                m_AvailableDivisions.Remove(m_SpawnerDivision);
                 return true;
             }
 
@@ -790,12 +824,18 @@ namespace ARTowerDefense
         private void _BuildPath()
         {
             Debug.Log($"Started path building. The path contains {m_PathDivisions.Count} path divisions.");
+            PathWaypoints = new Transform[m_PathDivisions.Count + 2];
+            PathWaypoints[0] = m_DivisionGameObjectDictionary[m_SpawnerDivision].transform;
+            int index = 1;
             foreach (Division pathDivision in m_PathDivisions)
             {
                 var pathObject = Instantiate(PathPrefab, pathDivision.Center, Quaternion.identity);
                 pathObject.transform.parent = m_DivisionGameObjectDictionary[pathDivision].transform;
                 m_AvailableDivisions.Remove(pathDivision);
+                PathWaypoints[index++] = m_DivisionGameObjectDictionary[pathDivision].transform;
             }
+
+            PathWaypoints[index] = m_DivisionGameObjectDictionary[m_HomeBaseDivision].transform;
         }
 
         // ########################################################
@@ -804,7 +844,16 @@ namespace ARTowerDefense
 
         private void _GameLoopLogic()
         {
+            if (!BuildingsPanel.activeSelf && m_GameObjectToBePlaced != null)
+            {
+                _UpdatePlaceButtonState();
+            }
+
         }
+
+        // ########################################################
+        // ###################### GAME OVER #######################
+        // ########################################################
 
         private void _GameOverLogic()
         {
