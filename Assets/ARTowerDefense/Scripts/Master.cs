@@ -5,6 +5,7 @@ using Assets.ARTowerDefense.Scripts;
 using GoogleARCore;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 using Random = System.Random;
 #if UNITY_EDITOR
 using Input = GoogleARCore.InstantPreviewInput;
@@ -14,7 +15,6 @@ namespace ARTowerDefense
 {
     public class Master : MonoBehaviour
     {
-        [SerializeField] private GameObject ARCoreDevice;
         [SerializeField] private Camera FirstPersonCamera;
         [SerializeField] private GameObject GridGenerator;
         [SerializeField] private GameObject PointCloud;
@@ -22,7 +22,7 @@ namespace ARTowerDefense
         [SerializeField] private GameObject PlacePrefabButton;
         [SerializeField] private GameObject Crosshair;
         [SerializeField] private GameObject ShowBuildingsPanelButton;
-        [SerializeField] private GameObject BuildingsPanel;
+        [SerializeField] private GameObject BuildingManager;
 
         [SerializeField] private GameObject PlaneMarkerPrefab;
         [SerializeField] private GameObject WallPrefab;
@@ -32,8 +32,6 @@ namespace ARTowerDefense
         [SerializeField] private GameObject DivisionPrefab;
         [SerializeField] private GameObject SpawnerPrefab;
         [SerializeField] private GameObject PathPrefab;
-        [SerializeField] private GameObject CannonTowerPrefab;
-        [SerializeField] private GameObject EnemyPrefab;
 
         private const float k_DivisionLength = .1f;
 
@@ -77,11 +75,11 @@ namespace ARTowerDefense
         /// <summary>
         /// A set of all divisions that contain no game object
         /// </summary>
-        private HashSet<Division> m_AvailableDivisions;
+        public static HashSet<Division> AvailableDivisions { get; private set; }
         /// <summary>
         /// A dictionary of divisions and their corresponding division game object instance
         /// </summary>
-        private Dictionary<Division, GameObject> m_DivisionGameObjectDictionary;
+        public static Dictionary<Division, GameObject> DivisionGameObjectDictionary { get; private set; }
         /// <summary>
         /// A set of all divisions that will contain paths
         /// </summary>
@@ -253,7 +251,7 @@ namespace ARTowerDefense
         }
 
         /// <summary>
-        /// Sets the state of the PlacePrefabButton (enabled or disabled).
+        /// Sets the state of the BuildButton (enabled or disabled).
         /// <para>
         /// Enabled: the center of the camera points to an available division (one that does not contain any child game object).
         /// </para>
@@ -281,7 +279,7 @@ namespace ARTowerDefense
                 return;
             }
 
-            m_DivisionToPlaceOn = m_AvailableDivisions.SingleOrDefault(div => div.Includes(divisionTransform.position));
+            m_DivisionToPlaceOn = AvailableDivisions.SingleOrDefault(div => div.Includes(divisionTransform.position));
             if (m_DivisionToPlaceOn != null)
             {
                 PlacePrefabButton.SetActive(true);
@@ -296,39 +294,23 @@ namespace ARTowerDefense
 
         /// <summary>
         /// Places a game object prefab corresponding to the current context at a valid division pointed to by the camera.
-        /// <para>The method is triggered on PlacePrefabButton click.</para>
+        /// <para>The method is triggered on BuildButton click.</para>
         /// </summary>
         public void PlacePrefab()
         {
             if (m_PlacedGameObject != null)
             {
                 Destroy(m_PlacedGameObject);
-                m_AvailableDivisions.Add(m_DivisionPlacedOn);
+                AvailableDivisions.Add(m_DivisionPlacedOn);
             }
 
             GameObject newGameObject = Instantiate(m_GameObjectToBePlaced,
                 m_DivisionToPlaceOn.Center, Quaternion.identity,
-                m_DivisionGameObjectDictionary[m_DivisionToPlaceOn].transform);
-            m_AvailableDivisions.Remove(m_DivisionToPlaceOn);
+                DivisionGameObjectDictionary[m_DivisionToPlaceOn].transform);
+            AvailableDivisions.Remove(m_DivisionToPlaceOn);
             m_PlacedGameObject = newGameObject;
             m_DivisionPlacedOn = m_DivisionToPlaceOn;
             Debug.Log("Placed game object");
-        }
-
-        public void SetBuildingToBePlaced(int x)
-        {
-            switch (x)
-            {
-                case 1:
-                    m_GameObjectToBePlaced = CannonTowerPrefab;
-                    break;
-            }
-        }
-
-        public void UpdateBuildingPanelStatus()
-        {
-            BuildingsPanel.SetActive(!BuildingsPanel.activeSelf);
-            Debug.Log($"Set buildings panel status to: {BuildingsPanel.activeSelf}");
         }
 
         public void ToStartState()
@@ -392,7 +374,7 @@ namespace ARTowerDefense
 
         private void _InitializeGameLoop()
         {
-            ShowBuildingsPanelButton.SetActive(true);
+            BuildingManager.SetActive(true);
             m_GameObjectToBePlaced = null;
             Debug.Log("Game loop initialized");
         }
@@ -600,17 +582,17 @@ namespace ARTowerDefense
 
             _TrimDivisions(divisions);
 
-            m_DivisionGameObjectDictionary = new Dictionary<Division, GameObject>(divisions.Count);
+            DivisionGameObjectDictionary = new Dictionary<Division, GameObject>(divisions.Count);
             Debug.Log($"Will spawn {divisions.Count} divisions.");
             foreach (var division in divisions)
             {
                 var divisionObject =
                     Instantiate(DivisionPrefab, division.Center, Quaternion.identity, AnchorTransform);
                 Debug.Log("Spawned division marker.");
-                m_DivisionGameObjectDictionary.Add(division, divisionObject);
+                DivisionGameObjectDictionary.Add(division, divisionObject);
             }
 
-            m_AvailableDivisions =
+            AvailableDivisions =
                 new HashSet<Division>(divisions); // TODO: load divisions into m_availableDivisions directly 
             m_PlaneSplit = true;
         }
@@ -690,19 +672,19 @@ namespace ARTowerDefense
         private void _GeneratePathEnd()
         {
             Vector3 front = m_HomeBaseDivision.Center - m_HomeBase.transform.forward * k_DivisionLength;
-            m_PathEnd = m_DivisionGameObjectDictionary.SingleOrDefault(div => div.Key.Includes(front)).Key;
+            m_PathEnd = DivisionGameObjectDictionary.SingleOrDefault(div => div.Key.Includes(front)).Key;
             
             if (m_PathEnd != null) return;
             
             front = m_HomeBaseDivision.Center - m_HomeBase.transform.forward * -1;
-            m_PathEnd = m_DivisionGameObjectDictionary.SingleOrDefault(div => div.Key.Includes(front)).Key;
+            m_PathEnd = DivisionGameObjectDictionary.SingleOrDefault(div => div.Key.Includes(front)).Key;
             // TODO: may crash if placed in a division with a single neighbor, investigate
         }
 
         private Division _GeneratePath()
         {
             Debug.Log("Started generating m_PathDivisions.");
-            m_AvailableDivisionsForPathGeneration = new HashSet<Division>(m_AvailableDivisions);
+            m_AvailableDivisionsForPathGeneration = new HashSet<Division>(AvailableDivisions);
             m_PathDivisions = new Stack<Division>();
             return _GenerateRandomPath(m_PathEnd);
         }
@@ -727,7 +709,7 @@ namespace ARTowerDefense
                 m_AvailableDivisionsThreshold += k_IncreaseThresholdSize;
             }
 
-            if (m_AvailableDivisionsForPathGeneration.Count < m_AvailableDivisionsThreshold * m_DivisionGameObjectDictionary.Count &&
+            if (m_AvailableDivisionsForPathGeneration.Count < m_AvailableDivisionsThreshold * DivisionGameObjectDictionary.Count &&
                 _CanPlaceSpawner(currentDivision))
             {
                 m_PathDivisions.Push(currentDivision);
@@ -807,8 +789,8 @@ namespace ARTowerDefense
                 m_AvailableDivisionsForPathGeneration.FirstOrDefault(div => div.Includes(currentDivision.Center + direction));
             if (m_SpawnerDivision != null)
             {
-                m_Spawner = Instantiate(SpawnerPrefab, m_SpawnerDivision.Center, Quaternion.identity, m_DivisionGameObjectDictionary[m_SpawnerDivision].transform);
-                m_AvailableDivisions.Remove(m_SpawnerDivision);
+                m_Spawner = Instantiate(SpawnerPrefab, m_SpawnerDivision.Center, Quaternion.identity, DivisionGameObjectDictionary[m_SpawnerDivision].transform);
+                AvailableDivisions.Remove(m_SpawnerDivision);
                 return true;
             }
 
@@ -825,17 +807,17 @@ namespace ARTowerDefense
         {
             Debug.Log($"Started path building. The path contains {m_PathDivisions.Count} path divisions.");
             PathWaypoints = new Transform[m_PathDivisions.Count + 2];
-            PathWaypoints[0] = m_DivisionGameObjectDictionary[m_SpawnerDivision].transform;
+            PathWaypoints[0] = DivisionGameObjectDictionary[m_SpawnerDivision].transform;
             int index = 1;
             foreach (Division pathDivision in m_PathDivisions)
             {
                 var pathObject = Instantiate(PathPrefab, pathDivision.Center, Quaternion.identity);
-                pathObject.transform.parent = m_DivisionGameObjectDictionary[pathDivision].transform;
-                m_AvailableDivisions.Remove(pathDivision);
-                PathWaypoints[index++] = m_DivisionGameObjectDictionary[pathDivision].transform;
+                pathObject.transform.parent = DivisionGameObjectDictionary[pathDivision].transform;
+                AvailableDivisions.Remove(pathDivision);
+                PathWaypoints[index++] = DivisionGameObjectDictionary[pathDivision].transform;
             }
 
-            PathWaypoints[index] = m_DivisionGameObjectDictionary[m_HomeBaseDivision].transform;
+            PathWaypoints[index] = DivisionGameObjectDictionary[m_HomeBaseDivision].transform;
         }
 
         // ########################################################
@@ -844,10 +826,6 @@ namespace ARTowerDefense
 
         private void _GameLoopLogic()
         {
-            if (!BuildingsPanel.activeSelf && m_GameObjectToBePlaced != null)
-            {
-                _UpdatePlaceButtonState();
-            }
 
         }
 

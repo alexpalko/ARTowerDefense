@@ -379,13 +379,13 @@ public class PathGenerationTestMaster : MonoBehaviour
     private void _PlaceSpawn()
     {
         //Random random = new Random();
-        //int index = random.Next(m_AvailableDivisions.Count);
-        //Division division = m_AvailableDivisions[index];
+        //int index = random.Next(AvailableDivisions.Count);
+        //Division division = AvailableDivisions[index];
         //m_Spawner = Instantiate(SpawnerPrefab, division.Center, Quaternion.identity);
         //Vector3 front = division.Center - m_Spawner.transform.forward;
         //m_PathStart = m_Divisions.First(div => div.Includes(front));
 
-        //m_AvailableDivisions.RemoveAll(div => _CheckProximity(div, division));
+        //AvailableDivisions.RemoveAll(div => _CheckProximity(div, division));
         state = GameState.PLACING_PATH_NODES;
     }
 
@@ -399,7 +399,7 @@ public class PathGenerationTestMaster : MonoBehaviour
             Division division = m_AvailableDivisions[index];
             m_PathNodeDivisions.Add(division);
             m_PathNodes.Add(Instantiate(PathMarkerPrefab, division.Center, Quaternion.identity));
-            //m_AvailableDivisions.RemoveAll(div => _CheckProximity(div, division));
+            //AvailableDivisions.RemoveAll(div => _CheckProximity(div, division));
             m_AvailableDivisions.Remove(division);
         }
 

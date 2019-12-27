@@ -2,7 +2,7 @@
 
 namespace Assets.ARTowerDefense.Scripts
 {
-    internal class Division
+    public class Division
     {
         public Vector3 Point1 { get; }
         public Vector3 Point2 { get; }
