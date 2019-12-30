@@ -18,12 +18,15 @@ namespace ARTowerDefense
         [SerializeField] private Camera FirstPersonCamera;
         [SerializeField] private GameObject GridGenerator;
         [SerializeField] private GameObject PointCloud;
-        [SerializeField] private GameObject AdvanceStateButton;
+        [SerializeField] private GameObject ToBasePlacementButton;
+        [SerializeField] private GameObject ToGameLoopButton;
         [SerializeField] private GameObject PlacePrefabButton;
         [SerializeField] private GameObject Crosshair;
-        [SerializeField] private GameObject ShowBuildingsPanelButton;
         [SerializeField] private GameObject CoinManager;
         [SerializeField] private GameObject BuildingManager;
+        [SerializeField] private GameObject GridDetectionPanel;
+        [SerializeField] private GameObject GameInitializationPanel;
+        [SerializeField] private GameObject GameLoopPanel;
 
         [SerializeField] private GameObject PlaneMarkerPrefab;
         [SerializeField] private GameObject WallPrefab;
@@ -157,13 +160,16 @@ namespace ARTowerDefense
                 case GameState.STARTED:
                     break;
                 case GameState.GRID_DETECTION:
+                    GridDetectionPanel.SetActive(true);
                     _GridDetectionLogic();
                     break;
                 case GameState.GAME_SPACE_INSTANTIATION:
+                    GridDetectionPanel.SetActive(false);
                     _GameSpaceInitializationLogic();
                     AdvanceGameState();
                     break;
                 case GameState.BASE_PLACEMENT:
+                    GameInitializationPanel.SetActive(true);
                     if (!m_PlaneSplit)
                     {
                         _SplitPlane();
@@ -176,12 +182,13 @@ namespace ARTowerDefense
                         {
                             m_HomeBase = m_PlacedGameObject;
                             m_HomeBaseDivision = m_DivisionPlacedOn;
-                            AdvanceStateButton.SetActive(true);
+                            ToGameLoopButton.SetActive(true);
                         }
                     }
 
                     break;
                 case GameState.PATH_GENERATION:
+                    GameInitializationPanel.SetActive(false);
                     if (m_Moves == null)
                     {
                         _InitializeMoves();
@@ -194,6 +201,7 @@ namespace ARTowerDefense
                     }
                     break;
                 case GameState.GAME_LOOP:
+                    GameLoopPanel.SetActive(true);
                     _GameLoopLogic();
                     break;
                 case GameState.PAUSED:
@@ -246,8 +254,6 @@ namespace ARTowerDefense
                     throw new InvalidOperationException(
                         "The session is in an undefined state. Current state: {m_GameStage}");
             }
-
-            AdvanceStateButton.SetActive(false);
             Debug.Log($"Game stage changed to {m_GameState}");
         }
 
@@ -357,14 +363,14 @@ namespace ARTowerDefense
             GridGenerator.SetActive(false);
             PointCloud.SetActive(false);
             Debug.Log("Grid generation disabled");
-            AdvanceStateButton.SetActive(false);
+            ToBasePlacementButton.SetActive(false);
             Debug.Log("ConfirmButton disabled");
         }
 
         private void _InitializeBasePlacement()
         {
             Crosshair.SetActive(true);
-            AdvanceStateButton.SetActive(false);
+            ToBasePlacementButton.SetActive(false);
             Debug.Log("ConfirmButton disabled");
         }
 
@@ -441,7 +447,7 @@ namespace ARTowerDefense
                             //AnchorTransform = m_MarkedPlane.CreateAnchor(MarkedPlaneCenterPose).transform;
                             AnchorTransform = anchor.transform;
                             Debug.Log("New base marker placed");
-                            AdvanceStateButton.SetActive(true);
+                            ToBasePlacementButton.SetActive(true);
                             Debug.Log("ConfirmButton activated");
                         }
                     }
