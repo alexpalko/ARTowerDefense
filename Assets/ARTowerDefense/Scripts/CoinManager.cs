@@ -1,6 +1,5 @@
 ﻿using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class CoinManager : MonoBehaviour
 {
@@ -11,7 +10,7 @@ public class CoinManager : MonoBehaviour
 
     void OnEnable()
     {
-        Coins = 150;
+        Coins = 10000;
         CoinInfo.SetActive(true);
     }
 
