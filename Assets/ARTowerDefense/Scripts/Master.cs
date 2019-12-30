@@ -22,6 +22,7 @@ namespace ARTowerDefense
         [SerializeField] private GameObject PlacePrefabButton;
         [SerializeField] private GameObject Crosshair;
         [SerializeField] private GameObject ShowBuildingsPanelButton;
+        [SerializeField] private GameObject CoinManager;
         [SerializeField] private GameObject BuildingManager;
 
         [SerializeField] private GameObject PlaneMarkerPrefab;
@@ -374,6 +375,7 @@ namespace ARTowerDefense
 
         private void _InitializeGameLoop()
         {
+            CoinManager.SetActive(true);
             BuildingManager.SetActive(true);
             m_GameObjectToBePlaced = null;
             Debug.Log("Game loop initialized");

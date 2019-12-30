@@ -3,6 +3,7 @@ using System.Linq;
 using ARTowerDefense;
 using Assets.ARTowerDefense.Scripts;
 using UnityEngine;
+using Debug = UnityEngine.Debug;
 
 public class BuildingManager : MonoBehaviour
 {
@@ -14,15 +15,19 @@ public class BuildingManager : MonoBehaviour
     public GameObject BuildingsPanel;
 
     public GameObject CannonTowerPrefab;
+    public GameObject CropFarmPrefab;
+    public GameObject ChickenFarmPrefab;
+    public GameObject MillPrefab;
 
-    public int Coins { get; }
+    private int[] m_PriceList = {0, 100, 0, 0, 50, 100, 300, 0};
+
     private HashSet<Division> m_AvailableDivisions;
     private Dictionary<Division, GameObject> m_DivisionGameObjectsDictionary;
     private Dictionary<Division, GameObject> m_DivisionBuildingDictionary;
 
     private Division m_DivisionToPlaceOn;
 
-    private GameObject m_BuildingToConstruct;
+    private int m_BuildingToConstructId = -1;
     private Division m_FocusedBuildingDivision;
     private Division m_SelectedBuildingDivision;
 
@@ -53,7 +58,7 @@ public class BuildingManager : MonoBehaviour
 
         foreach (var hit in hits)
         {
-            if (!hit.collider.CompareTag("Division") || m_BuildingToConstruct == null) continue;
+            if (!hit.collider.CompareTag("Division") || m_BuildingToConstructId < 0) continue;
             m_DivisionToPlaceOn =
                 m_AvailableDivisions.SingleOrDefault(div => div.Includes(hit.collider.transform.position));
             if (m_DivisionToPlaceOn != null)
@@ -76,37 +81,59 @@ public class BuildingManager : MonoBehaviour
 
     public void SelectBuildingToConstruct(int x)
     {
-        switch (x)
+        if (x < 0 || x > 7)
         {
-            case 0:
-                break;
-            case 1:
-                m_BuildingToConstruct = CannonTowerPrefab;
-                Debug.Log($"the Cannon Tower was selected");
-                break;
-            case 2:
-                break;
-            case 3:
-                break;
-            case 4: 
-                break;
-            case 5:
-                break;
-            case 6:
-                break;
-            case 7:
-                break;
-            case 8:
-                break;
-            default:
-                Debug.LogError($"Invalid building code: {x}");
-                break;
+            Debug.LogError($"Invalid building code: {x}");
+            return;
         }
+        m_BuildingToConstructId = x;
     }
 
     public void Construct()
     {
-        var newBuilding = Instantiate(m_BuildingToConstruct, m_DivisionToPlaceOn.Center, Quaternion.identity,
+        GameObject buildingToConstruct; 
+        switch(m_BuildingToConstructId)
+        {
+            case 0:
+                buildingToConstruct = null;
+                break;
+            case 1:
+                buildingToConstruct = CannonTowerPrefab;
+                break;
+            case 2:
+                buildingToConstruct = null;
+                break;
+            case 3:
+                buildingToConstruct = null;
+                break;
+            case 4:
+                buildingToConstruct = CropFarmPrefab;
+                break;
+            case 5:
+                buildingToConstruct = ChickenFarmPrefab;
+                break;
+            case 6:
+                buildingToConstruct = MillPrefab;
+                break;
+            case 7:
+                buildingToConstruct = null;
+                break;
+            default:
+                buildingToConstruct = null;
+                break;
+        }
+
+        if (buildingToConstruct == null)
+        {
+            Debug.LogError("Building prefab was null");
+            m_BuildingToConstructId = -1;
+        }
+
+        if (!CoinManager.RemoveCoins(m_PriceList[m_BuildingToConstructId]))
+        {
+            return;
+        }
+        var newBuilding = Instantiate(buildingToConstruct, m_DivisionGameObjectsDictionary[m_DivisionToPlaceOn].transform.position, Quaternion.identity,
             m_DivisionGameObjectsDictionary[m_DivisionToPlaceOn].transform);
         m_AvailableDivisions.Remove(m_DivisionToPlaceOn);
         m_DivisionBuildingDictionary.Add(m_DivisionToPlaceOn, newBuilding);
