@@ -12,6 +12,7 @@ TagManager:
   - enemyBug
   - Castle
   - CannonTower
+  - Dead
   layers:
   - Default
   - TransparentFX

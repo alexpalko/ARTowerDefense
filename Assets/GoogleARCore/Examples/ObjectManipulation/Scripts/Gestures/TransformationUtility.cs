@@ -251,7 +251,7 @@ namespace GoogleARCore.Examples.ObjectManipulationInternal
         /// <summary>
         /// Limits the translation to the maximum distance allowed.
         /// </summary>
-        /// <returns>The new target position, limited so that the object does not tranlsate more
+        /// <returns>The new Target position, limited so that the object does not tranlsate more
         /// than the maximum allowed distance.</returns>
         /// <param name="desiredPosition">Desired position.</param>
         /// <param name="currentPosition">Current position.</param>

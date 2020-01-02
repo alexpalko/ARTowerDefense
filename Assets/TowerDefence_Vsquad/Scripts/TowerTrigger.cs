@@ -13,7 +13,7 @@ public class TowerTrigger : MonoBehaviour {
 	{
 		if(other.CompareTag("enemyBug") && !lockE)
 		{   
-			twr.target = other.gameObject.transform;            
+			twr.Target = other.gameObject.transform;            
             curTarget = other.gameObject;
 			lockE = true;
 		}
@@ -26,7 +26,7 @@ public class TowerTrigger : MonoBehaviour {
             if (curTarget.CompareTag("Dead")) // get it from EnemyHealth
             {
                 lockE = false;
-                twr.target = null;               
+                twr.Target = null;               
             }
         }
 
@@ -43,7 +43,7 @@ public class TowerTrigger : MonoBehaviour {
 		if(other.CompareTag("enemyBug") && other.gameObject == curTarget)
 		{
 			lockE = false;
-            twr.target = null;            
+            twr.Target = null;            
         }
 	}
 	

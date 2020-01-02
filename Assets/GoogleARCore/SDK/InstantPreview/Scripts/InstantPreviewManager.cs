@@ -227,7 +227,7 @@ namespace GoogleARCoreInternal
                         "<unknown>" : string.Format("{0}x", minGameViewScale);
                     Debug.LogWarningFormat(
                         "Instant Preview disabled, {0} minimum Game view scale unsupported for " +
-                        "target build platform '{1}'.\n" +
+                        "Target build platform '{1}'.\n" +
                         "To use Instant Preview, switch build platform to '{2}' from the 'Build " +
                         "settings' window.",
                         viewScaleText,
@@ -383,7 +383,7 @@ namespace GoogleARCoreInternal
                     needToStartActivity = false;
                 }
 
-                // Creates a target texture to capture the preview window onto.
+                // Creates a Target texture to capture the preview window onto.
                 // Some video encoders prefer the dimensions to be a multiple of 16.
                 var targetWidth = RoundUpToNearestMultipleOf16(Screen.width);
                 var targetHeight = RoundUpToNearestMultipleOf16(Screen.height);

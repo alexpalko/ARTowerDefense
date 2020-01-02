@@ -1,9 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Tower : MonoBehaviour {
-
-
+public class CTower : MonoBehaviour {
     public bool Catcher = false;
 	public Transform shootElement;
     public GameObject Towerbug;
@@ -14,10 +12,10 @@ public class Tower : MonoBehaviour {
     public Transform target;
     public int dmg = 10;
     public float shootDelay;
-    bool isShoot;
+    protected bool isShoot;
     public Animator anim_2;
     public TowerHP TowerHp;    
-    private float homeY;
+    protected float homeY;
 
     // for Catcher tower 
 
@@ -32,7 +30,7 @@ public class Tower : MonoBehaviour {
     
     // for Catcher tower attack animation
 
-    void GetDamage()
+    protected virtual void GetDamage()
 
     {
         if (target)
@@ -44,7 +42,7 @@ public class Tower : MonoBehaviour {
 
 
 
-    void Update () {
+    protected virtual void Update () {
 
         
         // Tower`s rotate
@@ -101,7 +99,7 @@ public class Tower : MonoBehaviour {
 
     }
 
-	IEnumerator shoot()
+	protected virtual IEnumerator shoot()
 	{
 		isShoot = true;
 		yield return new WaitForSeconds(shootDelay);
@@ -111,7 +109,7 @@ public class Tower : MonoBehaviour {
         {
             GameObject b = GameObject.Instantiate(bullet, shootElement.position, Quaternion.identity) as GameObject;
             b.GetComponent<TowerBullet>().target = target;
-            b.GetComponent<TowerBullet>().twr = this;
+            b.GetComponent<TowerBullet>().twr = default;
           
         }
 
@@ -127,13 +125,13 @@ public class Tower : MonoBehaviour {
 
 
 
-        void StopCatcherAttack()
+    protected virtual void StopCatcherAttack()
 
-        {                
-            target = null;
-            anim_2.SetBool("Attack", false);
-            anim_2.SetBool("T_pose", true);        
-        } 
+    {                
+        target = null;
+        anim_2.SetBool("Attack", false);
+        anim_2.SetBool("T_pose", true);        
+    } 
           
 
 }

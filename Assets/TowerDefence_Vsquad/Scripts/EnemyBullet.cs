@@ -6,11 +6,11 @@ public class EnemyBullet : MonoBehaviour
 
     public float Speed;
     public Transform target;
-    public GameObject impactParticle; // bullet impact    
+    public GameObject impactParticle; // Ammo impact    
     public Vector3 impactNormal; 
     Vector3 lastBulletPosition; 
     public Enemy twr;
-    float i = 0.05f; // delay time of bullet destruction
+    float i = 0.05f; // delay time of Ammo destruction
 
 
     void Update()
@@ -27,7 +27,7 @@ public class EnemyBullet : MonoBehaviour
 
         }
 
-        // Move bullet ( enemy was disapeared )
+        // Move Ammo ( enemy was disapeared )
 
         else
         {
@@ -61,7 +61,7 @@ public class EnemyBullet : MonoBehaviour
         if (other.gameObject.transform == target)
         {
             target.GetComponent<TowerHP>().Dmg_2(twr.Creature_Damage);
-            Destroy(gameObject, i); // destroy bullet
+            Destroy(gameObject, i); // destroy Ammo
             impactParticle = Instantiate(impactParticle, transform.position, Quaternion.FromToRotation(Vector3.up, impactNormal)) as GameObject;
             impactParticle.transform.parent = target.transform;
             Destroy(impactParticle, 3);
