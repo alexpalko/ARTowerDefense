@@ -57,7 +57,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5c40027982a518f4c877ed8b22c18b9d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  twr: {fileID: 7728892606928205003}
+  twr: {fileID: 1396897573404490766}
   lockE: 0
   curTarget: {fileID: 0}
 --- !u!1 &7697405237424635051
@@ -69,8 +69,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7694218494251005131}
-  - component: {fileID: 7728892606928205003}
   - component: {fileID: 5226063667722303333}
+  - component: {fileID: 1396897573404490766}
   m_Layer: 8
   m_Name: CrossbowTower
   m_TagString: CannonTower
@@ -93,24 +93,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &7728892606928205003
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7697405237424635051}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a682e4e961f99c0498ca12fad03ef8fc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ShootElement: {fileID: 3461494419582495381}
-  LookAtObj: {fileID: 5597770910860265517}
-  Ammo: {fileID: 1756512607606164535, guid: c2f4bd3fb8d6c49448ef761a0a902d03, type: 3}
-  Target: {fileID: 0}
-  Damage: 5
-  ShootDelay: 1
 --- !u!65 &5226063667722303333
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -124,6 +106,24 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1.1415945, y: 2.209217, z: 1}
   m_Center: {x: -0.07079744, y: 1.0800104, z: 0}
+--- !u!114 &1396897573404490766
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7697405237424635051}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ab86a2dbda8456843bd0e8992f8f927b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShootElement: {fileID: 3461494419582495381}
+  LookAtObj: {fileID: 5597770910860265517}
+  Ammo: {fileID: 1756512607606164535, guid: c2f4bd3fb8d6c49448ef761a0a902d03, type: 3}
+  Target: {fileID: 0}
+  Damage: 5
+  ShootDelay: 0.5
 --- !u!1 &7697428288291632159
 GameObject:
   m_ObjectHideFlags: 0

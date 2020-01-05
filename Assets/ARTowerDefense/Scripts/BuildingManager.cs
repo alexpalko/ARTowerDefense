@@ -15,11 +15,13 @@ public class BuildingManager : MonoBehaviour
     public GameObject BuildingsPanel;
 
     public GameObject CannonTowerPrefab;
+    public GameObject CrossbowTowerPrefab;
+    public GameObject ThunderTowerPrefab;
     public GameObject CropFarmPrefab;
     public GameObject ChickenFarmPrefab;
     public GameObject MillPrefab;
 
-    private int[] m_PriceList = {0, 100, 0, 0, 50, 100, 300, 0};
+    private readonly int[] m_PriceList = {40, 100, 1000, 50, 100, 300};
 
     private HashSet<Division> m_AvailableDivisions;
     private Dictionary<Division, GameObject> m_DivisionGameObjectsDictionary;
@@ -95,28 +97,22 @@ public class BuildingManager : MonoBehaviour
         switch(m_BuildingToConstructId)
         {
             case 0:
-                buildingToConstruct = null;
+                buildingToConstruct = CrossbowTowerPrefab;
                 break;
             case 1:
                 buildingToConstruct = CannonTowerPrefab;
                 break;
             case 2:
-                buildingToConstruct = null;
+                buildingToConstruct = ThunderTowerPrefab;
                 break;
             case 3:
-                buildingToConstruct = null;
-                break;
-            case 4:
                 buildingToConstruct = CropFarmPrefab;
                 break;
-            case 5:
+            case 4:
                 buildingToConstruct = ChickenFarmPrefab;
                 break;
-            case 6:
+            case 5:
                 buildingToConstruct = MillPrefab;
-                break;
-            case 7:
-                buildingToConstruct = null;
                 break;
             default:
                 buildingToConstruct = null;

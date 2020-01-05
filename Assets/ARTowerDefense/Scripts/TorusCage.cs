@@ -6,7 +6,7 @@ public class TorusCage : MonoBehaviour
     public Transform TorusCageTransform;
     private float m_ChangeVerticalDirCooldown;
     private float m_BeforeChangeCooldown;
-    private Vector3 m_VerticalMoveDirection = Vector3.up * .1f;
+    private Vector3 m_VerticalMoveDirection = Vector3.up * .05f;
 
     void Update()
     {

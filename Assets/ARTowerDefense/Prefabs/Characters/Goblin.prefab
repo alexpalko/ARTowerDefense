@@ -711,12 +711,12 @@ GameObject:
   m_Component:
   - component: {fileID: 2355346184003000130}
   - component: {fileID: 2443967236704437504}
-  - component: {fileID: 2389537641039228908}
   - component: {fileID: 2404244015500822814}
   - component: {fileID: 8060548432060017081}
+  - component: {fileID: 4043453394190440234}
   m_Layer: 0
   m_Name: Goblin
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -757,30 +757,6 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
---- !u!114 &2389537641039228908
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2358473443761111954}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 153dd393b80768d4d8587c484df95783, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  shootElement: {fileID: 0}
-  bullet: {fileID: 0}
-  Enemybug: {fileID: 2358481304910086670}
-  Creature_Damage: 10
-  Speed: 5
-  waypoints:
-  - {fileID: 4951462613596946, guid: 49d144698851ec547865738ab31e7325, type: 3}
-  previous_Speed: 0
-  anim: {fileID: 0}
-  Enemy_Hp: {fileID: 0}
-  target: {fileID: 0}
-  EnemyTarget: {fileID: 0}
 --- !u!135 &2404244015500822814
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -806,7 +782,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bc38d3299a5b7ef4695439d3e1874f97, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Health: {fileID: 2104546881254709604}
   MovementSpeed: 0.2
+--- !u!114 &4043453394190440234
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2358473443761111954}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 153dd393b80768d4d8587c484df95783, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Enemybug: {fileID: 2358481304910086670}
+  m_Animator: {fileID: 0}
+  EnemyHealth: {fileID: 0}
 --- !u!1 &2358481304910086670
 GameObject:
   m_ObjectHideFlags: 0
@@ -820,9 +812,9 @@ GameObject:
   - component: {fileID: 2373211861571239482}
   - component: {fileID: 2404640091101715780}
   - component: {fileID: 2341413062501395056}
-  - component: {fileID: 2389472824914781464}
+  - component: {fileID: 2104546881254709604}
   m_Layer: 0
-  m_Name: Enemy_Bug
+  m_Name: Enemy Health
   m_TagString: enemyBug
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -917,7 +909,7 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &2389472824914781464
+--- !u!114 &2104546881254709604
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -926,10 +918,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 2358481304910086670}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5b6d63bc97dbdbd4cbb197d5c4dacdfd, type: 3}
+  m_Script: {fileID: 11500000, guid: fe07fdb287fb15c4d8cda68f46a64ee2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  EnemyHP: 25
+  EnemyHP: 50
 --- !u!1 &2358494940769623246
 GameObject:
   m_ObjectHideFlags: 0

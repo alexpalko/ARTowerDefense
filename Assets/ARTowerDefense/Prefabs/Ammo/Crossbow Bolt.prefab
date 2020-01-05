@@ -9,7 +9,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8807516419561553829}
-  - component: {fileID: 2499940613445480451}
+  - component: {fileID: 1915812089880523220}
+  - component: {fileID: 8005682596899359007}
   m_Layer: 0
   m_Name: Crossbow Bolt
   m_TagString: Untagged
@@ -26,13 +27,13 @@ Transform:
   m_GameObject: {fileID: 1756512607606164535}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.05, y: 0.05, z: 0.05}
   m_Children:
   - {fileID: 4048729873584264210}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2499940613445480451
+--- !u!114 &1915812089880523220
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -41,14 +42,26 @@ MonoBehaviour:
   m_GameObject: {fileID: 1756512607606164535}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 807a988a1765edd439007be8fbee2c70, type: 3}
+  m_Script: {fileID: 11500000, guid: 95f4a4de29c6509469c3e45a82c47660, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Speed: 10
+  Speed: 1
   target: {fileID: 0}
-  impactParticle: {fileID: 0}
   impactNormal: {x: 0, y: 0, z: 0}
   twr: {fileID: 0}
+--- !u!65 &8005682596899359007
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1756512607606164535}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.10590821, y: 0.086704336, z: 0.9442575}
+  m_Center: {x: 0.0026515825, y: 0.00624713, z: 0.50532156}
 --- !u!1 &4048729873584522920
 GameObject:
   m_ObjectHideFlags: 0

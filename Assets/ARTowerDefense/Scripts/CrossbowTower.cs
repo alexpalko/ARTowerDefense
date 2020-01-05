@@ -15,16 +15,15 @@ public class CrossbowTower : Tower
     protected override IEnumerator shoot()
     {
         m_IsShooting = true;
-        m_Animator.SetTrigger("Shoot");
         yield return new WaitForSeconds(ShootDelay);
-
 
         if (Target)
         {
-            GameObject b = Instantiate(Ammo, ShootElement.position, Quaternion.identity) as GameObject;
+            m_Animator.SetTrigger("Shoot");
+            GameObject b = Instantiate(Ammo, ShootElement.position, Quaternion.identity);
             b.transform.LookAt(Target.transform);
-            b.GetComponent<TowerBullet>().target = Target;
-            b.GetComponent<TowerBullet>().twr = this;
+            b.GetComponent<CrossbowBolt>().target = Target;
+            b.GetComponent<CrossbowBolt>().twr = this;
         }
 
         m_IsShooting = false;

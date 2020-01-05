@@ -47,9 +47,9 @@ public class Tower : MonoBehaviour
 
         if (Target)
         {
-            GameObject b = GameObject.Instantiate(Ammo, ShootElement.position, Quaternion.identity) as GameObject;
-            b.GetComponent<TowerBullet>().target = Target;
-            b.GetComponent<TowerBullet>().twr = this;
+            GameObject b = Instantiate(Ammo, ShootElement.position, Quaternion.identity);
+            b.GetComponent<CannonBall>().target = Target;
+            b.GetComponent<CannonBall>().twr = this;
         }
 
         m_IsShooting = false;

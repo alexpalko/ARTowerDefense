@@ -35,7 +35,7 @@ public class CTower : MonoBehaviour {
     {
         if (target)
         {
-            target.GetComponent<EnemyHp>().Dmg(dmg);
+            target.GetComponent<EnemyHealth>().DoDamage(dmg);
         }
     }
 

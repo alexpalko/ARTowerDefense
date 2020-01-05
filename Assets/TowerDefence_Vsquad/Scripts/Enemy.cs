@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Enemy : MonoBehaviour {
+public class Enemy1 : MonoBehaviour {
     
     public Transform shootElement;
     public GameObject bullet;
@@ -52,7 +52,7 @@ public class Enemy : MonoBehaviour {
        // {           
             GameObject с = GameObject.Instantiate(bullet, shootElement.position, Quaternion.identity) as GameObject;
             с.GetComponent<EnemyBullet>().target = target;
-            с.GetComponent<EnemyBullet>().twr = this;
+            //с.GetComponent<EnemyBullet>().twr = this;
        // }  
 
     }
@@ -60,19 +60,15 @@ public class Enemy : MonoBehaviour {
     
 
     void GetDamage ()
-
     {        
             EnemyTarget.GetComponent<TowerHP>().Dmg_2(Creature_Damage);       
     }
-
-    
-
 
     void Update () 
 	{
 
         
-        //Debug.Log("Animator  " + anim);
+        //Debug.Log("Animator  " + m_Animator);
 
 
         // MOVING

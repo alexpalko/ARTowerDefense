@@ -27,7 +27,7 @@ public class WaveSpawn : MonoBehaviour {
 	{
 		enemyCount++;
 		GameObject enemy = GameObject.Instantiate(EnemyPrefab,spawnPoint.position,Quaternion.identity) as GameObject;
-		enemy.GetComponent<Enemy>().waypoints = WayPoints;
+		//enemy.GetComponent<Enemy>().waypoints = WayPoints;
       
     }
 }

@@ -27,6 +27,10 @@ namespace ARTowerDefense
         [SerializeField] private GameObject GridDetectionPanel;
         [SerializeField] private GameObject GameInitializationPanel;
         [SerializeField] private GameObject GameLoopPanel;
+        [SerializeField] private GameObject GamePausedPanel;
+        [SerializeField] private GameObject GameOverPanel;
+        [SerializeField] private GameObject VictoryText;
+        [SerializeField] private GameObject DefeatText;
 
         [SerializeField] private GameObject PlaneMarkerPrefab;
         [SerializeField] private GameObject WallPrefab;
@@ -38,6 +42,9 @@ namespace ARTowerDefense
         [SerializeField] private GameObject PathPrefab;
 
         private const float k_DivisionLength = .1f;
+
+        public static bool LastWave { get; set; }
+        public static bool EnemyReachedBase { get; set; }
 
         private GameObject m_PlaneSelectionMarker;
         private DetectedPlane m_MarkedPlane;
@@ -340,9 +347,36 @@ namespace ARTowerDefense
             m_GameState = GameState.BASE_PLACEMENT;
         }
 
-        public void ToPausedState()
+        public void Pause()
         {
             m_GameState = GameState.PAUSED;
+            Time.timeScale = 0;
+            GameLoopPanel.SetActive(false);
+            GamePausedPanel.SetActive(true);
+        }
+
+        public void Unpause()
+        {
+            GamePausedPanel.SetActive(false);
+            GameLoopPanel.SetActive(true);
+            Time.timeScale = 1;
+            m_GameState = GameState.GAME_LOOP;
+        }
+
+        public void GameOver(bool victory)
+        {
+            Time.timeScale = 0;
+            GameLoopPanel.SetActive(false);
+            m_GameState = GameState.GAME_OVER;
+            GameOverPanel.SetActive(true);
+            if (victory)
+            {
+                VictoryText.SetActive(true);
+            }
+            else
+            {
+                DefeatText.SetActive(true);
+            }
         }
 
         private void _InitializeGameSpaceInstantiation()
@@ -834,7 +868,15 @@ namespace ARTowerDefense
 
         private void _GameLoopLogic()
         {
+            if (EnemyReachedBase)
+            {
+                GameOver(false);
+            }
 
+            if (LastWave && !GameObject.FindGameObjectsWithTag("enemyBug").Any())
+            {
+                GameOver(true);
+            }
         }
 
         // ########################################################

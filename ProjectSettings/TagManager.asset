@@ -13,6 +13,8 @@ TagManager:
   - Castle
   - CannonTower
   - Dead
+  - Enemy
+  - EnemyHealth
   layers:
   - Default
   - TransparentFX
