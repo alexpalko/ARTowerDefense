@@ -8,6 +8,8 @@ public class ThunderTower : Tower
     private Dictionary<GameObject, GameObject> m_Bolts;
     public GameObject CenterPoint;
 
+    public float MovementDebuff = .4f;
+
     protected override void Start()
     {
         base.Start();
@@ -25,13 +27,11 @@ public class ThunderTower : Tower
 
     protected override void Update()
     {
-        //base.Update();
         foreach (var bolt in m_Bolts)
         {
             if (bolt.Key == null)
             {
                 Destroy(bolt.Value);
-
             }
         }
     }
@@ -44,6 +44,8 @@ public class ThunderTower : Tower
         script.StartObject = CenterPoint;
         script.EndObject = target;
         m_Bolts.Add(target, newBolt);
+        var enemyMovement = target.transform.parent.GetComponent<EnemyMovement>();
+        enemyMovement.MovementDebuffQueue.Enqueue(MovementDebuff);
     }
 
     public void RemoveTarget(GameObject target)
@@ -51,6 +53,7 @@ public class ThunderTower : Tower
         m_Targets.Remove(target);
         Destroy(m_Bolts[target]);
         m_Bolts.Remove(target);
+        var enemyMovement = target.transform.parent.GetComponent<EnemyMovement>();
+        enemyMovement.MovementDebuffQueue.Dequeue();
     }
-
 }

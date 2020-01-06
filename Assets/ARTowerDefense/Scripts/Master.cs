@@ -351,12 +351,14 @@ namespace ARTowerDefense
         {
             m_GameState = GameState.PAUSED;
             Time.timeScale = 0;
+            Crosshair.SetActive(false);
             GameLoopPanel.SetActive(false);
             GamePausedPanel.SetActive(true);
         }
 
         public void Unpause()
         {
+            Crosshair.SetActive(true);
             GamePausedPanel.SetActive(false);
             GameLoopPanel.SetActive(true);
             Time.timeScale = 1;
@@ -366,6 +368,7 @@ namespace ARTowerDefense
         public void GameOver(bool victory)
         {
             Time.timeScale = 0;
+            Crosshair.SetActive(false);
             GameLoopPanel.SetActive(false);
             m_GameState = GameState.GAME_OVER;
             GameOverPanel.SetActive(true);
