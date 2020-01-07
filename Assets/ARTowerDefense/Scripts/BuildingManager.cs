@@ -13,6 +13,7 @@ public class BuildingManager : MonoBehaviour
     public GameObject SelectButton;
     public GameObject DemolishButton;
     public GameObject BuildingsPanel;
+    public List<GameObject> BuildingInfoPanels; 
 
     public GameObject CannonTowerPrefab;
     public GameObject CrossbowTowerPrefab;
@@ -157,4 +158,13 @@ public class BuildingManager : MonoBehaviour
         Debug.Log($"Set buildings panel status to: {BuildingsPanel.activeSelf}");
     }
 
+    public void UpdateBuildingInfoPanelsStatus(GameObject currentInfoPanel)
+    {
+        currentInfoPanel.SetActive(!currentInfoPanel.activeSelf);
+        foreach (var infoPanel in BuildingInfoPanels)
+        {
+            if (infoPanel.Equals(currentInfoPanel)) continue;
+            infoPanel.SetActive(false);
+        }
+    }
 }
