@@ -4,5 +4,11 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/ARTowerDefense/Scenes/StartMenu.unity
+    guid: c07fc9fa89447524f8212fc2469a430c
+  - enabled: 1
+    path: Assets/ARTowerDefense/Scenes/ARTowerDefense.unity
+    guid: 1d3a7c378d8d7cc43a74534099f25634
   m_configObjects: {}
