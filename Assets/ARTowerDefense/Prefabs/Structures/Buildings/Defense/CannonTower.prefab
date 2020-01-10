@@ -391,8 +391,8 @@ MonoBehaviour:
   LookAtObj: {fileID: 7644559308151452096}
   Ammo: {fileID: 1240887441953726, guid: 8a976dcd328a4664c85144f33b9c46b0, type: 3}
   Target: {fileID: 0}
-  Damage: 10
-  ShootDelay: 1
+  Damage: 25
+  ShootDelay: 1.5
 --- !u!1 &7646724305836691386
 GameObject:
   m_ObjectHideFlags: 0

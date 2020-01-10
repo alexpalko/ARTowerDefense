@@ -779,5 +779,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46e4f55bd9e835e478305e7a4c4ae9bc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Amount: 100
-  TimeInterval: 30
+  Amount: 50
+  TimeInterval: 25

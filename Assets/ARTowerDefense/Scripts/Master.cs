@@ -204,6 +204,7 @@ namespace ARTowerDefense
                     if (_GeneratePath() != null)
                     {
                         _BuildPath();
+                        m_HomeBase.transform.Rotate(0, 180 ,0);
                         AdvanceGameState();
                     }
                     break;

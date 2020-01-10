@@ -55,7 +55,7 @@ public class CannonBall : MonoBehaviour
 
             if (Vector3.Distance(enemy.transform.parent.position, target.position) < .2f)
             {
-                enemy.GetComponent<EnemyHealth>().DoDamage(500);
+                enemy.GetComponent<EnemyHealth>().DoDamage(5);
             }
         }
     }

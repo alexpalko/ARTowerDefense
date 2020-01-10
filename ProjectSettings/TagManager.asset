@@ -15,6 +15,7 @@ TagManager:
   - Dead
   - Enemy
   - EnemyHealth
+  - CoinManager
   layers:
   - Default
   - TransparentFX

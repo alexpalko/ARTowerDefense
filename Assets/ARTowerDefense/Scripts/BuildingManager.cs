@@ -22,7 +22,7 @@ public class BuildingManager : MonoBehaviour
     public GameObject ChickenFarmPrefab;
     public GameObject MillPrefab;
 
-    private readonly int[] m_PriceList = {40, 100, 1000, 50, 100, 300};
+    private readonly int[] m_PriceList = {25, 60, 150, 50, 80, 200};
 
     private HashSet<Division> m_AvailableDivisions;
     private Dictionary<Division, GameObject> m_DivisionGameObjectsDictionary;

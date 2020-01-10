@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class CoinManager : MonoBehaviour
 {
+    public int StartingCoinAmount = 100;
+
     public GameObject CoinInfo;
     public TextMeshProUGUI CoinAmount;
     public GameObject IncreasePrefab;
@@ -16,7 +18,7 @@ public class CoinManager : MonoBehaviour
 
     void OnEnable()
     {
-        Coins = 10000;
+        Coins = StartingCoinAmount;
         CoinInfo.SetActive(true);
         s_AmountChanges = new Queue<int>();
     }

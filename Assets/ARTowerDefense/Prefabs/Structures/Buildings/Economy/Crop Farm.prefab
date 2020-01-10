@@ -7799,7 +7799,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Amount: 10
-  TimeInterval: 10
+  TimeInterval: 5
 --- !u!1 &2949383518734679027
 GameObject:
   m_ObjectHideFlags: 0
