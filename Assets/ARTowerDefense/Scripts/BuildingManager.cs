@@ -3,6 +3,7 @@ using System.Linq;
 using ARTowerDefense;
 using Assets.ARTowerDefense.Scripts;
 using UnityEngine;
+using UnityEngineInternal;
 using Debug = UnityEngine.Debug;
 
 public class BuildingManager : MonoBehaviour
@@ -28,7 +29,11 @@ public class BuildingManager : MonoBehaviour
     private Dictionary<Division, GameObject> m_DivisionGameObjectsDictionary;
     private Dictionary<Division, GameObject> m_DivisionBuildingDictionary;
 
+    private HashSet<GameObject> m_VacantDivisions;
+    private HashSet<GameObject> m_NonvacantDivisions;
+
     private Division m_DivisionToPlaceOn;
+    private GameObject m_DivisionToPlaceOnn;
 
     private int m_BuildingToConstructId = -1;
     private Division m_FocusedBuildingDivision;
@@ -40,6 +45,8 @@ public class BuildingManager : MonoBehaviour
         m_AvailableDivisions = Master.AvailableDivisions;
         m_DivisionGameObjectsDictionary = Master.DivisionGameObjectDictionary;
         m_DivisionBuildingDictionary = new Dictionary<Division, GameObject>();
+        m_NonvacantDivisions = new HashSet<GameObject>();
+        m_VacantDivisions = new HashSet<GameObject>(Master.AvailableDivisionObjects);
     }
 
     void Update()
@@ -53,6 +60,7 @@ public class BuildingManager : MonoBehaviour
         SelectButton.SetActive(false);
         DemolishButton.SetActive(m_SelectedBuildingDivision != null);
         m_DivisionToPlaceOn = null;
+        m_DivisionToPlaceOnn = null;
 
         var ray = new Ray(FirstPersonCamera.transform.position, FirstPersonCamera.transform.forward);
         var hits = Physics.RaycastAll(ray);
@@ -62,9 +70,31 @@ public class BuildingManager : MonoBehaviour
         foreach (var hit in hits)
         {
             if (!hit.collider.CompareTag("Division") || m_BuildingToConstructId < 0) continue;
-            m_DivisionToPlaceOn =
-                m_AvailableDivisions.SingleOrDefault(div => div.Includes(hit.collider.transform.position));
-            if (m_DivisionToPlaceOn != null)
+            Debug.Log("Hit division collider.");
+            if (m_VacantDivisions.Contains(hit.collider.gameObject.transform.parent.gameObject))
+            {
+                m_DivisionToPlaceOnn = hit.collider.gameObject.transform.parent.gameObject;
+            }
+
+            //m_DivisionToPlaceOn =
+            //    m_AvailableDivisions.SingleOrDefault(div => div.Includes(hit.collider.transform.position));
+            //if (m_DivisionToPlaceOn != null)
+            //{
+            //    BuildButton.SetActive(true);
+            //    break;
+            //}
+            //else
+            //{
+            //    m_FocusedBuildingDivision = m_DivisionBuildingDictionary.Keys.FirstOrDefault(div =>
+            //        div.Includes(hit.collider.transform.position));
+            //    if (m_FocusedBuildingDivision != null)
+            //    {
+            //        SelectButton.SetActive(true);
+            //        break;
+            //    }
+            //}
+
+            if (m_DivisionToPlaceOnn != null)
             {
                 BuildButton.SetActive(true);
                 break;
@@ -130,11 +160,14 @@ public class BuildingManager : MonoBehaviour
         {
             return;
         }
-        var newBuilding = Instantiate(buildingToConstruct, m_DivisionGameObjectsDictionary[m_DivisionToPlaceOn].transform.position, Quaternion.identity,
-            m_DivisionGameObjectsDictionary[m_DivisionToPlaceOn].transform);
-        m_AvailableDivisions.Remove(m_DivisionToPlaceOn);
-        m_DivisionBuildingDictionary.Add(m_DivisionToPlaceOn, newBuilding);
-        m_DivisionToPlaceOn = null;
+        var newBuilding = Instantiate(buildingToConstruct, m_DivisionToPlaceOnn.transform.position, Quaternion.identity,
+            m_DivisionToPlaceOnn.transform);
+        //m_AvailableDivisions.Remove(m_DivisionToPlaceOn);
+        m_VacantDivisions.Remove(m_DivisionToPlaceOnn);
+        m_NonvacantDivisions.Add(m_DivisionToPlaceOnn);
+        //m_DivisionBuildingDictionary.Add(m_DivisionToPlaceOn, newBuilding);
+        //m_DivisionToPlaceOn = null;
+        m_DivisionToPlaceOnn = null;
     }
 
     public void Select()

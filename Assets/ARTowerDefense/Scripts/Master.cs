@@ -5,7 +5,6 @@ using Assets.ARTowerDefense.Scripts;
 using GoogleARCore;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.UI;
 using Random = System.Random;
 #if UNITY_EDITOR
 using Input = GoogleARCore.InstantPreviewInput;
@@ -86,11 +85,12 @@ namespace ARTowerDefense
         /// <summary>
         /// A set of all divisions that contain no game object
         /// </summary>
-        public static HashSet<Division> AvailableDivisions { get; private set; }
+        public static HashSet<Division> AvailableDivisions { get; private set; } // TODO: Remove
+        public static HashSet<GameObject> AvailableDivisionObjects { get; private set; }
         /// <summary>
         /// A dictionary of divisions and their corresponding division game object instance
         /// </summary>
-        public static Dictionary<Division, GameObject> DivisionGameObjectDictionary { get; private set; }
+        public static Dictionary<Division, GameObject> DivisionGameObjectDictionary { get; private set; } // TODO: Remove
         /// <summary>
         /// A set of all divisions that will contain paths
         /// </summary>
@@ -629,6 +629,7 @@ namespace ARTowerDefense
             _TrimDivisions(divisions);
 
             DivisionGameObjectDictionary = new Dictionary<Division, GameObject>(divisions.Count);
+            AvailableDivisionObjects = new HashSet<GameObject>();
             Debug.Log($"Will spawn {divisions.Count} divisions.");
             foreach (var division in divisions)
             {
@@ -636,6 +637,7 @@ namespace ARTowerDefense
                     Instantiate(DivisionPrefab, division.Center, Quaternion.identity, AnchorTransform);
                 Debug.Log("Spawned division marker.");
                 DivisionGameObjectDictionary.Add(division, divisionObject);
+                AvailableDivisionObjects.Add(divisionObject);
             }
 
             AvailableDivisions =
@@ -648,10 +650,8 @@ namespace ARTowerDefense
             Debug.Log("Started trim division.");
             Debug.Log($"Original divisions count: {divisions.Count}");
 
-
             divisions.RemoveAll(div =>
             {
-
                 var raycastHits = Physics.RaycastAll(div.Point1, Vector3.right, Mathf.Infinity);
 
                 if (!_IsWithinBoundaries(raycastHits))
@@ -837,6 +837,7 @@ namespace ARTowerDefense
             {
                 m_Spawner = Instantiate(SpawnerPrefab, m_SpawnerDivision.Center, Quaternion.identity, DivisionGameObjectDictionary[m_SpawnerDivision].transform);
                 AvailableDivisions.Remove(m_SpawnerDivision);
+                AvailableDivisionObjects.Remove(DivisionGameObjectDictionary[m_SpawnerDivision]);
                 return true;
             }
 
@@ -860,6 +861,7 @@ namespace ARTowerDefense
                 var pathObject = Instantiate(PathPrefab, pathDivision.Center, Quaternion.identity);
                 pathObject.transform.parent = DivisionGameObjectDictionary[pathDivision].transform;
                 AvailableDivisions.Remove(pathDivision);
+                AvailableDivisionObjects.Remove(DivisionGameObjectDictionary[pathDivision]);
                 PathWaypoints[index++] = DivisionGameObjectDictionary[pathDivision].transform;
             }
 

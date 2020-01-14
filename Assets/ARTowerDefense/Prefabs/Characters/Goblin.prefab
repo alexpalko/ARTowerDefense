@@ -783,7 +783,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Health: {fileID: 2104546881254709604}
-  MovementSpeed: 0.2
+  MovementSpeed: 0
 --- !u!114 &4043453394190440234
 MonoBehaviour:
   m_ObjectHideFlags: 0
