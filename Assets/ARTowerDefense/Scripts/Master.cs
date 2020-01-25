@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Assets.ARTowerDefense.Scripts;
 using GoogleARCore;
+using GoogleARCore.Examples.Common;
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using Random = System.Random;
@@ -24,6 +26,8 @@ namespace ARTowerDefense
         [SerializeField] private GameObject CoinManager;
         [SerializeField] private GameObject BuildingManager;
         [SerializeField] private GameObject GridDetectionPanel;
+        [SerializeField] private GameObject GridDetectionHelperPanel;
+        [SerializeField] private GameObject GridDetectionText;
         [SerializeField] private GameObject GameInitializationPanel;
         [SerializeField] private GameObject GameLoopPanel;
         [SerializeField] private GameObject GamePausedPanel;
@@ -168,6 +172,9 @@ namespace ARTowerDefense
                     break;
                 case GameState.GRID_DETECTION:
                     GridDetectionPanel.SetActive(true);
+                    GridDetectionHelperPanel.SetActive(true);
+                    GridDetectionText.GetComponent<TextMeshProUGUI>().text =
+                        "Move the camera around a flat horizontal surface to detect planes.";
                     _GridDetectionLogic();
                     break;
                 case GameState.GAME_SPACE_INSTANTIATION:
@@ -187,8 +194,13 @@ namespace ARTowerDefense
                         _UpdatePlaceButtonState();
                         if (m_PlacedGameObject != null)
                         {
+                            if (m_HomeBase != null)
+                            {
+                                AvailableDivisionObjects.Add(DivisionGameObjectDictionary[m_HomeBaseDivision]);
+                            }
                             m_HomeBase = m_PlacedGameObject;
                             m_HomeBaseDivision = m_DivisionPlacedOn;
+                            AvailableDivisionObjects.Remove(DivisionGameObjectDictionary[m_HomeBaseDivision]);
                             ToGameLoopButton.SetActive(true);
                         }
                     }
@@ -437,6 +449,15 @@ namespace ARTowerDefense
 
         private void _GridDetectionLogic()
         {
+            List<DetectedPlane> detectedPlanes = new List<DetectedPlane>();
+            Session.GetTrackables(detectedPlanes);
+            if (detectedPlanes.Any())
+            {
+                GridDetectionHelperPanel.SetActive(false);
+                GridDetectionText.GetComponent<TextMeshProUGUI>().text =
+                    "Once you are happy with one of the detected planes, touch it to place a marker and hit CONFIRM.";
+            }
+
             Touch touch;
 
             if (Input.touchCount < 1 || (touch = Input.GetTouch(0)).phase != TouchPhase.Began)

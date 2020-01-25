@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Assets.ARTowerDefense.Scripts;
 using UnityEngine;
-using UnityEngine.Experimental.XR;
 using Random = System.Random;
 
 public class PathGenerationTestMaster : MonoBehaviour
