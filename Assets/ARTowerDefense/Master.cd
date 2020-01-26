@@ -1,2 +1,18 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<ClassDiagram /> 
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="ARTowerDefense.Master">
+    <Position X="5.5" Y="1" Width="5.5" />
+    <NestedTypes>
+      <Enum Name="ARTowerDefense.Master.GameState" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Assets\ARTowerDefense\Scripts\Master.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Enum>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>B1S15IgouSUAaAgNgjgABQyVACG0RYAVgAMCVLBXhOw=</HashCode>
+      <FileName>Assets\ARTowerDefense\Scripts\Master.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Arial" Size="9" />
+</ClassDiagram>

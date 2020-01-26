@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices.WindowsRuntime;
 using Assets.ARTowerDefense.Scripts;
 using GoogleARCore;
 using GoogleARCore.Examples.Common;
@@ -26,16 +28,14 @@ namespace ARTowerDefense
         [SerializeField] private GameObject CoinManager;
         [SerializeField] private GameObject BuildingManager;
         [SerializeField] private GameObject GridDetectionPanel;
-        [SerializeField] private GameObject GridDetectionHelperPanel;
-        [SerializeField] private GameObject GridDetectionText;
         [SerializeField] private GameObject GameInitializationPanel;
         [SerializeField] private GameObject GameLoopPanel;
         [SerializeField] private GameObject GamePausedPanel;
         [SerializeField] private GameObject GameOverPanel;
         [SerializeField] private GameObject VictoryText;
         [SerializeField] private GameObject DefeatText;
+        [SerializeField] private GameObject GridDetectionManager;
 
-        [SerializeField] private GameObject PlaneMarkerPrefab;
         [SerializeField] private GameObject WallPrefab;
         [SerializeField] private GameObject TowerPrefab;
         [SerializeField] private GameObject HomeBasePrefab;
@@ -50,7 +50,7 @@ namespace ARTowerDefense
         public static bool EnemyReachedBase { get; set; }
 
         private GameObject m_PlaneSelectionMarker;
-        private DetectedPlane m_MarkedPlane;
+        public DetectedPlane MarkedPlane { get; set; }
         public static Pose MarkedPlaneCenterPose { get; private set; }
         private Vector3[] m_BindingVectors;
         private GameObject[] m_BindingWalls;
@@ -81,11 +81,10 @@ namespace ARTowerDefense
         /// Denotes whether the plane splitting has finished
         /// </summary>
         private bool m_PlaneSplit;
-
         /// <summary>
         /// An anchor to the center of the marked plane
         /// </summary>
-        public static Transform AnchorTransform { get; private set; }
+        public Transform AnchorTransform { get; set; }
         /// <summary>
         /// A set of all divisions that contain no game object
         /// </summary>
@@ -171,11 +170,7 @@ namespace ARTowerDefense
                 case GameState.STARTED:
                     break;
                 case GameState.GRID_DETECTION:
-                    GridDetectionPanel.SetActive(true);
-                    GridDetectionHelperPanel.SetActive(true);
-                    GridDetectionText.GetComponent<TextMeshProUGUI>().text =
-                        "Move the camera around a flat horizontal surface to detect planes.";
-                    _GridDetectionLogic();
+                    // TODO: Add grid detection logic
                     break;
                 case GameState.GAME_SPACE_INSTANTIATION:
                     GridDetectionPanel.SetActive(false);
@@ -242,8 +237,10 @@ namespace ARTowerDefense
             {
                 case GameState.STARTED:
                     m_GameState = GameState.GRID_DETECTION;
+                    GridDetectionManager.SetActive(true);
                     break;
                 case GameState.GRID_DETECTION:
+                    GridDetectionManager.SetActive(false);
                     m_GameState = GameState.GAME_SPACE_INSTANTIATION;
                     _InitializeGameSpaceInstantiation();
                     break;
@@ -400,9 +397,9 @@ namespace ARTowerDefense
             Debug.Log($"Initializing {GameState.GAME_SPACE_INSTANTIATION} state");
             Destroy(m_PlaneSelectionMarker);
             List<Vector3> boundaryPolygons = new List<Vector3>();
-            m_MarkedPlane.GetBoundaryPolygon(boundaryPolygons);
+            MarkedPlane.GetBoundaryPolygon(boundaryPolygons);
             m_BindingVectors = boundaryPolygons.ToArray();
-            MarkedPlaneCenterPose = m_MarkedPlane.CenterPose; // TODO: REMOVE ???
+            MarkedPlaneCenterPose = MarkedPlane.CenterPose; // TODO: REMOVE ???
 
             foreach (Vector3 boundaryPolygon in boundaryPolygons)
             {
@@ -441,77 +438,10 @@ namespace ARTowerDefense
         {
             throw new NotImplementedException();
         }
-
+        
         private void _InitializeGridDetection()
         {
             throw new NotImplementedException();
-        }
-
-        private void _GridDetectionLogic()
-        {
-            List<DetectedPlane> detectedPlanes = new List<DetectedPlane>();
-            Session.GetTrackables(detectedPlanes);
-            if (detectedPlanes.Any())
-            {
-                GridDetectionHelperPanel.SetActive(false);
-                GridDetectionText.GetComponent<TextMeshProUGUI>().text =
-                    "Once you are happy with one of the detected planes, touch it to place a marker and hit CONFIRM.";
-            }
-
-            Touch touch;
-
-            if (Input.touchCount < 1 || (touch = Input.GetTouch(0)).phase != TouchPhase.Began)
-            {
-                return;
-            }
-
-            if (EventSystem.current.IsPointerOverGameObject(touch.fingerId))
-            {
-                return;
-            }
-
-            TrackableHit hit;
-            TrackableHitFlags raycastFilter = TrackableHitFlags.PlaneWithinPolygon |
-                                              TrackableHitFlags.FeaturePointWithSurfaceNormal;
-
-            if (Frame.Raycast(touch.position.x, touch.position.y, raycastFilter, out hit))
-            {
-                Debug.Log("Plane intersection found");
-
-                if ((hit.Trackable is DetectedPlane) &&
-                    Vector3.Dot(FirstPersonCamera.transform.position - hit.Pose.position,
-                        hit.Pose.rotation * Vector3.up) < 0)
-                {
-                    Debug.LogError("Hit at back of current DetectedPlane");
-                }
-                else
-                {
-                    if (hit.Trackable is DetectedPlane plane)
-                    {
-                        Debug.Log("The raycast hit a horizontal plane");
-                        if (plane.PlaneType == DetectedPlaneType.HorizontalUpwardFacing)
-                        {
-                            if (m_PlaneSelectionMarker != null)
-                            {
-                                Debug.Log("Old marker was removed");
-                                Destroy(m_PlaneSelectionMarker);
-                            }
-
-
-                            Anchor anchor = hit.Trackable.CreateAnchor(plane.CenterPose);
-                            m_PlaneSelectionMarker =
-                                Instantiate(PlaneMarkerPrefab, hit.Pose.position, hit.Pose.rotation);
-                            gameObject.transform.parent = anchor.transform;
-                            m_MarkedPlane = plane;
-                            //AnchorTransform = m_MarkedPlane.CreateAnchor(MarkedPlaneCenterPose).transform;
-                            AnchorTransform = anchor.transform;
-                            Debug.Log("New base marker placed");
-                            ToBasePlacementButton.SetActive(true);
-                            Debug.Log("ConfirmButton activated");
-                        }
-                    }
-                }
-            }
         }
 
         private void _GameSpaceInitializationLogic()

@@ -2801,7 +2801,7 @@ GameObject:
   - component: {fileID: 353786333}
   - component: {fileID: 353786332}
   m_Layer: 0
-  m_Name: Grid Detection Helper Text
+  m_Name: Master
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2829,14 +2829,13 @@ MonoBehaviour:
   CoinManager: {fileID: 1014380655}
   BuildingManager: {fileID: 465185648}
   GridDetectionPanel: {fileID: 1237335075}
-  GridDetectionHelperPanel: {fileID: 1002850829}
-  GridDetectionText: {fileID: 223886960}
   GameInitializationPanel: {fileID: 465466131}
   GameLoopPanel: {fileID: 1415317617}
   GamePausedPanel: {fileID: 1470344263}
   GameOverPanel: {fileID: 460346932}
   VictoryText: {fileID: 2110028825}
   DefeatText: {fileID: 1073427607}
+  GridDetectionManager: {fileID: 0}
   PlaneMarkerPrefab: {fileID: 1533428177928048, guid: b7953b6cbdfc4db4a84db0ca292913cd,
     type: 3}
   WallPrefab: {fileID: 7778782416957837993, guid: 280c54fa3061964449f6b0ac48916a50,
