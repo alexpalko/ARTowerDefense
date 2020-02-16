@@ -6,6 +6,10 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
+#if UNITY_EDITOR
+using Input = GoogleARCore.InstantPreviewInput;
+#endif
+
 namespace Assets.ARTowerDefense.Scripts
 {
     class GridDetectionManager : MonoBehaviour
