@@ -27,14 +27,13 @@ namespace ARTowerDefense
         [SerializeField] private GameObject Crosshair;
         [SerializeField] private GameObject CoinManager;
         [SerializeField] private GameObject BuildingManager;
-        [SerializeField] private GameObject GridDetectionPanel;
-        [SerializeField] private GameObject GameInitializationPanel;
         [SerializeField] private GameObject GameLoopPanel;
         [SerializeField] private GameObject GamePausedPanel;
         [SerializeField] private GameObject GameOverPanel;
         [SerializeField] private GameObject VictoryText;
         [SerializeField] private GameObject DefeatText;
         [SerializeField] private GameObject GridDetectionManager;
+        [SerializeField] private GameObject GameInitManager;
 
         [SerializeField] private GameObject WallPrefab;
         [SerializeField] private GameObject TowerPrefab;
@@ -52,10 +51,10 @@ namespace ARTowerDefense
         private GameObject m_PlaneSelectionMarker;
         public DetectedPlane MarkedPlane { get; set; }
         public static Pose MarkedPlaneCenterPose { get; private set; }
-        private Vector3[] m_BindingVectors;
-        private GameObject[] m_BindingWalls;
-        private GameObject[] m_BindingTowers;
-        private GameObject m_GamePlane;
+        public Vector3[] BindingVectors { get; private set; }
+        public GameObject[] BindingWalls { get; private set; }
+        public GameObject[] BindingTowers { get; private set; }
+        public GameObject GamePlane { get; private set; }
         private GameObject m_HomeBase;
         private Division m_HomeBaseDivision;
         private GameObject m_Spawner;
@@ -173,12 +172,10 @@ namespace ARTowerDefense
                     // TODO: Add grid detection logic
                     break;
                 case GameState.GAME_SPACE_INSTANTIATION:
-                    GridDetectionPanel.SetActive(false);
                     _GameSpaceInitializationLogic();
                     AdvanceGameState();
                     break;
                 case GameState.BASE_PLACEMENT:
-                    GameInitializationPanel.SetActive(true);
                     if (!m_PlaneSplit)
                     {
                         _SplitPlane();
@@ -202,7 +199,6 @@ namespace ARTowerDefense
 
                     break;
                 case GameState.PATH_GENERATION:
-                    GameInitializationPanel.SetActive(false);
                     if (m_Moves == null)
                     {
                         _InitializeMoves();
@@ -228,7 +224,10 @@ namespace ARTowerDefense
                         $"The session is in an undefined state. Current state: {m_GameState}");
             }
         }
-        
+
+        [SerializeField] private GameObject GameInitializationPanel;
+
+
         public void AdvanceGameState()
         {
             m_PlacedGameObject = null;
@@ -245,10 +244,12 @@ namespace ARTowerDefense
                     _InitializeGameSpaceInstantiation();
                     break;
                 case GameState.GAME_SPACE_INSTANTIATION:
+                    GameInitManager.SetActive(false);
                     m_GameState = GameState.BASE_PLACEMENT;
                     _InitializeBasePlacement();
                     break;
                 case GameState.BASE_PLACEMENT:
+                    GameInitializationPanel.SetActive(false);
                     m_GameState = GameState.PATH_GENERATION;
                     _InitializePathGeneration();
                     break;
@@ -398,7 +399,7 @@ namespace ARTowerDefense
             Destroy(m_PlaneSelectionMarker);
             List<Vector3> boundaryPolygons = new List<Vector3>();
             MarkedPlane.GetBoundaryPolygon(boundaryPolygons);
-            m_BindingVectors = boundaryPolygons.ToArray();
+            BindingVectors = boundaryPolygons.ToArray();
             MarkedPlaneCenterPose = MarkedPlane.CenterPose; // TODO: REMOVE ???
 
             foreach (Vector3 boundaryPolygon in boundaryPolygons)
@@ -446,114 +447,122 @@ namespace ARTowerDefense
 
         private void _GameSpaceInitializationLogic()
         {
-            List<Vector3> bindingVectorsList = m_BindingVectors.ToList();
-            _ConsolidateBoundaries(bindingVectorsList);
-            m_BindingVectors = bindingVectorsList.ToArray();
+            //List<Vector3> bindingVectorsList = BindingVectors.ToList();
+            //_ConsolidateBoundaries(bindingVectorsList);
+            //BindingVectors = bindingVectorsList.ToArray();
 
-            if (m_BindingWalls == null)
-            {
-                _SpawnBoundaries();
-            }
+            //if (BindingWalls == null)
+            //{
+            //    _SpawnBoundaries();
+            //}
 
-            if (m_GamePlane == null)
-            {
-                _SpawnGamePlane();
-            }
+            //if (GamePlane == null)
+            //{
+            //    _SpawnGamePlane();
+            //}
+
+            GameInitManager.SetActive(true);
+            GameInitManager script = GameInitManager.GetComponent<GameInitManager>();
+            // Binding vectors may be consolidated by the game init manager
+            BindingVectors = script.BindingVectors;
+            BindingTowers = script.BindingTowers;
+            BindingWalls = script.BindingWalls;
+            GamePlane = script.GamePlane;
 
             //_PlaceBaseMarker();
         }
 
-        private void _ConsolidateBoundaries(List<Vector3> vectors)
-        {
-            for (int i = 0; i < vectors.Count; i++)
-            {
-                var closeByVectorsIndexes = new List<int>();
-                for (int j = i + 1; j < vectors.Count; j++)
-                {
-                    if (Vector3.Distance(vectors[i], vectors[j]) < .5f)
-                    {
-                        closeByVectorsIndexes.Add(j);
-                    }
-                }
+        //private void _ConsolidateBoundaries(List<Vector3> vectors)
+        //{
+        //    for (int i = 0; i < vectors.Count; i++)
+        //    {
+        //        var closeByVectorsIndexes = new List<int>();
+        //        for (int j = i + 1; j < vectors.Count; j++)
+        //        {
+        //            if (Vector3.Distance(vectors[i], vectors[j]) < .5f)
+        //            {
+        //                closeByVectorsIndexes.Add(j);
+        //            }
+        //        }
 
-                if (closeByVectorsIndexes.Count != 0)
-                {
-                    var newVector = vectors[i];
-                    foreach (int index in closeByVectorsIndexes)
-                    {
-                        newVector += vectors[index];
-                    }
+        //        if (closeByVectorsIndexes.Count != 0)
+        //        {
+        //            var newVector = vectors[i];
+        //            foreach (int index in closeByVectorsIndexes)
+        //            {
+        //                newVector += vectors[index];
+        //            }
 
-                    newVector /= closeByVectorsIndexes.Count + 1;
+        //            newVector /= closeByVectorsIndexes.Count + 1;
 
-                    vectors.Remove(vectors[i]);
-                    //m_BindingVectors[i] = newVector;
-                    vectors.Insert(i, newVector);
-                    vectors.RemoveAll(vect =>
-                        closeByVectorsIndexes.Select(idx => vectors[idx]).Contains(vect));
-                    _ConsolidateBoundaries(vectors);
-                    return;
-                }
-            }
-        }
+        //            vectors.Remove(vectors[i]);
+        //            //BindingVectors[i] = newVector;
+        //            vectors.Insert(i, newVector);
+        //            vectors.RemoveAll(vect =>
+        //                closeByVectorsIndexes.Select(idx => vectors[idx]).Contains(vect));
+        //            _ConsolidateBoundaries(vectors);
+        //            return;
+        //        }
+        //    }
+        //}
 
-        private void _SpawnBoundaries()
-        {
-            m_BindingTowers = m_BindingVectors
-                .Select(v => Instantiate(TowerPrefab, v, Quaternion.identity, AnchorTransform)).ToArray();
+        //private void _SpawnBoundaries()
+        //{
+        //    BindingTowers = BindingVectors
+        //        .Select(v => Instantiate(TowerPrefab, v, Quaternion.identity, AnchorTransform)).ToArray();
 
-            m_BindingWalls = new GameObject[m_BindingVectors.Length];
-            for (int i = 0; i < m_BindingVectors.Length; i++)
-            {
-                m_BindingWalls[i] = Instantiate(WallPrefab,
-                    Vector3.Lerp(m_BindingVectors[i], m_BindingVectors[(i + 1) % m_BindingVectors.Length], 0.5f),
-                    Quaternion.identity, AnchorTransform);
-                m_BindingWalls[i].transform.localScale += new Vector3(
-                    Vector3.Distance(m_BindingVectors[i], m_BindingVectors[(i + 1) % m_BindingVectors.Length]), 0, 0);
-            }
+        //    BindingWalls = new GameObject[BindingVectors.Length];
+        //    for (int i = 0; i < BindingVectors.Length; i++)
+        //    {
+        //        BindingWalls[i] = Instantiate(WallPrefab,
+        //            Vector3.Lerp(BindingVectors[i], BindingVectors[(i + 1) % BindingVectors.Length], 0.5f),
+        //            Quaternion.identity, AnchorTransform);
+        //        BindingWalls[i].transform.localScale += new Vector3(
+        //            Vector3.Distance(BindingVectors[i], BindingVectors[(i + 1) % BindingVectors.Length]), 0, 0);
+        //    }
 
-            for (int i = 0; i < m_BindingVectors.Length; i++)
-            {
-                Vector3 point = m_BindingVectors[i];
-                Vector3 midPoint = m_BindingWalls[i].transform.position;
+        //    for (int i = 0; i < BindingVectors.Length; i++)
+        //    {
+        //        Vector3 point = BindingVectors[i];
+        //        Vector3 midPoint = BindingWalls[i].transform.position;
 
-                Vector3 pointProjectionOntoX = Vector3.Project(point, Vector3.right);
-                Vector3 midPointProjectionOntoX = Vector3.Project(midPoint, Vector3.right);
-                Vector3 pointProjectionOntoZ = Vector3.Project(point, Vector3.forward);
-                Vector3 midPointProjectionOntoZ = Vector3.Project(midPoint, Vector3.forward);
+        //        Vector3 pointProjectionOntoX = Vector3.Project(point, Vector3.right);
+        //        Vector3 midPointProjectionOntoX = Vector3.Project(midPoint, Vector3.right);
+        //        Vector3 pointProjectionOntoZ = Vector3.Project(point, Vector3.forward);
+        //        Vector3 midPointProjectionOntoZ = Vector3.Project(midPoint, Vector3.forward);
 
-                float cath1 = Vector3.Distance(pointProjectionOntoX, midPointProjectionOntoX);
-                float cath2 = Vector3.Distance(pointProjectionOntoZ, midPointProjectionOntoZ);
-                float angle = Mathf.Atan2(cath2, cath1) * Mathf.Rad2Deg;
+        //        float cath1 = Vector3.Distance(pointProjectionOntoX, midPointProjectionOntoX);
+        //        float cath2 = Vector3.Distance(pointProjectionOntoZ, midPointProjectionOntoZ);
+        //        float angle = Mathf.Atan2(cath2, cath1) * Mathf.Rad2Deg;
 
-                m_BindingWalls[i].transform.RotateAround(m_BindingWalls[i].transform.position, Vector3.up, angle);
-                Collider fieldCollider = m_BindingWalls[i].GetComponent<Collider>();
-                if (ColliderContainsPoint(fieldCollider.transform, point)) continue;
-                m_BindingWalls[i].transform.RotateAround(m_BindingWalls[i].transform.position, Vector3.up, -angle * 2);
-            }
-        }
+        //        BindingWalls[i].transform.RotateAround(BindingWalls[i].transform.position, Vector3.up, angle);
+        //        Collider fieldCollider = BindingWalls[i].GetComponent<Collider>();
+        //        if (ColliderContainsPoint(fieldCollider.transform, point)) continue;
+        //        BindingWalls[i].transform.RotateAround(BindingWalls[i].transform.position, Vector3.up, -angle * 2);
+        //    }
+        //}
 
-        private void _SpawnGamePlane()
-        {
+        //private void _SpawnGamePlane()
+        //{
 
-            float maxX = m_BindingVectors.Select(v => v.x).Max();
-            float minX = m_BindingVectors.Select(v => v.x).Min();
-            float maxZ = m_BindingVectors.Select(v => v.z).Max();
-            float minZ = m_BindingVectors.Select(v => v.z).Min();
+        //    float maxX = BindingVectors.Select(v => v.x).Max();
+        //    float minX = BindingVectors.Select(v => v.x).Min();
+        //    float maxZ = BindingVectors.Select(v => v.z).Max();
+        //    float minZ = BindingVectors.Select(v => v.z).Min();
 
-            float distanceX = maxX - minX;
-            float distanceZ = maxZ - minZ;
-            float maxDistance = distanceX > distanceZ ? distanceX : distanceZ;
+        //    float distanceX = maxX - minX;
+        //    float distanceZ = maxZ - minZ;
+        //    float maxDistance = distanceX > distanceZ ? distanceX : distanceZ;
 
-            float middleX = (maxX + minX) / 2;
-            float middleZ = (maxZ + minZ) / 2;
+        //    float middleX = (maxX + minX) / 2;
+        //    float middleZ = (maxZ + minZ) / 2;
 
-            m_GamePlane = Instantiate(GamePlanePrefab, new Vector3(middleX, m_BindingVectors[0].y, middleZ),
-                Quaternion.identity, AnchorTransform);
-            m_GamePlane.transform.localScale = new Vector3(maxDistance, maxDistance, 1);
-            m_GamePlane.transform.Rotate(90, 0, 0);
-            Debug.Log(m_GamePlane.transform.localScale);
-        }
+        //    GamePlane = Instantiate(GamePlanePrefab, new Vector3(middleX, BindingVectors[0].y, middleZ),
+        //        Quaternion.identity, AnchorTransform);
+        //    GamePlane.transform.localScale = new Vector3(maxDistance, maxDistance, 1);
+        //    GamePlane.transform.Rotate(90, 0, 0);
+        //    Debug.Log(GamePlane.transform.localScale);
+        //}
 
         // ########################################################
         // ################### PATH GENERATION  ###################
@@ -561,7 +570,7 @@ namespace ARTowerDefense
 
         private void _SplitPlane()
         {
-            Renderer rend = m_GamePlane.GetComponent<Renderer>();
+            Renderer rend = GamePlane.GetComponent<Renderer>();
             Debug.Log("Acquired game plane renderer");
 
             float y = rend.bounds.min.y;
@@ -795,11 +804,11 @@ namespace ARTowerDefense
             return false;
         }
 
-        private bool ColliderContainsPoint(Transform colliderTransform, Vector3 point)
-        {
-            Vector3 localPos = colliderTransform.InverseTransformPoint(point);
-            return Mathf.Abs(localPos.x) < 0.5f && Mathf.Abs(localPos.y) < 0.5f && Mathf.Abs(localPos.z) < 0.5f;
-        }
+        //private bool ColliderContainsPoint(Transform colliderTransform, Vector3 point)
+        //{
+        //    Vector3 localPos = colliderTransform.InverseTransformPoint(point);
+        //    return Mathf.Abs(localPos.x) < 0.5f && Mathf.Abs(localPos.y) < 0.5f && Mathf.Abs(localPos.z) < 0.5f;
+        //}
 
         private void _BuildPath()
         {
