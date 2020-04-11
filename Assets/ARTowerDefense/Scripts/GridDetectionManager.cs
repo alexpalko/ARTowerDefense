@@ -24,7 +24,7 @@ namespace Assets.ARTowerDefense.Scripts
         [SerializeField] private GameObject MarkerPrefab;
 
         private GameObject m_PlaneSelectionMarker;
-        private DetectedPlane m_MarkedPlane;
+        public DetectedPlane MarkedPlane;
         
         public Transform AnchorTransform { get; private set; }
 
@@ -82,8 +82,7 @@ namespace Assets.ARTowerDefense.Scripts
                             Anchor anchor = hit.Trackable.CreateAnchor(plane.CenterPose);
                             m_PlaneSelectionMarker =
                                 Instantiate(MarkerPrefab, hit.Pose.position, hit.Pose.rotation);
-                            gameObject.transform.parent = anchor.transform;
-                            m_MarkedPlane = plane;
+                            MarkedPlane = plane;
                             AnchorTransform = anchor.transform;
                             Debug.Log("New base marker placed");
                             ConfirmButton.SetActive(true);
@@ -101,8 +100,8 @@ namespace Assets.ARTowerDefense.Scripts
 
         private void OnDisable()
         {
-            Master.AnchorTransform = AnchorTransform;
-            Master.MarkedPlane = m_MarkedPlane;
+            //Master.AnchorTransform = AnchorTransform;
+            //Master.MarkedPlane = MarkedPlane;
             Destroy(m_PlaneSelectionMarker);
             GridDetectionPanel.SetActive(false);
         }

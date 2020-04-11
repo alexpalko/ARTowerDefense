@@ -962,7 +962,7 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4282971944
+    rgba: 4283037737
   m_fontColor: {r: 0.16042183, g: 0.9716981, b: 0.28522477, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
@@ -1467,7 +1467,6 @@ GameObject:
   - component: {fileID: 208625972}
   - component: {fileID: 208625975}
   - component: {fileID: 208625974}
-  - component: {fileID: 208625973}
   m_Layer: 5
   m_Name: Place Base Button Container
   m_TagString: Untagged
@@ -1496,60 +1495,6 @@ RectTransform:
   m_AnchoredPosition: {x: -151, y: 102}
   m_SizeDelta: {x: 300, y: 200}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &208625973
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 208625971}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Navigation:
-    m_Mode: 3
-    m_SelectOnUp: {fileID: 0}
-    m_SelectOnDown: {fileID: 0}
-    m_SelectOnLeft: {fileID: 0}
-    m_SelectOnRight: {fileID: 0}
-  m_Transition: 1
-  m_Colors:
-    m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
-    m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
-    m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
-    m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
-    m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
-    m_ColorMultiplier: 1
-    m_FadeDuration: 0.1
-  m_SpriteState:
-    m_HighlightedSprite: {fileID: 0}
-    m_PressedSprite: {fileID: 0}
-    m_SelectedSprite: {fileID: 0}
-    m_DisabledSprite: {fileID: 0}
-  m_AnimationTriggers:
-    m_NormalTrigger: Normal
-    m_HighlightedTrigger: Highlighted
-    m_PressedTrigger: Pressed
-    m_SelectedTrigger: Selected
-    m_DisabledTrigger: Disabled
-  m_Interactable: 1
-  m_TargetGraphic: {fileID: 208625974}
-  m_OnClick:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 353786332}
-        m_MethodName: PlacePrefab
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
 --- !u!114 &208625974
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2700,7 +2645,7 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4282971944
+    rgba: 4283037737
   m_fontColor: {r: 0.16042183, g: 0.9716981, b: 0.28522477, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
@@ -2836,15 +2781,7 @@ MonoBehaviour:
   DefeatText: {fileID: 1073427607}
   GridDetectionManager: {fileID: 1614171763}
   GameInitManager: {fileID: 433131841}
-  WallPrefab: {fileID: 7778782416957837993, guid: 280c54fa3061964449f6b0ac48916a50,
-    type: 3}
-  TowerPrefab: {fileID: 1770514590405088, guid: 1cace56ba420dd64c9171c422c8e9aaa,
-    type: 3}
   HomeBasePrefab: {fileID: 2678552160550302294, guid: f94295e6b2c49cc40a56ca91e7cfbd62,
-    type: 3}
-  GamePlanePrefab: {fileID: 2571624567956541521, guid: fc6219a69d819aa45a74a8763fd62055,
-    type: 3}
-  DivisionPrefab: {fileID: 8337470342546997709, guid: 69f0ebf8b99b7fc45a960de1740b46be,
     type: 3}
   SpawnerPrefab: {fileID: 8895986631548008031, guid: bfb93cbb9a1c7f645bc2e3b4cc09d871,
     type: 3}
@@ -3388,8 +3325,9 @@ MonoBehaviour:
     type: 3}
   GamePlanePrefab: {fileID: 2571624567956541521, guid: fc6219a69d819aa45a74a8763fd62055,
     type: 3}
+  DivisionPrefab: {fileID: 8337470342546997709, guid: 69f0ebf8b99b7fc45a960de1740b46be,
+    type: 3}
   Master: {fileID: 353786332}
-  GameInitializationPanel: {fileID: 465466131}
 --- !u!4 &433131843
 Transform:
   m_ObjectHideFlags: 0
@@ -10329,7 +10267,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   FirstPersonCamera: {fileID: 2000547365}
-  Master: {fileID: 353786332}
+  Master: {fileID: 0}
   HelperMessage: {fileID: 223886960}
   ConfirmButton: {fileID: 2098464309}
   HelperAnimation: {fileID: 1002850829}

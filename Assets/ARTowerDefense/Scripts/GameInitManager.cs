@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using ARTowerDefense;
+using Assets.ARTowerDefense.Scripts;
 using UnityEngine;
 
 public class GameInitManager : MonoBehaviour
@@ -8,29 +9,32 @@ public class GameInitManager : MonoBehaviour
     public GameObject BindingWallPrefab;
     public GameObject BindingTowerPrefab;
     public GameObject GamePlanePrefab;
+    public GameObject DivisionPrefab;
 
     [SerializeField] private Master Master;
-    [SerializeField] private GameObject GameInitializationPanel;
 
     public Vector3[] BindingVectors { get; private set; }
     public  GameObject[] BindingWalls { get; private set; }
     public  GameObject[] BindingTowers { get; private set; }
     public GameObject GamePlane { get; private set; }
+    public Dictionary<Division, GameObject> DivisionGameObjectDictionary { get; set; }
+    public HashSet<Division> AvailableDivisions { get; set; }
 
     void OnEnable()
     {
-        GameInitializationPanel.SetActive(true);
         List<Vector3> bindingVectorsList = Master.BindingVectors.ToList();
         _ConsolidateBoundaries(bindingVectorsList);
         BindingVectors = bindingVectorsList.ToArray();
         _SpawnBoundaries();
         _SpawnGamePlane();
+        _SplitPlane();
     }
 
     void OnDisable()
     {
         //GameInitializationPanel.SetActive(false);
     }
+
     private void _ConsolidateBoundaries(List<Vector3> vectors)
     {
         for (int i = 0; i < vectors.Count; i++)
@@ -128,15 +132,56 @@ public class GameInitManager : MonoBehaviour
         Debug.Log(GamePlane.transform.localScale);
     }
 
-    // Start is called before the first frame update
-    void Start()
+    private void _SplitPlane()
     {
-        
+        Renderer rend = GamePlane.GetComponent<Renderer>();
+        Debug.Log("Acquired game plane renderer");
+
+        float y = rend.bounds.min.y;
+
+        List<Division> divisions = new List<Division>();
+
+        for (var x = rend.bounds.min.x; x < rend.bounds.max.x; x += Master.k_DivisionLength)
+        {
+            for (var z = rend.bounds.min.z; z < rend.bounds.max.z; z += Master.k_DivisionLength)
+            {
+                divisions.Add(new Division(new Vector3(x, y, z),
+                    new Vector3(x + Master.k_DivisionLength, y, z + Master.k_DivisionLength)));
+            }
+        }
+
+        _TrimDivisions(divisions);
+
+        DivisionGameObjectDictionary = new Dictionary<Division, GameObject>(divisions.Count);
+        Debug.Log($"Will spawn {divisions.Count} divisions.");
+        foreach (var division in divisions)
+        {
+            var divisionObject =
+                Instantiate(DivisionPrefab, division.Center, Quaternion.identity, Master.AnchorTransform);
+            Debug.Log("Spawned division marker.");
+            DivisionGameObjectDictionary.Add(division, divisionObject);
+        }
+
+        AvailableDivisions =
+            new HashSet<Division>(divisions); // TODO: load divisions into m_availableDivisions directly 
     }
 
-    // Update is called once per frame
-    void Update()
+    private void _TrimDivisions(List<Division> divisions)
     {
-        
+        Debug.Log("Started trim division.");
+        Debug.Log($"Original divisions count: {divisions.Count}");
+
+        divisions.RemoveAll(div =>
+        {
+            var polyPoints = BindingVectors.Select(x => new Vector2(x.x, x.z)).ToArray();
+
+            return !(Poly.ContainsPoint(polyPoints, new Vector2(div.Point1.x, div.Point1.z)) &&
+                     Poly.ContainsPoint(polyPoints, new Vector2(div.Point2.x, div.Point2.z)) &&
+                     Poly.ContainsPoint(polyPoints, new Vector2(div.Point1.x, div.Point2.z)) &&
+                     Poly.ContainsPoint(polyPoints, new Vector2(div.Point2.x, div.Point1.z)));
+        });
+
+        Debug.Log($"Division count after trimming: {divisions.Count}");
     }
+
 }
