@@ -5,6 +5,7 @@ using UnityEngine;
 public class Spawner : MonoBehaviour
 {
     [SerializeField] private GameObject EnemyPrefab;
+
     private int m_RemainingWaves = 6;
     private float m_TimeBetweenWaves = 20;
     private float m_WaveCountdown = 10;
@@ -19,7 +20,7 @@ public class Spawner : MonoBehaviour
 
     void Start()
     {
-        m_AnchorTransform = Master.AnchorTransform;
+        m_AnchorTransform = GameObject.Find("Master").GetComponent<Master>().AnchorTransform;
         m_SpawnerTransform = Master.PathWaypoints[0];
     }
 
@@ -27,7 +28,7 @@ public class Spawner : MonoBehaviour
     {
         if (m_RemainingWaves == 0)
         {
-            Master.LastWave = true;
+            ARTowerDefense.Master.LastWave = true;
             return;
         }
 
