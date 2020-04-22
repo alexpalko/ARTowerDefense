@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using ARTowerDefense;
 using UnityEngine;
@@ -38,50 +39,124 @@ public class BuildingManager : MonoBehaviour
 
     void Update()
     {
-        _UpdateButtonStates();
+
+
+        if (TryGetDivisionHit(out var hit))
+        {
+            _UpdateButtonStates(hit);
+            _HighlightDivisions();
+        }
     }
 
-    private void _UpdateButtonStates()
+    private bool TryGetDivisionHit(out RaycastHit hit)
+    {
+        var ray = new Ray(FirstPersonCamera.transform.position, FirstPersonCamera.transform.forward);
+        var any = false;
+        hit = Physics.RaycastAll(ray).FirstOrDefault(h =>
+        {
+            if (!h.collider.CompareTag("Division")) return false;
+            any = true;
+            return true;
+
+        });
+
+        return any;
+    }
+
+    private void _UpdateButtonStates(RaycastHit hit)
     {
         BuildButton.SetActive(false);
         SelectButton.SetActive(false);
         DemolishButton.SetActive(m_SelectedBuildingDivision != null);
         m_FocusedDivision = null;
-        m_FocusedDivision = null;
+        if (m_BuildingToConstructId < 0) return;
 
-        var ray = new Ray(FirstPersonCamera.transform.position, FirstPersonCamera.transform.forward);
-        var hits = Physics.RaycastAll(ray);
-
-        if (!hits.Any()) return;
-
-        foreach (var hit in hits)
+        if (m_Divisions.Contains(hit.collider.transform.parent.gameObject))
         {
-            if (!hit.collider.CompareTag("Division") || m_BuildingToConstructId < 0) continue;
-
-            Debug.Log("Hit division collider.");
-
-            if (m_Divisions.Contains(hit.collider.gameObject.transform.parent.gameObject))
-            {
-                m_FocusedDivision = hit.collider.transform.parent.gameObject;
-            }
-
-            if (m_FocusedDivision == null) return;
-            var buildingDiv = m_FocusedDivision.GetComponent<BuildingDivision>();
-
-            if (!buildingDiv.HasNature &&
-                !buildingDiv.HasBuilding)
-            {
-                BuildButton.SetActive(true);
-                break;
-            }
-
-            if (buildingDiv.HasBuilding)
-            {
-                SelectButton.SetActive(true);
-            }
-
-            break;
+            m_FocusedDivision = hit.collider.transform.parent.gameObject;
         }
+
+        if (m_FocusedDivision == null) return;
+        var buildingDiv = m_FocusedDivision.GetComponent<BuildingDivision>();
+
+        if (!buildingDiv.HasNature &&
+            !buildingDiv.HasBuilding)
+        {
+            BuildButton.SetActive(true);
+        }
+        else if (buildingDiv.HasBuilding)
+        {
+            SelectButton.SetActive(true);
+        }
+    }
+
+    private List<Renderer> m_HighlightedDivRenderers;
+
+    private void _HighlightDivisions()
+    {
+        if (m_FocusedDivision == null)
+        {
+            foreach (var division in m_Divisions)
+            {
+                _ClearDivisionHighlight(division.GetComponentInChildren<Renderer>());
+            }
+            return;
+        }
+
+        foreach (var division in m_Divisions)
+        {
+            var distance = _GetSqrMagnitude(division.transform, m_FocusedDivision.transform);
+            float alpha = distance < .01f ? 0 : .75f * .05f / distance;
+            _HighlightDivision(division.GetComponent<BuildingDivision>(), division.GetComponentInChildren<Renderer>(),
+                alpha);
+        }
+
+        //var rend = hit.collider.gameObject.GetComponent<Renderer>();
+        
+        //var rends = _GetNeighborRenderers();
+        //m_HighlightedDivRenderers.Add(rend);
+
+        //var buildingDiv = rend.transform.parent.GetComponent<BuildingDivision>();
+        //if (!buildingDiv.HasNature &&
+        //    !buildingDiv.HasBuilding)
+        //{
+        //    rend.material.color = new Color(0, 255, 0, .5f);
+        //}
+        //else
+        //{
+        //    rend.material.color = new Color(255, 0, 0, .5f);
+        //}
+
+        //rend.enabled = true;
+
+        //foreach (var renderer1 in rends)
+        //{
+        //    buildingDiv = renderer1.transform.parent.GetComponent<BuildingDivision>();
+        //    _HighlightDivision(renderer1.transform.parent.GetComponent<BuildingDivision>(), renderer1, .25f);
+        //}
+    }
+
+    private void _HighlightDivision(BuildingDivision buildingDiv, Renderer rend, float alpha)
+    {
+        if (!buildingDiv.HasNature &&
+            !buildingDiv.HasBuilding)
+        {
+            rend.material.color = new Color(0, 255, 0, alpha);
+        }
+        else
+        {
+            rend.material.color = new Color(255, 0, 0, alpha);
+        }
+    }
+
+    private void _ClearDivisionHighlight(Renderer rend)
+    {
+        rend.material.color = new Color(0,0,0,0);
+    }
+
+    private float _GetSqrMagnitude(Transform t1, Transform t2)
+    {
+        return (t1.position - t2.position).sqrMagnitude;
     }
 
     public void SelectBuildingToConstruct(int x)
