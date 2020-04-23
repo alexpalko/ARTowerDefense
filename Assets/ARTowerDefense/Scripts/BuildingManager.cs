@@ -94,21 +94,34 @@ public class BuildingManager : MonoBehaviour
 
     private void _HighlightDivisions()
     {
-        if (m_FocusedDivision == null)
+        foreach (var division in m_Divisions)
         {
-            foreach (var division in m_Divisions)
-            {
-                _ClearDivisionHighlight(division.GetComponentInChildren<Renderer>());
-            }
-            return;
+            _ClearDivisionHighlight(division.GetComponentInChildren<Renderer>());
         }
+
+        if (m_FocusedDivision == null) return;
 
         foreach (var division in m_Divisions)
         {
-            var distance = _GetSqrMagnitude(division.transform, m_FocusedDivision.transform);
-            float alpha = distance < .01f ? 0 : .75f * .05f / distance;
-            _HighlightDivision(division.GetComponent<BuildingDivision>(), division.GetComponentInChildren<Renderer>(),
-                alpha);
+            var distance = _GetMagnitude(division.transform, m_FocusedDivision.transform);
+            if (distance <= .1 * Math.Sqrt(2) / 2)
+            {
+                _HighlightDivision(division.GetComponent<BuildingDivision>(), division.GetComponentInChildren<Renderer>(),
+                    .5f);
+            }
+            else if (distance <= .1 * Math.Sqrt(2) / 2 + .1 * Math.Sqrt(2))
+            {
+                _HighlightDivision(division.GetComponent<BuildingDivision>(), division.GetComponentInChildren<Renderer>(),
+                    .1f);
+            }
+            else if (distance <= .1 * Math.Sqrt(2) / 2 + .1 * Math.Sqrt(2) * 2)
+            {
+                _HighlightDivision(division.GetComponent<BuildingDivision>(), division.GetComponentInChildren<Renderer>(),
+                    .005f);
+            }
+            //float alpha = distance < .00001f ? .75f : .75f * .05f / distance;
+            //_HighlightDivision(division.GetComponent<BuildingDivision>(), division.GetComponentInChildren<Renderer>(),
+            //    alpha);
         }
 
         //var rend = hit.collider.gameObject.GetComponent<Renderer>();
@@ -138,6 +151,8 @@ public class BuildingManager : MonoBehaviour
 
     private void _HighlightDivision(BuildingDivision buildingDiv, Renderer rend, float alpha)
     {
+        //if (alpha < 0.3) return;
+
         if (!buildingDiv.HasNature &&
             !buildingDiv.HasBuilding)
         {
@@ -147,16 +162,18 @@ public class BuildingManager : MonoBehaviour
         {
             rend.material.color = new Color(255, 0, 0, alpha);
         }
+
+        rend.enabled = true;
     }
 
     private void _ClearDivisionHighlight(Renderer rend)
     {
-        rend.material.color = new Color(0,0,0,0);
+        rend.enabled = false;
     }
 
-    private float _GetSqrMagnitude(Transform t1, Transform t2)
+    private float _GetMagnitude(Transform t1, Transform t2)
     {
-        return (t1.position - t2.position).sqrMagnitude;
+        return (t1.position - t2.position).magnitude;
     }
 
     public void SelectBuildingToConstruct(int x)
