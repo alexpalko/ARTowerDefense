@@ -24,9 +24,9 @@ public class BuildingManager : MonoBehaviour
 
     private readonly int[] m_PriceList = {25, 60, 150, 50, 80, 200};
 
-    private List<GameObject> m_Divisions;
+    private List<BuildingDivision> m_Divisions;
 
-    private GameObject m_FocusedDivision;
+    private GameObject m_FocusedDivision; // TODO: May be the same as buildingDivision
 
     private int m_BuildingToConstructId = -1;
     private GameObject m_SelectedBuildingDivision;
@@ -34,7 +34,7 @@ public class BuildingManager : MonoBehaviour
     void OnEnable()
     {
         TriggerBuildingsPanelButton.SetActive(true);
-        m_Divisions = Master.AvailableDivisionObjects.ToList();
+        m_Divisions = Master.DivisionGameObjectDictionary.Values.ToList();
     }
 
     void Update()
@@ -71,7 +71,7 @@ public class BuildingManager : MonoBehaviour
         m_FocusedDivision = null;
         if (m_BuildingToConstructId < 0) return;
 
-        if (m_Divisions.Contains(hit.collider.transform.parent.gameObject))
+        if (m_Divisions.Contains(hit.collider.transform.parent.GetComponent<BuildingDivision>()))
         {
             m_FocusedDivision = hit.collider.transform.parent.gameObject;
         }

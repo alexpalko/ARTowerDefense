@@ -17,8 +17,7 @@ public class GameInitManager : MonoBehaviour
     public  GameObject[] BindingWalls { get; private set; }
     public  GameObject[] BindingTowers { get; private set; }
     public GameObject GamePlane { get; private set; }
-    public Dictionary<Division, GameObject> DivisionGameObjectDictionary { get; set; }
-    public HashSet<Division> AvailableDivisions { get; set; }
+    public Dictionary<Division, BuildingDivision> DivisionsDictionary { get; set; }
 
     void OnEnable()
     {
@@ -28,11 +27,6 @@ public class GameInitManager : MonoBehaviour
         _SpawnBoundaries();
         _SpawnGamePlane();
         _SplitPlane();
-    }
-
-    void OnDisable()
-    {
-        //GameInitializationPanel.SetActive(false);
     }
 
     private void _ConsolidateBoundaries(List<Vector3> vectors)
@@ -152,18 +146,16 @@ public class GameInitManager : MonoBehaviour
 
         _TrimDivisions(divisions);
 
-        DivisionGameObjectDictionary = new Dictionary<Division, GameObject>(divisions.Count);
+        DivisionsDictionary = new Dictionary<Division, BuildingDivision>(divisions.Count);
         Debug.Log($"Will spawn {divisions.Count} divisions.");
         foreach (var division in divisions)
         {
             var divisionObject =
                 Instantiate(DivisionPrefab, division.Center, Quaternion.identity, Master.AnchorTransform);
             Debug.Log("Spawned division marker.");
-            DivisionGameObjectDictionary.Add(division, divisionObject);
+            DivisionsDictionary.Add(division, divisionObject.GetComponent<BuildingDivision>());
         }
 
-        AvailableDivisions =
-            new HashSet<Division>(divisions); // TODO: load divisions into m_availableDivisions directly 
     }
 
     private void _TrimDivisions(List<Division> divisions)
