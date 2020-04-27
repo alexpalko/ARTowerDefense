@@ -61,7 +61,6 @@ namespace ARTowerDefense
 
         private GameObject m_PlaneSelectionMarker;
         public DetectedPlane MarkedPlane { get; set; }
-        public static Pose MarkedPlaneCenterPose { get; private set; }
         public Vector3[] BindingVectors { get; private set; }
         private GameObject m_HomeBase;
         private Division m_HomeBaseDivision;
@@ -95,7 +94,7 @@ namespace ARTowerDefense
         /// <summary>
         /// A dictionary of divisions and their corresponding division game object instance
         /// </summary>
-        public static Dictionary<Division, BuildingDivision> DivisionGameObjectDictionary { get; private set; } // TODO: Remove
+        public static Dictionary<Division, BuildingDivision> DivisionGameObjectDictionary { get; private set; }
         /// <summary>
         /// A set of all divisions that will contain paths
         /// </summary>
@@ -104,10 +103,6 @@ namespace ARTowerDefense
         /// The final path division, leading to the home base
         /// </summary>
         private Division m_PathEnd;
-        /// <summary>
-        /// The starting path division, leading out of the spawner 
-        /// </summary>
-        private Division m_PathStart;
         /// <summary>
         /// A collection of divisions used for the path generation phase.
         /// Stores divisions that are not occupied by the path or divisions that are not adjacent to a path.
@@ -368,7 +363,6 @@ namespace ARTowerDefense
             MarkedPlane = script.MarkedPlane;
             MarkedPlane.GetBoundaryPolygon(boundaryPolygons);
             BindingVectors = boundaryPolygons.ToArray();
-            MarkedPlaneCenterPose = MarkedPlane.CenterPose; // TODO: REMOVE ???
 
             foreach (Vector3 boundaryPolygon in boundaryPolygons)
             {
@@ -489,7 +483,7 @@ namespace ARTowerDefense
             }
 
             if (m_AvailableDivisionsForPathGeneration.Count < m_AvailableDivisionsThreshold * DivisionGameObjectDictionary.Count &&
-                _CanPlaceSpawner(currentDivision))
+                _TryPlaceSpawner(currentDivision))
             {
                 m_PathDivisions.Push(currentDivision);
                 return currentDivision;
@@ -560,13 +554,13 @@ namespace ARTowerDefense
             return divisions.OrderBy(_ => random.Next());
         }
 
-        // TODO: Rename this function (the spawner is placed in this function, it does not just check if it can be placed)
-        private bool _CanPlaceSpawner(Division currentDivision)
+        private bool _TryPlaceSpawner(Division currentDivision)
         {
             var previousDivision = m_PathDivisions.Peek();
             var direction = currentDivision.Center - previousDivision.Center;
             m_SpawnerDivision =
-                DivisionGameObjectDictionary.FirstOrDefault(kvp => kvp.Key.Includes(currentDivision.Center + direction)).Key; // TODO: Rethink this
+                DivisionGameObjectDictionary.FirstOrDefault(kvp => kvp.Key.Includes(currentDivision.Center + direction))
+                    .Key; // TODO: Rethink this
             if (m_SpawnerDivision == null) return false;
             DivisionGameObjectDictionary[m_SpawnerDivision].AddBuilding(SpawnerPrefab);
             DivisionGameObjectDictionary[m_SpawnerDivision].Lock();
