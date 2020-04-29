@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using ARTowerDefense;
 using UnityEngine;
@@ -12,7 +13,8 @@ public class BuildingManager : MonoBehaviour
     public GameObject SelectButton;
     public GameObject DemolishButton;
     public GameObject BuildingsPanel;
-    public List<GameObject> BuildingInfoPanels; 
+    public List<GameObject> BuildingInfoPanels;
+    public bool UseDivisionHoverHighlight;
 
     public GameObject CannonTowerPrefab;
     public GameObject CrossbowTowerPrefab;
@@ -23,65 +25,120 @@ public class BuildingManager : MonoBehaviour
 
     private readonly int[] m_PriceList = {25, 60, 150, 50, 80, 200};
 
-    private List<GameObject> m_Divisions;
+    private List<BuildingDivision> m_Divisions;
 
-    private GameObject m_FocusedDivision;
+    private BuildingDivision m_FocusedDivision; // TODO: May be the same as buildingDivision
 
     private int m_BuildingToConstructId = -1;
-    private GameObject m_SelectedBuildingDivision;
+    private BuildingDivision m_SelectedBuildingDivision;
 
     void OnEnable()
     {
         TriggerBuildingsPanelButton.SetActive(true);
-        m_Divisions = Master.AvailableDivisionObjects.ToList();
+        m_Divisions = Master.DivisionGameObjectDictionary.Values.ToList();
     }
 
     void Update()
     {
-        _UpdateButtonStates();
+        if (!TryGetDivisionHit(out var hit)) return;
+        _UpdateButtonStates(hit);
+        if (UseDivisionHoverHighlight)
+        {
+            _HighlightDivisions();
+        }
     }
 
-    private void _UpdateButtonStates()
+    private bool TryGetDivisionHit(out RaycastHit hit)
+    {
+        var ray = new Ray(FirstPersonCamera.transform.position, FirstPersonCamera.transform.forward);
+        var any = false;
+        hit = Physics.RaycastAll(ray).FirstOrDefault(h =>
+        {
+            if (!h.collider.CompareTag("Division")) return false;
+            any = true;
+            return true;
+
+        });
+
+        return any;
+    }
+
+    private void _UpdateButtonStates(RaycastHit hit)
     {
         BuildButton.SetActive(false);
         SelectButton.SetActive(false);
         DemolishButton.SetActive(m_SelectedBuildingDivision != null);
         m_FocusedDivision = null;
-        m_FocusedDivision = null;
+        if (m_BuildingToConstructId < 0) return;
 
-        var ray = new Ray(FirstPersonCamera.transform.position, FirstPersonCamera.transform.forward);
-        var hits = Physics.RaycastAll(ray);
-
-        if (!hits.Any()) return;
-
-        foreach (var hit in hits)
+        if (m_Divisions.Contains(hit.collider.transform.parent.GetComponent<BuildingDivision>()))
         {
-            if (!hit.collider.CompareTag("Division") || m_BuildingToConstructId < 0) continue;
-
-            Debug.Log("Hit division collider.");
-
-            if (m_Divisions.Contains(hit.collider.gameObject.transform.parent.gameObject))
-            {
-                m_FocusedDivision = hit.collider.transform.parent.gameObject;
-            }
-
-            if (m_FocusedDivision == null) return;
-            var buildingDiv = m_FocusedDivision.GetComponent<BuildingDivision>();
-
-            if (!buildingDiv.HasNature &&
-                !buildingDiv.HasBuilding)
-            {
-                BuildButton.SetActive(true);
-                break;
-            }
-
-            if (buildingDiv.HasBuilding)
-            {
-                SelectButton.SetActive(true);
-            }
-
-            break;
+            m_FocusedDivision = hit.collider.transform.parent.gameObject.GetComponent<BuildingDivision>();
         }
+
+        if (m_FocusedDivision == null || m_FocusedDivision.IsLocked) return;
+
+        if (!m_FocusedDivision.HasNature &&
+            !m_FocusedDivision.HasBuilding)
+        {
+            BuildButton.SetActive(true);
+        }
+        else if (m_FocusedDivision.HasBuilding)
+        {
+            SelectButton.SetActive(true);
+        }
+    }
+
+    private void _HighlightDivisions()
+    {
+        foreach (var division in m_Divisions)
+        {
+            _ClearDivisionHighlight(division.GetComponentInChildren<Renderer>());
+        }
+
+        if (m_FocusedDivision == null) return;
+
+        foreach (var division in m_Divisions)
+        {
+            var distance = _GetMagnitude(division.transform, m_FocusedDivision.transform);
+            if (distance <= .1 * Math.Sqrt(2) / 2)
+            {
+                _HighlightDivision(division.GetComponentInChildren<Renderer>(), .5f);
+            }
+            else if (distance <= .1 * Math.Sqrt(2) / 2 + .1 * Math.Sqrt(2))
+            {
+                _HighlightDivision(division.GetComponentInChildren<Renderer>(), .1f);
+            }
+            else if (distance <= .1 * Math.Sqrt(2) / 2 + .1 * Math.Sqrt(2) * 2)
+            {
+                _HighlightDivision(division.GetComponentInChildren<Renderer>(), .005f);
+            }
+        }
+    }
+
+    private void _HighlightDivision(Renderer rend, float alpha)
+    {
+        if (!m_FocusedDivision.HasNature &&
+            !m_FocusedDivision.HasBuilding)
+        {
+            rend.material.color = new Color(0, 255, 0, alpha);
+        }
+        else
+        {
+            rend.material.color = new Color(255, 0, 0, alpha);
+        }
+
+        rend.enabled = true;
+    }
+
+    private void _ClearDivisionHighlight(Renderer rend)
+    {
+        rend.enabled = false;
+    }
+
+    private float _GetMagnitude(Transform t1, Transform t2)
+    {
+        return (t1.position - t2.position).magnitude;
     }
 
     public void SelectBuildingToConstruct(int x)
@@ -139,13 +196,14 @@ public class BuildingManager : MonoBehaviour
 
     public void Select()
     {
+        if(m_FocusedDivision.IsLocked) return;
         m_SelectedBuildingDivision = m_FocusedDivision;
         DemolishButton.SetActive(true);
     }
 
     public void Demolish()
     {
-        m_SelectedBuildingDivision.GetComponent<BuildingDivision>().RemoveBuilding();
+        m_SelectedBuildingDivision.RemoveBuilding();
         m_SelectedBuildingDivision = null;
     }
 
