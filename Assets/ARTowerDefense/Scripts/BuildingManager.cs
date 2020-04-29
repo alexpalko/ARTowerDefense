@@ -13,7 +13,8 @@ public class BuildingManager : MonoBehaviour
     public GameObject SelectButton;
     public GameObject DemolishButton;
     public GameObject BuildingsPanel;
-    public List<GameObject> BuildingInfoPanels; 
+    public List<GameObject> BuildingInfoPanels;
+    public bool UseDivisionHoverHighlight;
 
     public GameObject CannonTowerPrefab;
     public GameObject CrossbowTowerPrefab;
@@ -39,11 +40,10 @@ public class BuildingManager : MonoBehaviour
 
     void Update()
     {
-
-
-        if (TryGetDivisionHit(out var hit))
+        if (!TryGetDivisionHit(out var hit)) return;
+        _UpdateButtonStates(hit);
+        if (UseDivisionHoverHighlight)
         {
-            _UpdateButtonStates(hit);
             _HighlightDivisions();
         }
     }
