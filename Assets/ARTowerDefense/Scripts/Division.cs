@@ -18,7 +18,6 @@ namespace Assets.ARTowerDefense.Scripts
         public bool Includes(Vector3 point)
         {
             return point.x >= Point1.x && point.x <= Point2.x && 
-                   //point.y >= Point1.y && point.y <= Point2.y &&
                    point.z >= Point1.z && point.z <= Point2.z;
         }
 

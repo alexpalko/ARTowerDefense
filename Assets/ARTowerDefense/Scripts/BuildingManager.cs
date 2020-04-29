@@ -24,17 +24,17 @@ public class BuildingManager : MonoBehaviour
 
     private readonly int[] m_PriceList = {25, 60, 150, 50, 80, 200};
 
-    private List<GameObject> m_Divisions;
+    private List<BuildingDivision> m_Divisions;
 
-    private GameObject m_FocusedDivision;
+    private BuildingDivision m_FocusedDivision; // TODO: May be the same as buildingDivision
 
     private int m_BuildingToConstructId = -1;
-    private GameObject m_SelectedBuildingDivision;
+    private BuildingDivision m_SelectedBuildingDivision;
 
     void OnEnable()
     {
         TriggerBuildingsPanelButton.SetActive(true);
-        m_Divisions = Master.AvailableDivisionObjects.ToList();
+        m_Divisions = Master.DivisionGameObjectDictionary.Values.ToList();
     }
 
     void Update()
@@ -71,26 +71,23 @@ public class BuildingManager : MonoBehaviour
         m_FocusedDivision = null;
         if (m_BuildingToConstructId < 0) return;
 
-        if (m_Divisions.Contains(hit.collider.transform.parent.gameObject))
+        if (m_Divisions.Contains(hit.collider.transform.parent.GetComponent<BuildingDivision>()))
         {
-            m_FocusedDivision = hit.collider.transform.parent.gameObject;
+            m_FocusedDivision = hit.collider.transform.parent.gameObject.GetComponent<BuildingDivision>();
         }
 
-        if (m_FocusedDivision == null) return;
-        var buildingDiv = m_FocusedDivision.GetComponent<BuildingDivision>();
+        if (m_FocusedDivision == null || m_FocusedDivision.IsLocked) return;
 
-        if (!buildingDiv.HasNature &&
-            !buildingDiv.HasBuilding)
+        if (!m_FocusedDivision.HasNature &&
+            !m_FocusedDivision.HasBuilding)
         {
             BuildButton.SetActive(true);
         }
-        else if (buildingDiv.HasBuilding)
+        else if (m_FocusedDivision.HasBuilding)
         {
             SelectButton.SetActive(true);
         }
     }
-
-    private List<Renderer> m_HighlightedDivRenderers;
 
     private void _HighlightDivisions()
     {
@@ -106,55 +103,23 @@ public class BuildingManager : MonoBehaviour
             var distance = _GetMagnitude(division.transform, m_FocusedDivision.transform);
             if (distance <= .1 * Math.Sqrt(2) / 2)
             {
-                _HighlightDivision(division.GetComponent<BuildingDivision>(), division.GetComponentInChildren<Renderer>(),
-                    .5f);
+                _HighlightDivision(division.GetComponentInChildren<Renderer>(), .5f);
             }
             else if (distance <= .1 * Math.Sqrt(2) / 2 + .1 * Math.Sqrt(2))
             {
-                _HighlightDivision(division.GetComponent<BuildingDivision>(), division.GetComponentInChildren<Renderer>(),
-                    .1f);
+                _HighlightDivision(division.GetComponentInChildren<Renderer>(), .1f);
             }
             else if (distance <= .1 * Math.Sqrt(2) / 2 + .1 * Math.Sqrt(2) * 2)
             {
-                _HighlightDivision(division.GetComponent<BuildingDivision>(), division.GetComponentInChildren<Renderer>(),
-                    .005f);
+                _HighlightDivision(division.GetComponentInChildren<Renderer>(), .005f);
             }
-            //float alpha = distance < .00001f ? .75f : .75f * .05f / distance;
-            //_HighlightDivision(division.GetComponent<BuildingDivision>(), division.GetComponentInChildren<Renderer>(),
-            //    alpha);
         }
-
-        //var rend = hit.collider.gameObject.GetComponent<Renderer>();
-        
-        //var rends = _GetNeighborRenderers();
-        //m_HighlightedDivRenderers.Add(rend);
-
-        //var buildingDiv = rend.transform.parent.GetComponent<BuildingDivision>();
-        //if (!buildingDiv.HasNature &&
-        //    !buildingDiv.HasBuilding)
-        //{
-        //    rend.material.color = new Color(0, 255, 0, .5f);
-        //}
-        //else
-        //{
-        //    rend.material.color = new Color(255, 0, 0, .5f);
-        //}
-
-        //rend.enabled = true;
-
-        //foreach (var renderer1 in rends)
-        //{
-        //    buildingDiv = renderer1.transform.parent.GetComponent<BuildingDivision>();
-        //    _HighlightDivision(renderer1.transform.parent.GetComponent<BuildingDivision>(), renderer1, .25f);
-        //}
     }
 
-    private void _HighlightDivision(BuildingDivision buildingDiv, Renderer rend, float alpha)
+    private void _HighlightDivision(Renderer rend, float alpha)
     {
-        //if (alpha < 0.3) return;
-
-        if (!buildingDiv.HasNature &&
-            !buildingDiv.HasBuilding)
+        if (!m_FocusedDivision.HasNature &&
+            !m_FocusedDivision.HasBuilding)
         {
             rend.material.color = new Color(0, 255, 0, alpha);
         }
@@ -231,13 +196,14 @@ public class BuildingManager : MonoBehaviour
 
     public void Select()
     {
+        if(m_FocusedDivision.IsLocked) return;
         m_SelectedBuildingDivision = m_FocusedDivision;
         DemolishButton.SetActive(true);
     }
 
     public void Demolish()
     {
-        m_SelectedBuildingDivision.GetComponent<BuildingDivision>().RemoveBuilding();
+        m_SelectedBuildingDivision.RemoveBuilding();
         m_SelectedBuildingDivision = null;
     }
 
