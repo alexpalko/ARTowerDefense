@@ -19,28 +19,41 @@ namespace ARTowerDefense
     public class Master : MonoBehaviour
     {
         #region Prefabs
+
         [SerializeField] private Camera FirstPersonCamera;
         [SerializeField] private GameObject GridGenerator;
         [SerializeField] private GameObject PointCloud;
         [SerializeField] private GameObject ToBasePlacementButton;
         [SerializeField] private GameObject ToGameLoopButton;
         [SerializeField] private GameObject PlacePrefabButton;
-        [SerializeField] private GameObject Crosshair;
-        [SerializeField] private GameObject CoinManager;
-        [SerializeField] private GameObject BuildingManager;
-        [SerializeField] private GameObject GameLoopPanel;
-        [SerializeField] private GameObject GamePausedPanel;
-        [SerializeField] private GameObject GameOverPanel;
         [SerializeField] private GameObject VictoryText;
         [SerializeField] private GameObject DefeatText;
-        [SerializeField] private GameObject GridDetectionManager;
-        [SerializeField] private GameObject GameInitManager;
         [SerializeField] private GameObject HomeBasePrefab;
         [SerializeField] private GameObject SpawnerPrefab;
         [SerializeField] private GameObject PathPrefab;
+
+        #endregion
+
+        #region Managers
+
+        [SerializeField] private GameObject GridDetectionManager;
+        [SerializeField] private GameObject GameInitManager;
+        [SerializeField] private GameObject BuildingManager;
+        [SerializeField] private GameObject CoinManager;
+
+        #endregion
+
+        #region Panels
+
+        [SerializeField] private GameObject GameInitializationPanel;
+        [SerializeField] private GameObject GameLoopPanel;
+        [SerializeField] private GameObject GamePausedPanel;
+        [SerializeField] private GameObject GameOverPanel;
+
         #endregion
 
         #region Constants
+
         public const float k_DivisionLength = .1f;
         /// <summary>
         /// The time iteration limit after which the threshold increases
@@ -54,17 +67,14 @@ namespace ARTowerDefense
         /// Precision used for floating point comparison
         /// </summary>
         private const float k_Epsilon = 1e-5f;
+
         #endregion
 
         public static bool LastWave { get; set; }
         public static bool EnemyReachedBase { get; set; }
-
-        private GameObject m_PlaneSelectionMarker;
         public DetectedPlane MarkedPlane { get; set; }
         public Vector3[] BindingVectors { get; private set; }
-        private GameObject m_HomeBase;
         private Division m_HomeBaseDivision;
-        //private GameObject m_Spawner;
         private Division m_SpawnerDivision;
 
         /// <summary>
@@ -76,17 +86,9 @@ namespace ARTowerDefense
         /// </summary>
         private GameObject m_GameObjectToBePlaced;
         /// <summary>
-        /// Represents the previously placed game object
-        /// </summary>
-        private GameObject m_PlacedGameObject;
-        /// <summary>
         /// Represents the division to which the previously placed game object belongs to
         /// </summary>
         private Division m_DivisionPlacedOn;
-        /// <summary>
-        /// Denotes whether the plane splitting has finished
-        /// </summary>
-        private bool m_PlaneSplit;
         /// <summary>
         /// An anchor to the center of the marked plane
         /// </summary>
@@ -204,11 +206,8 @@ namespace ARTowerDefense
             }
         }
 
-        [SerializeField] private GameObject GameInitializationPanel;
-
         public void AdvanceGameState()
         {
-            m_PlacedGameObject = null;
             PlacePrefabButton.SetActive(false);
             switch (m_GameState)
             {
@@ -338,14 +337,12 @@ namespace ARTowerDefense
         {
             m_GameState = GameState.PAUSED;
             Time.timeScale = 0;
-            Crosshair.SetActive(false);
             GameLoopPanel.SetActive(false);
             GamePausedPanel.SetActive(true);
         }
 
         public void Unpause()
         {
-            Crosshair.SetActive(true);
             GamePausedPanel.SetActive(false);
             GameLoopPanel.SetActive(true);
             Time.timeScale = 1;
@@ -355,7 +352,6 @@ namespace ARTowerDefense
         private void _InitializeGameSpaceInstantiation()
         {
             Debug.Log($"Initializing {GameState.GAME_SPACE_INSTANTIATION} state");
-            Destroy(m_PlaneSelectionMarker);
             GridDetectionManager.SetActive(false);
             List<Vector3> boundaryPolygons = new List<Vector3>();
             var script = GridDetectionManager.GetComponent<GridDetectionManager>();
@@ -380,7 +376,6 @@ namespace ARTowerDefense
 
         private void _InitializeBasePlacement()
         {
-            Crosshair.SetActive(true);
             ToBasePlacementButton.SetActive(false);
             var script = GameInitManager.GetComponent<GameInitManager>();
             DivisionGameObjectDictionary = script.DivisionsDictionary;
@@ -448,9 +443,9 @@ namespace ARTowerDefense
             
             if (m_PathEnd != null) return;
             
-            front = m_HomeBaseDivision.Center - m_HomeBase.transform.forward * -1;
+            //front = m_HomeBaseDivision.Center - m_HomeBase.transform.forward * -1;
             m_PathEnd = DivisionGameObjectDictionary.SingleOrDefault(div => div.Key.Includes(front)).Key;
-            // TODO: may crash if placed in a division with a single neighbor, investigate
+            // TODO: may crash if placed in a division with a single neighbor, investigate! Also, fix rotation of base to always face path
         }
 
         private Division _GeneratePath()
@@ -615,7 +610,6 @@ namespace ARTowerDefense
         public void GameOver(bool victory)
         {
             Time.timeScale = 0;
-            Crosshair.SetActive(false);
             GameLoopPanel.SetActive(false);
             m_GameState = GameState.GAME_OVER;
             GameOverPanel.SetActive(true);
