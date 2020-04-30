@@ -31,7 +31,7 @@ namespace GoogleARCore
     public class TrackedPoint : FeaturePoint
     {
         /// <summary>
-        /// Construct TrackedPoint from a native handle.
+        /// Build TrackedPoint from a native handle.
         /// </summary>
         /// <param name="nativeHandle">A handle to the native ARCore API Trackable.</param>
         /// <param name="nativeApi">The ARCore native api.</param>

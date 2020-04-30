@@ -1,5 +1,4 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class BuildingDivision : MonoBehaviour
 {
@@ -7,46 +6,37 @@ public class BuildingDivision : MonoBehaviour
     public bool HasBuilding { get; private set; }
     public bool HasNature { get; private set; }
 
-    private GameObject m_Building;
-    private GameObject m_Nature;
+    private GameObject m_ContainedStructure;
 
     public void Lock()
     {
         IsLocked = true;
     }
 
-    public bool AddBuilding(GameObject buildingPrefab)
+    public void AddBuilding(GameObject buildingPrefab)
+    {
+        if (!AddContainedStructure(buildingPrefab)) return;
+        HasBuilding = true;
+    }
+    public void AddNature(GameObject naturePrefab)
+    {
+        if (!AddContainedStructure(naturePrefab)) return;
+        m_ContainedStructure.transform.Rotate(0,new System.Random().Next(360),0);
+        HasNature = true;
+    }
+
+    private bool AddContainedStructure(GameObject buildingPrefab)
     {
         if (IsLocked || HasNature || HasBuilding) return false;
-        m_Building = Instantiate(buildingPrefab, transform.position, Quaternion.identity, transform);
-        HasBuilding = true;
+        m_ContainedStructure = Instantiate(buildingPrefab, transform.position, Quaternion.identity, transform);
         return true;
     }
-
-    public void RemoveBuilding()
+    
+    public void Clear()
     {
-        if (m_Building == null || IsLocked) return;
-        Destroy(m_Building);
-        m_Building = null;
-        HasBuilding = false;
-    }
-
-    private void AddNature()
-    {
-        throw new NotImplementedException();
-    }
-
-    public void RemoveNature()
-    {
-        if(m_Nature == null) return;
-        Destroy(m_Nature);
-        m_Nature = null;
-        HasNature = false;
-    }
-
-    public void ClearNature()
-    {
-        Destroy(m_Nature);
-        HasNature = true;
+        if (m_ContainedStructure == null || IsLocked) return;
+        Destroy(m_ContainedStructure);
+        m_ContainedStructure = null;
+        HasBuilding = HasNature = false;
     }
 }

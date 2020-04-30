@@ -4,6 +4,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Assets.ARTowerDefense.Scripts;
+using Assets.ARTowerDefense.Scripts.Managers;
 using GoogleARCore;
 using GoogleARCore.Examples.Common;
 using TMPro;
@@ -40,6 +41,7 @@ namespace ARTowerDefense
         [SerializeField] private GameObject GameInitManager;
         [SerializeField] private GameObject BuildingManager;
         [SerializeField] private GameObject CoinManager;
+        [SerializeField] private GameObject NatureManager;
 
         #endregion
 
@@ -172,7 +174,7 @@ namespace ARTowerDefense
                     {
                         if (m_HomeBaseDivision != null && m_HomeBaseDivision != m_DivisionPlacedOn)
                         {
-                            DivisionGameObjectDictionary[m_HomeBaseDivision].RemoveBuilding();
+                            DivisionGameObjectDictionary[m_HomeBaseDivision].Clear();
                         }
                         m_HomeBaseDivision = m_DivisionPlacedOn;
                         //AvailableDivisionObjects.Remove(DivisionGameObjectDictionary[m_HomeBaseDivision]);
@@ -300,7 +302,7 @@ namespace ARTowerDefense
             if (m_DivisionPlacedOn != null)
             {
                 //Destroy(m_PlacedGameObject);
-                DivisionGameObjectDictionary[m_DivisionPlacedOn].RemoveBuilding();
+                DivisionGameObjectDictionary[m_DivisionPlacedOn].Clear();
                 //AvailableDivisions.Add(m_DivisionPlacedOn);
             }
 
@@ -393,6 +395,7 @@ namespace ARTowerDefense
 
         private void _InitializeGameLoop()
         {
+            NatureManager.SetActive(true);
             CoinManager.SetActive(true);
             BuildingManager.SetActive(true);
             m_GameObjectToBePlaced = null;
@@ -452,7 +455,8 @@ namespace ARTowerDefense
         {
             Debug.Log("Started generating m_PathDivisions.");
             m_AvailableDivisionsForPathGeneration = new HashSet<Division>(DivisionGameObjectDictionary
-                .Where(kvp => !kvp.Value.HasBuilding).Select(kvp => kvp.Key)); // TODO: Try to rewrite this monstrosity
+                .Where(kvp => !kvp.Value.HasBuilding)
+                .Select(kvp => kvp.Key));
             m_PathDivisions = new Stack<Division>();
             return _GenerateRandomPath(m_PathEnd);
         }

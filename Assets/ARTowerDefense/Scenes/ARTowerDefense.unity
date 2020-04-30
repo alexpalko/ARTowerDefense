@@ -2457,23 +2457,23 @@ MonoBehaviour:
   ToBasePlacementButton: {fileID: 1400755101}
   ToGameLoopButton: {fileID: 713766645}
   PlacePrefabButton: {fileID: 1210075714}
-  Crosshair: {fileID: 550529447}
-  CoinManager: {fileID: 1014380655}
-  BuildingManager: {fileID: 465185648}
-  GameLoopPanel: {fileID: 311125611}
-  GamePausedPanel: {fileID: 298688386}
-  GameOverPanel: {fileID: 637903085}
   VictoryText: {fileID: 260818222}
   DefeatText: {fileID: 256098380}
-  GridDetectionManager: {fileID: 1614171763}
-  GameInitManager: {fileID: 433131841}
   HomeBasePrefab: {fileID: 2678552160550302294, guid: f94295e6b2c49cc40a56ca91e7cfbd62,
     type: 3}
   SpawnerPrefab: {fileID: 8895986631548008031, guid: bfb93cbb9a1c7f645bc2e3b4cc09d871,
     type: 3}
   PathPrefab: {fileID: 5844872373206071705, guid: 5e9d38320353ad64e939e30c8fe54a6d,
     type: 3}
+  GridDetectionManager: {fileID: 1614171763}
+  GameInitManager: {fileID: 433131841}
+  BuildingManager: {fileID: 465185648}
+  CoinManager: {fileID: 1014380655}
+  NatureManager: {fileID: 841520700}
   GameInitializationPanel: {fileID: 1993820744}
+  GameLoopPanel: {fileID: 311125611}
+  GamePausedPanel: {fileID: 298688386}
+  GameOverPanel: {fileID: 637903085}
 --- !u!4 &353786333
 Transform:
   m_ObjectHideFlags: 0
@@ -3002,7 +3002,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 433131841}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0f15d66ea00a27e4ea507836dcbe0c8f, type: 3}
+  m_Script: {fileID: 11500000, guid: f936174bd09a0c54990d7571eeb1eebb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   BindingWallPrefab: {fileID: 7778782416957837993, guid: 280c54fa3061964449f6b0ac48916a50,
@@ -3099,7 +3099,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 465185648}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1f886d76acc110a4980dd4bcbc5a7ad1, type: 3}
+  m_Script: {fileID: 11500000, guid: 3e314aa8d16289f4cab9accb2f211d3f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   FirstPersonCamera: {fileID: 2000547365}
@@ -3115,6 +3115,7 @@ MonoBehaviour:
   - {fileID: 2949383518734678983, guid: 67f5a70084638114c9f3ef2692cb1e09, type: 3}
   - {fileID: 3644400674030827390, guid: dd1083c69fc18bd42b2f18f2135b0b80, type: 3}
   - {fileID: 8731784784253972170, guid: 8d949d3f74fe81a49a59f946afc4ae4d, type: 3}
+  UseDivisionHoverHighlight: 0
   CannonTowerPrefab: {fileID: 7646496918847361974, guid: 51fc905d9f1f26243ac34aa1eba5542e,
     type: 3}
   CrossbowTowerPrefab: {fileID: 7697405237424635051, guid: 1eaf5578f2cc99f48b8dd01fe8a1dae7,
@@ -5259,6 +5260,54 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 809019840}
   m_CullTransparentMesh: 0
+--- !u!1 &841520700
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 841520702}
+  - component: {fileID: 841520701}
+  m_Layer: 0
+  m_Name: NatureManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!114 &841520701
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 841520700}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd2ef9b9ff6f8f0419133956bb8559ac, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  CoverageRate: 0.65
+  NaturePrefabs:
+  - {fileID: 1951238066754079594, guid: e04d6f9680f9da244909511f80fa4e63, type: 3}
+  - {fileID: 5746110075615653314, guid: 9132c1f0677496e47a3e7c28080ac91e, type: 3}
+  - {fileID: 1280428445037664998, guid: 39174e515e578de41986db44186e021a, type: 3}
+--- !u!4 &841520702
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 841520700}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 391.5, y: 220, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 12
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &894158112
 GameObject:
   m_ObjectHideFlags: 0
@@ -5846,7 +5895,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1014380655}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 89a3afa9ec9f52442aa982a8895bec02, type: 3}
+  m_Script: {fileID: 11500000, guid: 5a76f0d9389a0d84fa079057ed2a72aa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   StartingCoinAmount: 200
@@ -7862,7 +7911,7 @@ GameObject:
   - component: {fileID: 1312240828}
   - component: {fileID: 1312240827}
   m_Layer: 5
-  m_Name: Crosshair (1)
+  m_Name: Crosshair
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -9358,7 +9407,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1614171763}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c8c18f748d565bf4494de960ede203cf, type: 3}
+  m_Script: {fileID: 11500000, guid: 264ba8ac670536e4e88455cd160875c4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   FirstPersonCamera: {fileID: 2000547365}

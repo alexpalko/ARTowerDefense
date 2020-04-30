@@ -34,7 +34,7 @@ namespace GoogleARCore
     public partial class AugmentedFace : Trackable
     {
         /// <summary>
-        /// Construct AugmentedFace from a native handle.
+        /// Build AugmentedFace from a native handle.
         /// </summary>
         /// <param name="nativeHandle">A handle to the native ARCore API Trackable.</param>
         /// <param name="nativeApi">The ARCore native API.</param>
