@@ -41,7 +41,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 170565085325155840}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5336e55083c674a419f3df3fe543fd52, type: 3}
+  m_Script: {fileID: 11500000, guid: ce3e88e4633f20f4ab553fa939899078, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   TorusCageTransform: {fileID: 7595691674611127239}
@@ -99,6 +99,7 @@ MeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -133,7 +134,6 @@ GameObject:
   m_Component:
   - component: {fileID: 3831387435973677834}
   - component: {fileID: 3803095952137815736}
-  - component: {fileID: 3797007456677750054}
   - component: {fileID: 7030972455858994136}
   m_Layer: 8
   m_Name: Zone1
@@ -169,21 +169,6 @@ SphereCollider:
   serializedVersion: 2
   m_Radius: 4
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &3797007456677750054
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3828428730373926116}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5c40027982a518f4c877ed8b22c18b9d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  twr: {fileID: 6087627384170439722}
-  lockE: 0
-  curTarget: {fileID: 0}
 --- !u!114 &7030972455858994136
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -193,10 +178,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 3828428730373926116}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 755ed233f842459429e824feb264d1bf, type: 3}
+  m_Script: {fileID: 11500000, guid: f54f37edc3d50e6498231227f01d26e0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  twr: {fileID: 3207479949339470985}
+  Tower: {fileID: 3207479949339470985}
 --- !u!1 &3828504755966057060
 GameObject:
   m_ObjectHideFlags: 0
@@ -207,8 +192,8 @@ GameObject:
   m_Component:
   - component: {fileID: 3833798554590073348}
   - component: {fileID: 1690411969875841450}
-  - component: {fileID: 6087627384170439722}
   - component: {fileID: 3207479949339470985}
+  - component: {fileID: 7741927709760690192}
   m_Layer: 8
   m_Name: ThunderTower
   m_TagString: CannonTower
@@ -245,24 +230,6 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1.1415945, y: 2.209217, z: 1}
   m_Center: {x: -0.07079744, y: 1.0800104, z: 0}
---- !u!114 &6087627384170439722
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3828504755966057060}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a682e4e961f99c0498ca12fad03ef8fc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ShootElement: {fileID: 7595691674611127239}
-  LookAtObj: {fileID: 7978308415421150280}
-  Ammo: {fileID: 106988, guid: 15dec7b07032b2f4aa6f855bfbe120f7, type: 3}
-  Target: {fileID: 0}
-  Damage: 10
-  ShootDelay: 2
 --- !u!114 &3207479949339470985
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -272,16 +239,29 @@ MonoBehaviour:
   m_GameObject: {fileID: 3828504755966057060}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 64bbcc1a73c4f96448c206922be51f74, type: 3}
+  m_Script: {fileID: 11500000, guid: 4b2fca7b485aa9f4693f006e37b6c446, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   ShootElement: {fileID: 7978308415421150280}
   LookAtObj: {fileID: 7978308415421150280}
   Ammo: {fileID: 106988, guid: 15dec7b07032b2f4aa6f855bfbe120f7, type: 3}
   Target: {fileID: 0}
-  Damage: 0
+  Damage: 10
   ShootDelay: 0
   CenterPoint: {fileID: 7741747655622190368}
+  MovementDebuff: 0.4
+--- !u!114 &7741927709760690192
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3828504755966057060}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8392ef2f44d046b40a6d062e034621cc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &3828612834063675236
 GameObject:
   m_ObjectHideFlags: 0
@@ -339,14 +319,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6859554586118611412}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.105, y: -0.047513936, z: -0.637}
+  m_LocalRotation: {x: 0.26645318, y: 0.90763444, z: 0.19269916, w: -0.26090112}
+  m_LocalPosition: {x: 0.10499035, y: -0.047489796, z: -0.63702047}
   m_LocalScale: {x: 54, y: 54, z: 54}
   m_Children:
   - {fileID: 7978308415421150280}
   m_Father: {fileID: 1497544200085294619}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 209.264, y: 25.161987, z: 206.052}
 --- !u!33 &1455322294516296177
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -369,6 +349,7 @@ MeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -498,22 +479,22 @@ PrefabInstance:
     - target: {fileID: 2702656798688668771, guid: 338f0f9e156b29341b53d4217869cc7f,
         type: 3}
       propertyPath: m_BoundingSphereOverride.x
-      value: 0
+      value: 9.63e-43
       objectReference: {fileID: 0}
     - target: {fileID: 2702656798688668771, guid: 338f0f9e156b29341b53d4217869cc7f,
         type: 3}
       propertyPath: m_BoundingSphereOverride.y
-      value: 0
+      value: -1.5285083e+34
       objectReference: {fileID: 0}
     - target: {fileID: 2702656798688668771, guid: 338f0f9e156b29341b53d4217869cc7f,
         type: 3}
       propertyPath: m_BoundingSphereOverride.z
-      value: 0
+      value: 9.61e-43
       objectReference: {fileID: 0}
     - target: {fileID: 2702656798688668771, guid: 338f0f9e156b29341b53d4217869cc7f,
         type: 3}
       propertyPath: m_BoundingSphereOverride.w
-      value: 1e-45
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2702656798688668771, guid: 338f0f9e156b29341b53d4217869cc7f,
         type: 3}
