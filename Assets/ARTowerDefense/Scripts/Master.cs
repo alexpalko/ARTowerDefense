@@ -3,7 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using Assets.ARTowerDefense.Scripts;
 using GoogleARCore;
+using GoogleARCore.Examples.Common;
+using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using Random = System.Random;
 #if UNITY_EDITOR
 using Input = GoogleARCore.InstantPreviewInput;
@@ -13,64 +16,49 @@ namespace ARTowerDefense
 {
     public class Master : MonoBehaviour
     {
-        #region Prefabs
-
         [SerializeField] private Camera FirstPersonCamera;
         [SerializeField] private GameObject GridGenerator;
         [SerializeField] private GameObject PointCloud;
         [SerializeField] private GameObject ToBasePlacementButton;
         [SerializeField] private GameObject ToGameLoopButton;
         [SerializeField] private GameObject PlacePrefabButton;
-        [SerializeField] private GameObject VictoryText;
-        [SerializeField] private GameObject DefeatText;
-        [SerializeField] private GameObject HomeBasePrefab;
-        [SerializeField] private GameObject SpawnerPrefab;
-        [SerializeField] private GameObject PathPrefab;
-
-        #endregion
-
-        #region Managers
-
-        [SerializeField] private GameObject GridDetectionManager;
-        [SerializeField] private GameObject GameInitManager;
-        [SerializeField] private GameObject BuildingManager;
+        [SerializeField] private GameObject Crosshair;
         [SerializeField] private GameObject CoinManager;
-        [SerializeField] private GameObject NatureManager;
-
-        #endregion
-
-        #region Panels
-
+        [SerializeField] private GameObject BuildingManager;
+        [SerializeField] private GameObject GridDetectionPanel;
+        [SerializeField] private GameObject GridDetectionHelperPanel;
+        [SerializeField] private GameObject GridDetectionText;
         [SerializeField] private GameObject GameInitializationPanel;
         [SerializeField] private GameObject GameLoopPanel;
         [SerializeField] private GameObject GamePausedPanel;
         [SerializeField] private GameObject GameOverPanel;
+        [SerializeField] private GameObject VictoryText;
+        [SerializeField] private GameObject DefeatText;
 
-        #endregion
+        [SerializeField] private GameObject PlaneMarkerPrefab;
+        [SerializeField] private GameObject WallPrefab;
+        [SerializeField] private GameObject TowerPrefab;
+        [SerializeField] private GameObject HomeBasePrefab;
+        [SerializeField] private GameObject GamePlanePrefab;
+        [SerializeField] private GameObject DivisionPrefab;
+        [SerializeField] private GameObject SpawnerPrefab;
+        [SerializeField] private GameObject PathPrefab;
 
-        #region Constants
-
-        public const float k_DivisionLength = .1f;
-        /// <summary>
-        /// The time iteration limit after which the threshold increases
-        /// </summary>
-        private const float k_IncreaseThresholdCountLimit = 2000;
-        /// <summary>
-        /// The percentage by which the threshold increases
-        /// </summary>
-        private const float k_IncreaseThresholdSize = .1f;
-        /// <summary>
-        /// Precision used for floating point comparison
-        /// </summary>
-        private const float k_Epsilon = 1e-5f;
-
-        #endregion
+        private const float k_DivisionLength = .1f;
 
         public static bool LastWave { get; set; }
         public static bool EnemyReachedBase { get; set; }
-        public DetectedPlane MarkedPlane { get; set; }
-        public Vector3[] BindingVectors { get; private set; }
+
+        private GameObject m_PlaneSelectionMarker;
+        private DetectedPlane m_MarkedPlane;
+        public static Pose MarkedPlaneCenterPose { get; private set; }
+        private Vector3[] m_BindingVectors;
+        private GameObject[] m_BindingWalls;
+        private GameObject[] m_BindingTowers;
+        private GameObject m_GamePlane;
+        private GameObject m_HomeBase;
         private Division m_HomeBaseDivision;
+        private GameObject m_Spawner;
         private Division m_SpawnerDivision;
 
         /// <summary>
@@ -82,17 +70,31 @@ namespace ARTowerDefense
         /// </summary>
         private GameObject m_GameObjectToBePlaced;
         /// <summary>
+        /// Represents the previously placed game object
+        /// </summary>
+        private GameObject m_PlacedGameObject;
+        /// <summary>
         /// Represents the division to which the previously placed game object belongs to
         /// </summary>
         private Division m_DivisionPlacedOn;
         /// <summary>
+        /// Denotes whether the plane splitting has finished
+        /// </summary>
+        private bool m_PlaneSplit;
+
+        /// <summary>
         /// An anchor to the center of the marked plane
         /// </summary>
-        public Transform AnchorTransform { get; set; }
+        public static Transform AnchorTransform { get; private set; }
+        /// <summary>
+        /// A set of all divisions that contain no game object
+        /// </summary>
+        public static HashSet<Division> AvailableDivisions { get; private set; } // TODO: Remove
+        public static HashSet<GameObject> AvailableDivisionObjects { get; private set; }
         /// <summary>
         /// A dictionary of divisions and their corresponding division game object instance
         /// </summary>
-        public static Dictionary<Division, BuildingDivision> DivisionGameObjectDictionary { get; private set; }
+        public static Dictionary<Division, GameObject> DivisionGameObjectDictionary { get; private set; } // TODO: Remove
         /// <summary>
         /// A set of all divisions that will contain paths
         /// </summary>
@@ -101,6 +103,10 @@ namespace ARTowerDefense
         /// The final path division, leading to the home base
         /// </summary>
         private Division m_PathEnd;
+        /// <summary>
+        /// The starting path division, leading out of the spawner 
+        /// </summary>
+        private Division m_PathStart;
         /// <summary>
         /// A collection of divisions used for the path generation phase.
         /// Stores divisions that are not occupied by the path or divisions that are not adjacent to a path.
@@ -115,7 +121,18 @@ namespace ARTowerDefense
         /// Each time this field reached a value equal to k_IncreaseThresholdCountLimit, the m_AvailableDivisionsThreshold is modified
         /// </summary>
         private float m_IncreaseThresholdCount = 1;
-
+        /// <summary>
+        /// The time iteration limit after which the threshold increases
+        /// </summary>
+        private const float k_IncreaseThresholdCountLimit = 2000;
+        /// <summary>
+        /// The percentage by which the threshold increases
+        /// </summary>
+        private const float k_IncreaseThresholdSize = .1f;
+        /// <summary>
+        /// Precision used for floating point comparison
+        /// </summary>
+        private const float k_Epsilon = 1e-5f;
         /// <summary>
         /// A collection of 4 vectors depicting movement forward, backward, leftward and rightward on the horizontal plane
         /// </summary>
@@ -135,7 +152,7 @@ namespace ARTowerDefense
             GAME_LOOP
         }
 
-        private GameState m_GameState = GameState.STARTED;
+        private GameState m_GameState = GameState.GRID_DETECTION;
 
         private bool m_IsQuitting;
 
@@ -152,30 +169,45 @@ namespace ARTowerDefense
             switch (m_GameState)
             {
                 case GameState.STARTED:
-                    AdvanceGameState();
                     break;
                 case GameState.GRID_DETECTION:
-                    // TODO: Add grid detection logic
+                    GridDetectionPanel.SetActive(true);
+                    GridDetectionHelperPanel.SetActive(true);
+                    GridDetectionText.GetComponent<TextMeshProUGUI>().text =
+                        "Move the camera around a flat horizontal surface to detect planes.";
+                    _GridDetectionLogic();
                     break;
                 case GameState.GAME_SPACE_INSTANTIATION:
+                    GridDetectionPanel.SetActive(false);
                     _GameSpaceInitializationLogic();
                     AdvanceGameState();
                     break;
                 case GameState.BASE_PLACEMENT:
-                    m_GameObjectToBePlaced = HomeBasePrefab;
-                    _UpdatePlaceButtonState();
-                    if (m_DivisionPlacedOn != null)
+                    GameInitializationPanel.SetActive(true);
+                    if (!m_PlaneSplit)
                     {
-                        if (m_HomeBaseDivision != null && m_HomeBaseDivision != m_DivisionPlacedOn)
-                        {
-                            DivisionGameObjectDictionary[m_HomeBaseDivision].Clear();
-                        }
-                        m_HomeBaseDivision = m_DivisionPlacedOn;
-                        //AvailableDivisionObjects.Remove(DivisionGameObjectDictionary[m_HomeBaseDivision]);
-                        ToGameLoopButton.SetActive(true);
+                        _SplitPlane();
                     }
+                    else
+                    {
+                        m_GameObjectToBePlaced = HomeBasePrefab;
+                        _UpdatePlaceButtonState();
+                        if (m_PlacedGameObject != null)
+                        {
+                            if (m_HomeBase != null)
+                            {
+                                AvailableDivisionObjects.Add(DivisionGameObjectDictionary[m_HomeBaseDivision]);
+                            }
+                            m_HomeBase = m_PlacedGameObject;
+                            m_HomeBaseDivision = m_DivisionPlacedOn;
+                            AvailableDivisionObjects.Remove(DivisionGameObjectDictionary[m_HomeBaseDivision]);
+                            ToGameLoopButton.SetActive(true);
+                        }
+                    }
+
                     break;
                 case GameState.PATH_GENERATION:
+                    GameInitializationPanel.SetActive(false);
                     if (m_Moves == null)
                     {
                         _InitializeMoves();
@@ -184,7 +216,7 @@ namespace ARTowerDefense
                     if (_GeneratePath() != null)
                     {
                         _BuildPath();
-                        //m_HomeBase.transform.Rotate(0, 180 ,0);
+                        m_HomeBase.transform.Rotate(0, 180 ,0);
                         AdvanceGameState();
                     }
                     break;
@@ -201,15 +233,15 @@ namespace ARTowerDefense
                         $"The session is in an undefined state. Current state: {m_GameState}");
             }
         }
-
+        
         public void AdvanceGameState()
         {
+            m_PlacedGameObject = null;
             PlacePrefabButton.SetActive(false);
             switch (m_GameState)
             {
                 case GameState.STARTED:
                     m_GameState = GameState.GRID_DETECTION;
-                    _InitializeGridDetection();
                     break;
                 case GameState.GRID_DETECTION:
                     m_GameState = GameState.GAME_SPACE_INSTANTIATION;
@@ -233,7 +265,7 @@ namespace ARTowerDefense
                     break;
                 case GameState.GAME_OVER:
                     m_GameState = GameState.GRID_DETECTION;
-                    //_InitializeGridDetection();
+                    _InitializeGridDetection();
                     break;
                 case GameState.PAUSED:
                     throw new InvalidOperationException(
@@ -274,7 +306,7 @@ namespace ARTowerDefense
                 return;
             }
 
-            m_DivisionToPlaceOn = DivisionGameObjectDictionary.Keys.SingleOrDefault(div => div.Includes(divisionTransform.position));
+            m_DivisionToPlaceOn = AvailableDivisions.SingleOrDefault(div => div.Includes(divisionTransform.position));
             if (m_DivisionToPlaceOn != null)
             {
                 PlacePrefabButton.SetActive(true);
@@ -293,18 +325,17 @@ namespace ARTowerDefense
         /// </summary>
         public void PlacePrefab()
         {
-            if (m_DivisionPlacedOn != null)
+            if (m_PlacedGameObject != null)
             {
-                //Destroy(m_PlacedGameObject);
-                DivisionGameObjectDictionary[m_DivisionPlacedOn].Clear();
-                //AvailableDivisions.Add(m_DivisionPlacedOn);
+                Destroy(m_PlacedGameObject);
+                AvailableDivisions.Add(m_DivisionPlacedOn);
             }
 
-            //GameObject newGameObject = Instantiate(m_GameObjectToBePlaced,
-            //    m_DivisionToPlaceOn.Center, Quaternion.identity,
-            //    DivisionGameObjectDictionary[m_DivisionToPlaceOn].transform);
-            DivisionGameObjectDictionary[m_DivisionToPlaceOn].AddBuilding(m_GameObjectToBePlaced);
-            //m_PlacedGameObject = newGameObject;
+            GameObject newGameObject = Instantiate(m_GameObjectToBePlaced,
+                m_DivisionToPlaceOn.Center, Quaternion.identity,
+                DivisionGameObjectDictionary[m_DivisionToPlaceOn].transform);
+            AvailableDivisions.Remove(m_DivisionToPlaceOn);
+            m_PlacedGameObject = newGameObject;
             m_DivisionPlacedOn = m_DivisionToPlaceOn;
             Debug.Log("Placed game object");
         }
@@ -333,28 +364,45 @@ namespace ARTowerDefense
         {
             m_GameState = GameState.PAUSED;
             Time.timeScale = 0;
+            Crosshair.SetActive(false);
             GameLoopPanel.SetActive(false);
             GamePausedPanel.SetActive(true);
         }
 
         public void Unpause()
         {
+            Crosshair.SetActive(true);
             GamePausedPanel.SetActive(false);
             GameLoopPanel.SetActive(true);
             Time.timeScale = 1;
             m_GameState = GameState.GAME_LOOP;
         }
 
+        public void GameOver(bool victory)
+        {
+            Time.timeScale = 0;
+            Crosshair.SetActive(false);
+            GameLoopPanel.SetActive(false);
+            m_GameState = GameState.GAME_OVER;
+            GameOverPanel.SetActive(true);
+            if (victory)
+            {
+                VictoryText.SetActive(true);
+            }
+            else
+            {
+                DefeatText.SetActive(true);
+            }
+        }
+
         private void _InitializeGameSpaceInstantiation()
         {
             Debug.Log($"Initializing {GameState.GAME_SPACE_INSTANTIATION} state");
-            GridDetectionManager.SetActive(false);
+            Destroy(m_PlaneSelectionMarker);
             List<Vector3> boundaryPolygons = new List<Vector3>();
-            var script = GridDetectionManager.GetComponent<GridDetectionManager>();
-            AnchorTransform = script.AnchorTransform;
-            MarkedPlane = script.MarkedPlane;
-            MarkedPlane.GetBoundaryPolygon(boundaryPolygons);
-            BindingVectors = boundaryPolygons.ToArray();
+            m_MarkedPlane.GetBoundaryPolygon(boundaryPolygons);
+            m_BindingVectors = boundaryPolygons.ToArray();
+            MarkedPlaneCenterPose = m_MarkedPlane.CenterPose; // TODO: REMOVE ???
 
             foreach (Vector3 boundaryPolygon in boundaryPolygons)
             {
@@ -367,29 +415,22 @@ namespace ARTowerDefense
             Debug.Log("Grid generation disabled");
             ToBasePlacementButton.SetActive(false);
             Debug.Log("ConfirmButton disabled");
-            GameInitManager.SetActive(true);
         }
 
         private void _InitializeBasePlacement()
         {
+            Crosshair.SetActive(true);
             ToBasePlacementButton.SetActive(false);
-            var script = GameInitManager.GetComponent<GameInitManager>();
-            DivisionGameObjectDictionary = script.DivisionsDictionary;
-            GameInitManager.SetActive(false);
-            GameInitializationPanel.SetActive(true);
             Debug.Log("ConfirmButton disabled");
         }
 
         private void _InitializePathGeneration()
         {
-            DivisionGameObjectDictionary[m_HomeBaseDivision].Lock();
-            GameInitializationPanel.SetActive(false);
             _GeneratePathEnd();
         }
 
         private void _InitializeGameLoop()
         {
-            NatureManager.SetActive(true);
             CoinManager.SetActive(true);
             BuildingManager.SetActive(true);
             m_GameObjectToBePlaced = null;
@@ -400,57 +441,317 @@ namespace ARTowerDefense
         {
             throw new NotImplementedException();
         }
-        
+
         private void _InitializeGridDetection()
         {
-            GridDetectionManager.SetActive(true);
+            throw new NotImplementedException();
+        }
+
+        private void _GridDetectionLogic()
+        {
+            List<DetectedPlane> detectedPlanes = new List<DetectedPlane>();
+            Session.GetTrackables(detectedPlanes);
+            if (detectedPlanes.Any())
+            {
+                GridDetectionHelperPanel.SetActive(false);
+                GridDetectionText.GetComponent<TextMeshProUGUI>().text =
+                    "Once you are happy with one of the detected planes, touch it to place a marker and hit CONFIRM.";
+            }
+
+            Touch touch;
+
+            if (Input.touchCount < 1 || (touch = Input.GetTouch(0)).phase != TouchPhase.Began)
+            {
+                return;
+            }
+
+            if (EventSystem.current.IsPointerOverGameObject(touch.fingerId))
+            {
+                return;
+            }
+
+            TrackableHit hit;
+            TrackableHitFlags raycastFilter = TrackableHitFlags.PlaneWithinPolygon |
+                                              TrackableHitFlags.FeaturePointWithSurfaceNormal;
+
+            if (Frame.Raycast(touch.position.x, touch.position.y, raycastFilter, out hit))
+            {
+                Debug.Log("Plane intersection found");
+
+                if ((hit.Trackable is DetectedPlane) &&
+                    Vector3.Dot(FirstPersonCamera.transform.position - hit.Pose.position,
+                        hit.Pose.rotation * Vector3.up) < 0)
+                {
+                    Debug.LogError("Hit at back of current DetectedPlane");
+                }
+                else
+                {
+                    if (hit.Trackable is DetectedPlane plane)
+                    {
+                        Debug.Log("The raycast hit a horizontal plane");
+                        if (plane.PlaneType == DetectedPlaneType.HorizontalUpwardFacing)
+                        {
+                            if (m_PlaneSelectionMarker != null)
+                            {
+                                Debug.Log("Old marker was removed");
+                                Destroy(m_PlaneSelectionMarker);
+                            }
+
+
+                            Anchor anchor = hit.Trackable.CreateAnchor(plane.CenterPose);
+                            m_PlaneSelectionMarker =
+                                Instantiate(PlaneMarkerPrefab, hit.Pose.position, hit.Pose.rotation);
+                            gameObject.transform.parent = anchor.transform;
+                            m_MarkedPlane = plane;
+                            //AnchorTransform = m_MarkedPlane.CreateAnchor(MarkedPlaneCenterPose).transform;
+                            AnchorTransform = anchor.transform;
+                            Debug.Log("New base marker placed");
+                            ToBasePlacementButton.SetActive(true);
+                            Debug.Log("ConfirmButton activated");
+                        }
+                    }
+                }
+            }
         }
 
         private void _GameSpaceInitializationLogic()
         {
-            //List<Vector3> bindingVectorsList = BindingVectors.ToList();
-            //_ConsolidateBoundaries(bindingVectorsList);
-            //BindingVectors = bindingVectorsList.ToArray();
+            List<Vector3> bindingVectorsList = m_BindingVectors.ToList();
+            _ConsolidateBoundaries(bindingVectorsList);
+            m_BindingVectors = bindingVectorsList.ToArray();
 
-            //if (BindingWalls == null)
-            //{
-            //    _SpawnBoundaries();
-            //}
+            if (m_BindingWalls == null)
+            {
+                _SpawnBoundaries();
+            }
 
-            //if (GamePlane == null)
-            //{
-            //    _SpawnGamePlane();
-            //}
-
-            //GameInitManager.SetActive(true);
-            //GameInitManager script = GameInitManager.GetComponent<GameInitManager>();
-            // Binding vectors may be consolidated by the game init manager
-            //BindingVectors = script.BindingVectors;
-            //BindingTowers = script.BindingTowers;
-            //BindingWalls = script.BindingWalls;
-            //GamePlane = script.GamePlane;
+            if (m_GamePlane == null)
+            {
+                _SpawnGamePlane();
+            }
 
             //_PlaceBaseMarker();
         }
 
+        private void _ConsolidateBoundaries(List<Vector3> vectors)
+        {
+            for (int i = 0; i < vectors.Count; i++)
+            {
+                var closeByVectorsIndexes = new List<int>();
+                for (int j = i + 1; j < vectors.Count; j++)
+                {
+                    if (Vector3.Distance(vectors[i], vectors[j]) < .5f)
+                    {
+                        closeByVectorsIndexes.Add(j);
+                    }
+                }
+
+                if (closeByVectorsIndexes.Count != 0)
+                {
+                    var newVector = vectors[i];
+                    foreach (int index in closeByVectorsIndexes)
+                    {
+                        newVector += vectors[index];
+                    }
+
+                    newVector /= closeByVectorsIndexes.Count + 1;
+
+                    vectors.Remove(vectors[i]);
+                    //m_BindingVectors[i] = newVector;
+                    vectors.Insert(i, newVector);
+                    vectors.RemoveAll(vect =>
+                        closeByVectorsIndexes.Select(idx => vectors[idx]).Contains(vect));
+                    _ConsolidateBoundaries(vectors);
+                    return;
+                }
+            }
+        }
+
+        private void _SpawnBoundaries()
+        {
+            m_BindingTowers = m_BindingVectors
+                .Select(v => Instantiate(TowerPrefab, v, Quaternion.identity, AnchorTransform)).ToArray();
+
+            m_BindingWalls = new GameObject[m_BindingVectors.Length];
+            for (int i = 0; i < m_BindingVectors.Length; i++)
+            {
+                m_BindingWalls[i] = Instantiate(WallPrefab,
+                    Vector3.Lerp(m_BindingVectors[i], m_BindingVectors[(i + 1) % m_BindingVectors.Length], 0.5f),
+                    Quaternion.identity, AnchorTransform);
+                m_BindingWalls[i].transform.localScale += new Vector3(
+                    Vector3.Distance(m_BindingVectors[i], m_BindingVectors[(i + 1) % m_BindingVectors.Length]), 0, 0);
+            }
+
+            for (int i = 0; i < m_BindingVectors.Length; i++)
+            {
+                Vector3 point = m_BindingVectors[i];
+                Vector3 midPoint = m_BindingWalls[i].transform.position;
+
+                Vector3 pointProjectionOntoX = Vector3.Project(point, Vector3.right);
+                Vector3 midPointProjectionOntoX = Vector3.Project(midPoint, Vector3.right);
+                Vector3 pointProjectionOntoZ = Vector3.Project(point, Vector3.forward);
+                Vector3 midPointProjectionOntoZ = Vector3.Project(midPoint, Vector3.forward);
+
+                float cath1 = Vector3.Distance(pointProjectionOntoX, midPointProjectionOntoX);
+                float cath2 = Vector3.Distance(pointProjectionOntoZ, midPointProjectionOntoZ);
+                float angle = Mathf.Atan2(cath2, cath1) * Mathf.Rad2Deg;
+
+                m_BindingWalls[i].transform.RotateAround(m_BindingWalls[i].transform.position, Vector3.up, angle);
+                Collider fieldCollider = m_BindingWalls[i].GetComponent<Collider>();
+                if (ColliderContainsPoint(fieldCollider.transform, point)) continue;
+                m_BindingWalls[i].transform.RotateAround(m_BindingWalls[i].transform.position, Vector3.up, -angle * 2);
+            }
+        }
+
+        private void _SpawnGamePlane()
+        {
+
+            float maxX = m_BindingVectors.Select(v => v.x).Max();
+            float minX = m_BindingVectors.Select(v => v.x).Min();
+            float maxZ = m_BindingVectors.Select(v => v.z).Max();
+            float minZ = m_BindingVectors.Select(v => v.z).Min();
+
+            float distanceX = maxX - minX;
+            float distanceZ = maxZ - minZ;
+            float maxDistance = distanceX > distanceZ ? distanceX : distanceZ;
+
+            float middleX = (maxX + minX) / 2;
+            float middleZ = (maxZ + minZ) / 2;
+
+            m_GamePlane = Instantiate(GamePlanePrefab, new Vector3(middleX, m_BindingVectors[0].y, middleZ),
+                Quaternion.identity, AnchorTransform);
+            m_GamePlane.transform.localScale = new Vector3(maxDistance, maxDistance, 1);
+            m_GamePlane.transform.Rotate(90, 0, 0);
+            Debug.Log(m_GamePlane.transform.localScale);
+        }
+
+        // ########################################################
+        // ################### PATH GENERATION  ###################
+        // ########################################################
+
+        private void _SplitPlane()
+        {
+            Renderer rend = m_GamePlane.GetComponent<Renderer>();
+            Debug.Log("Acquired game plane renderer");
+
+            float y = rend.bounds.min.y;
+
+            List<Division> divisions = new List<Division>();
+
+            for (var x = rend.bounds.min.x; x < rend.bounds.max.x; x += k_DivisionLength)
+            {
+                for (var z = rend.bounds.min.z; z < rend.bounds.max.z; z += k_DivisionLength)
+                {
+                    divisions.Add(new Division(new Vector3(x, y, z),
+                        new Vector3(x + k_DivisionLength, y, z + k_DivisionLength)));
+                }
+            }
+
+            _TrimDivisions(divisions);
+
+            DivisionGameObjectDictionary = new Dictionary<Division, GameObject>(divisions.Count);
+            AvailableDivisionObjects = new HashSet<GameObject>();
+            Debug.Log($"Will spawn {divisions.Count} divisions.");
+            foreach (var division in divisions)
+            {
+                var divisionObject =
+                    Instantiate(DivisionPrefab, division.Center, Quaternion.identity, AnchorTransform);
+                Debug.Log("Spawned division marker.");
+                DivisionGameObjectDictionary.Add(division, divisionObject);
+                AvailableDivisionObjects.Add(divisionObject);
+            }
+
+            AvailableDivisions =
+                new HashSet<Division>(divisions); // TODO: load divisions into m_availableDivisions directly 
+            m_PlaneSplit = true;
+        }
+
+        private void _TrimDivisions(List<Division> divisions)
+        {
+            Debug.Log("Started trim division.");
+            Debug.Log($"Original divisions count: {divisions.Count}");
+
+            divisions.RemoveAll(div =>
+            {
+                var raycastHits = Physics.RaycastAll(div.Point1, Vector3.right, Mathf.Infinity);
+
+                if (!_IsWithinBoundaries(raycastHits))
+                {
+                    //Debug.Log("Division removed on first check");
+                    return true;
+                }
+
+                raycastHits = Physics.RaycastAll(div.Point2, Vector3.right, Mathf.Infinity);
+
+                if (!_IsWithinBoundaries(raycastHits))
+                {
+                    // Debug.Log("Division removed on second check");
+                    return true;
+                }
+
+                raycastHits = Physics.RaycastAll(new Vector3(div.Point1.x, div.Point1.y, div.Point2.z), Vector3.right,
+                    Mathf.Infinity);
+
+                if (!_IsWithinBoundaries(raycastHits))
+                {
+                    // Debug.Log("Division removed on fourth check");
+                    return true;
+                }
+
+                raycastHits = Physics.RaycastAll(new Vector3(div.Point2.x, div.Point1.y, div.Point1.z), Vector3.right,
+                    Mathf.Infinity);
+
+                if (!_IsWithinBoundaries(raycastHits))
+                {
+                    return true;
+                }
+
+
+                return false;
+            });
+
+            Debug.Log($"Division count after trimming: {divisions.Count}");
+        }
+
+        public bool _IsWithinBoundaries(RaycastHit[] hits)
+        {
+            if (hits.Length == 1 && hits[0].collider.CompareTag("GameWall")) return true;
+            if (hits.Length > 3) return false;
+
+            IEnumerable<Collider> colliders = hits.Select(hit => hit.collider);
+            List<Collider> towerColliders = colliders.Where(col => col.tag.Equals("GameTower")).ToList();
+            List<Collider> wallColliders = colliders.Where(col => col.tag.Equals("GameWall")).ToList();
+
+            if (towerColliders.Count() != 1) return false;
+
+            foreach (Collider wallCollider in wallColliders)
+            {
+                if (!towerColliders[0].bounds.Intersects(wallCollider.bounds))
+                {
+                    Debug.Log("Tower not intersecting wall.");
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
         private void _GeneratePathEnd()
         {
-            Vector3 front = m_HomeBaseDivision.Center - DivisionGameObjectDictionary[m_HomeBaseDivision].transform.forward * k_DivisionLength;
+            Vector3 front = m_HomeBaseDivision.Center - m_HomeBase.transform.forward * k_DivisionLength;
             m_PathEnd = DivisionGameObjectDictionary.SingleOrDefault(div => div.Key.Includes(front)).Key;
             
             if (m_PathEnd != null) return;
             
-            //front = m_HomeBaseDivision.Center - m_HomeBase.transform.forward * -1;
+            front = m_HomeBaseDivision.Center - m_HomeBase.transform.forward * -1;
             m_PathEnd = DivisionGameObjectDictionary.SingleOrDefault(div => div.Key.Includes(front)).Key;
-            // TODO: may crash if placed in a division with a single neighbor! Also, fix rotation of base to always face path
+            // TODO: may crash if placed in a division with a single neighbor, investigate
         }
 
         private Division _GeneratePath()
         {
             Debug.Log("Started generating m_PathDivisions.");
-            m_AvailableDivisionsForPathGeneration = new HashSet<Division>(DivisionGameObjectDictionary
-                .Where(kvp => !kvp.Value.HasBuilding)
-                .Select(kvp => kvp.Key));
+            m_AvailableDivisionsForPathGeneration = new HashSet<Division>(AvailableDivisions);
             m_PathDivisions = new Stack<Division>();
             return _GenerateRandomPath(m_PathEnd);
         }
@@ -476,7 +777,7 @@ namespace ARTowerDefense
             }
 
             if (m_AvailableDivisionsForPathGeneration.Count < m_AvailableDivisionsThreshold * DivisionGameObjectDictionary.Count &&
-                _TryPlaceSpawner(currentDivision))
+                _CanPlaceSpawner(currentDivision))
             {
                 m_PathDivisions.Push(currentDivision);
                 return currentDivision;
@@ -547,25 +848,28 @@ namespace ARTowerDefense
             return divisions.OrderBy(_ => random.Next());
         }
 
-        private bool _TryPlaceSpawner(Division currentDivision)
+        private bool _CanPlaceSpawner(Division currentDivision)
         {
-            var previousDivision = m_PathDivisions.Peek();
+            Division previousDivision = m_PathDivisions.Peek();
             var direction = currentDivision.Center - previousDivision.Center;
             m_SpawnerDivision =
-                DivisionGameObjectDictionary.FirstOrDefault(kvp => kvp.Key.Includes(currentDivision.Center + direction))
-                    .Key; // TODO: Refactor this
-            if (m_SpawnerDivision == null) return false;
-            DivisionGameObjectDictionary[m_SpawnerDivision].AddBuilding(SpawnerPrefab);
-            DivisionGameObjectDictionary[m_SpawnerDivision].Lock();
-            return true;
+                m_AvailableDivisionsForPathGeneration.FirstOrDefault(div => div.Includes(currentDivision.Center + direction));
+            if (m_SpawnerDivision != null)
+            {
+                m_Spawner = Instantiate(SpawnerPrefab, m_SpawnerDivision.Center, Quaternion.identity, DivisionGameObjectDictionary[m_SpawnerDivision].transform);
+                AvailableDivisions.Remove(m_SpawnerDivision);
+                AvailableDivisionObjects.Remove(DivisionGameObjectDictionary[m_SpawnerDivision]);
+                return true;
+            }
 
+            return false;
         }
 
-        //private bool ColliderContainsPoint(Transform colliderTransform, Vector3 point)
-        //{
-        //    Vector3 localPos = colliderTransform.InverseTransformPoint(point);
-        //    return Mathf.Abs(localPos.x) < 0.5f && Mathf.Abs(localPos.y) < 0.5f && Mathf.Abs(localPos.z) < 0.5f;
-        //}
+        private bool ColliderContainsPoint(Transform colliderTransform, Vector3 point)
+        {
+            Vector3 localPos = colliderTransform.InverseTransformPoint(point);
+            return Mathf.Abs(localPos.x) < 0.5f && Mathf.Abs(localPos.y) < 0.5f && Mathf.Abs(localPos.z) < 0.5f;
+        }
 
         private void _BuildPath()
         {
@@ -575,15 +879,19 @@ namespace ARTowerDefense
             int index = 1;
             foreach (Division pathDivision in m_PathDivisions)
             {
-                DivisionGameObjectDictionary[pathDivision].AddBuilding(PathPrefab);
-                DivisionGameObjectDictionary[pathDivision].Lock();
+                var pathObject = Instantiate(PathPrefab, pathDivision.Center, Quaternion.identity);
+                pathObject.transform.parent = DivisionGameObjectDictionary[pathDivision].transform;
+                AvailableDivisions.Remove(pathDivision);
+                AvailableDivisionObjects.Remove(DivisionGameObjectDictionary[pathDivision]);
                 PathWaypoints[index++] = DivisionGameObjectDictionary[pathDivision].transform;
             }
 
-            PathWaypoints[index] = DivisionGameObjectDictionary[m_HomeBaseDivision].transform; // TODO: Refactor
+            PathWaypoints[index] = DivisionGameObjectDictionary[m_HomeBaseDivision].transform;
         }
 
-        #region GAME LOOP
+        // ########################################################
+        // ###################### GAME LOOP #######################
+        // ########################################################
 
         private void _GameLoopLogic()
         {
@@ -598,30 +906,13 @@ namespace ARTowerDefense
             }
         }
 
-        #endregion
+        // ########################################################
+        // ###################### GAME OVER #######################
+        // ########################################################
 
-        #region GAME OVER
         private void _GameOverLogic()
         {
         }
-
-        public void GameOver(bool victory)
-        {
-            Time.timeScale = 0;
-            GameLoopPanel.SetActive(false);
-            m_GameState = GameState.GAME_OVER;
-            GameOverPanel.SetActive(true);
-            if (victory)
-            {
-                VictoryText.SetActive(true);
-            }
-            else
-            {
-                DefeatText.SetActive(true);
-            }
-        }
-
-        #endregion
 
         private void _UpdateApplicationLifecycle()
         {

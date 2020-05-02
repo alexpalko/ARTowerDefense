@@ -55,11 +55,10 @@ MeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
-  m_RayTracingMode: 2
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: c6083383f75927a42aed87090d2f2b95, type: 2}
+  - {fileID: 2100000, guid: adcfca753ec7e224883bad0d571fe921, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -149,11 +148,10 @@ MeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
-  m_RayTracingMode: 2
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 65ca6cacc8edf0042a5d390774c7cea9, type: 2}
+  - {fileID: 2100000, guid: adcfca753ec7e224883bad0d571fe921, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -278,11 +276,10 @@ MeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
-  m_RayTracingMode: 2
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: b1bff87c8a4724c41a597e67aa297b03, type: 2}
+  - {fileID: 2100000, guid: adcfca753ec7e224883bad0d571fe921, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -372,11 +369,10 @@ MeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
-  m_RayTracingMode: 2
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: b1bff87c8a4724c41a597e67aa297b03, type: 2}
+  - {fileID: 2100000, guid: adcfca753ec7e224883bad0d571fe921, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -466,11 +462,10 @@ MeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
-  m_RayTracingMode: 2
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 65ca6cacc8edf0042a5d390774c7cea9, type: 2}
+  - {fileID: 2100000, guid: adcfca753ec7e224883bad0d571fe921, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -609,11 +604,10 @@ MeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
-  m_RayTracingMode: 2
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: b1bff87c8a4724c41a597e67aa297b03, type: 2}
+  - {fileID: 2100000, guid: adcfca753ec7e224883bad0d571fe921, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -703,11 +697,10 @@ MeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
-  m_RayTracingMode: 2
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: b1bff87c8a4724c41a597e67aa297b03, type: 2}
+  - {fileID: 2100000, guid: adcfca753ec7e224883bad0d571fe921, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -752,7 +745,6 @@ GameObject:
   m_Component:
   - component: {fileID: 8731784784253972169}
   - component: {fileID: -4301718904548680994}
-  - component: {fileID: 8874008184684226950}
   m_Layer: 0
   m_Name: Mill
   m_TagString: Untagged
@@ -789,18 +781,3 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Amount: 50
   TimeInterval: 25
---- !u!114 &8874008184684226950
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8731784784253972170}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8392ef2f44d046b40a6d062e034621cc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  HoverOutlineColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
-  SelectedOutlineColor: {r: 1, g: 0.75, b: 0, a: 1}
-  OutlineThickness: 3

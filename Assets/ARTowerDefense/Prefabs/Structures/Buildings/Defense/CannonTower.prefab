@@ -54,7 +54,6 @@ MeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
-  m_RayTracingMode: 2
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
@@ -134,7 +133,6 @@ MeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
-  m_RayTracingMode: 2
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
@@ -307,7 +305,6 @@ MeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
-  m_RayTracingMode: 2
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
@@ -343,7 +340,6 @@ GameObject:
   - component: {fileID: 7640400597354240982}
   - component: {fileID: 5208914480519485560}
   - component: {fileID: 5826503806818567177}
-  - component: {fileID: 9084843633776438839}
   m_Layer: 8
   m_Name: CannonTower
   m_TagString: CannonTower
@@ -388,7 +384,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 7646496918847361974}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1c92762c7d4888745a375d3fe2b88a1f, type: 3}
+  m_Script: {fileID: 11500000, guid: 9a2c4a809db119443b495c488ce5d956, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   ShootElement: {fileID: 7640465072760706560}
@@ -397,21 +393,6 @@ MonoBehaviour:
   Target: {fileID: 0}
   Damage: 25
   ShootDelay: 1.5
---- !u!114 &9084843633776438839
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7646496918847361974}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8392ef2f44d046b40a6d062e034621cc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  HoverOutlineColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
-  SelectedOutlineColor: {r: 1, g: 0.75, b: 0, a: 1}
-  OutlineThickness: 3
 --- !u!1 &7646724305836691386
 GameObject:
   m_ObjectHideFlags: 0
