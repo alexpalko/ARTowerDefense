@@ -15,6 +15,7 @@ public class BuildingManager : MonoBehaviour
     public GameObject BuildingsPanel;
     public List<GameObject> BuildingInfoPanels;
     public bool UseDivisionHoverHighlight;
+    public int NatureRemovalCost;
 
     public GameObject CannonTowerPrefab;
     public GameObject CrossbowTowerPrefab;
@@ -217,9 +218,9 @@ public class BuildingManager : MonoBehaviour
     {
         if (m_SelectedBuildingDivision.HasNature)
         {
-            if (CoinManager.Coins >= 20)
+            if (CoinManager.Coins >= NatureRemovalCost)
             {
-                CoinManager.RemoveCoins(20);
+                CoinManager.RemoveCoins(NatureRemovalCost);
             }
             else
             {

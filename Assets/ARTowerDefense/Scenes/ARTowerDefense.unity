@@ -3116,8 +3116,7 @@ MonoBehaviour:
   - {fileID: 3644400674030827390, guid: dd1083c69fc18bd42b2f18f2135b0b80, type: 3}
   - {fileID: 8731784784253972170, guid: 8d949d3f74fe81a49a59f946afc4ae4d, type: 3}
   UseDivisionHoverHighlight: 0
-  HoverOutlineColor: {r: 1, g: 1, b: 0, a: 0}
-  SelectedOutlineColor: {r: 1, g: 0.62352943, b: 0, a: 0}
+  NatureRemovalCost: 20
   CannonTowerPrefab: {fileID: 7646496918847361974, guid: 51fc905d9f1f26243ac34aa1eba5542e,
     type: 3}
   CrossbowTowerPrefab: {fileID: 7697405237424635051, guid: 1eaf5578f2cc99f48b8dd01fe8a1dae7,
