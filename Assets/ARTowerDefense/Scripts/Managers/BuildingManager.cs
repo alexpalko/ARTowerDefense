@@ -24,6 +24,7 @@ public class BuildingManager : MonoBehaviour
     public GameObject ChickenFarmPrefab;
     public GameObject MillPrefab;
 
+    public GameObject[] TransparentBuildingPrefabs;
     private readonly int[] m_PriceList = {25, 60, 150, 50, 80, 200};
 
     private List<BuildingDivision> m_Divisions;
@@ -68,10 +69,15 @@ public class BuildingManager : MonoBehaviour
         BuildButton.SetActive(false);
         SelectButton.SetActive(false);
         DemolishButton.SetActive(m_SelectedBuildingDivision != null);
-        if (m_FocusedDivision != null && !m_FocusedDivision.Equals(m_SelectedBuildingDivision))
+        if (m_FocusedDivision != null)
         {
-            m_FocusedDivision.HideOutline();
+            m_FocusedDivision.ClearTransparentStructure();
+            if (!m_FocusedDivision.Equals(m_SelectedBuildingDivision))
+            {
+                m_FocusedDivision.HideOutline();
+            }
         }
+
         m_FocusedDivision = null;
 
         if (m_Divisions.Contains(hit.collider.transform.parent.GetComponent<BuildingDivision>()))
@@ -79,13 +85,32 @@ public class BuildingManager : MonoBehaviour
             m_FocusedDivision = hit.collider.transform.parent.gameObject.GetComponent<BuildingDivision>();
         }
 
-        if (m_FocusedDivision == null || m_FocusedDivision.IsLocked) return;
-
-        if (m_BuildingToConstructId != -1 &&
-            !m_FocusedDivision.HasNature &&
-            !m_FocusedDivision.HasBuilding)
+        if (m_FocusedDivision == null)
         {
-            BuildButton.SetActive(true);
+            return;
+        }
+
+        if (m_FocusedDivision.IsLocked)
+        {
+            if (m_BuildingToConstructId != -1)
+            {
+                m_FocusedDivision.ShowInvalidTransparentStructure(TransparentBuildingPrefabs[m_BuildingToConstructId]);
+            }
+            return;
+        }
+
+        if (m_BuildingToConstructId != -1)
+        {
+            if (!m_FocusedDivision.HasNature &&
+                !m_FocusedDivision.HasBuilding)
+            {
+                BuildButton.SetActive(true);
+                m_FocusedDivision.ShowValidTransparentStructure(TransparentBuildingPrefabs[m_BuildingToConstructId]);
+            }
+            else
+            {
+                m_FocusedDivision.ShowInvalidTransparentStructure(TransparentBuildingPrefabs[m_BuildingToConstructId]);
+            }
         }
         else if (m_FocusedDivision.HasNature || m_FocusedDivision.HasBuilding)
         {
@@ -199,7 +224,8 @@ public class BuildingManager : MonoBehaviour
         }
 
         m_FocusedDivision.GetComponent<BuildingDivision>().AddBuilding(buildingToConstruct);
-        m_FocusedDivision = null;
+        m_FocusedDivision.ClearTransparentStructure();
+        //m_FocusedDivision = null;
     }
 
     public void Select()

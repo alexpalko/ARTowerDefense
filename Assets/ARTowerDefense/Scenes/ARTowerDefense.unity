@@ -3129,6 +3129,13 @@ MonoBehaviour:
     type: 3}
   MillPrefab: {fileID: 8731784784253972170, guid: 8d949d3f74fe81a49a59f946afc4ae4d,
     type: 3}
+  TransparentBuildingPrefabs:
+  - {fileID: 7697405237424635051, guid: f365ca8499a16cb41a8a07a7383b6748, type: 3}
+  - {fileID: 7646496918847361974, guid: dfc1d97b58e44bd45ad7d9b61d8f5cdb, type: 3}
+  - {fileID: 3828504755966057060, guid: c0f31da4347586247b930ae992347175, type: 3}
+  - {fileID: 2949383518734678983, guid: b18acdd394681a54d84db3a9c4c4684b, type: 3}
+  - {fileID: 3644400674030827390, guid: 408d195b262499e4c88e3e545ccddfe6, type: 3}
+  - {fileID: 8731784784253972170, guid: 6ede490280e27c144beea0f96e3bbf31, type: 3}
 --- !u!4 &465185650
 Transform:
   m_ObjectHideFlags: 0

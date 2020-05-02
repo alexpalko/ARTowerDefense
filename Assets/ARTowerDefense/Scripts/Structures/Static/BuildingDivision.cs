@@ -1,4 +1,5 @@
 ﻿using Assets.ARTowerDefense;
+using Assets.ARTowerDefense.Scripts.Structures.Dynamic;
 using UnityEngine;
 
 public class BuildingDivision : MonoBehaviour
@@ -8,6 +9,7 @@ public class BuildingDivision : MonoBehaviour
     public bool HasNature { get; private set; }
 
     private GameObject m_ContainedStructure;
+    private GameObject m_TransparentStructure;
 
     public void Lock()
     {
@@ -19,6 +21,7 @@ public class BuildingDivision : MonoBehaviour
         if (!AddContainedStructure(buildingPrefab)) return;
         HasBuilding = true;
     }
+   
     public void AddNature(GameObject naturePrefab)
     {
         if (!AddContainedStructure(naturePrefab)) return;
@@ -69,5 +72,22 @@ public class BuildingDivision : MonoBehaviour
         {
             outlineController.HideOutline();
         }
+    }
+
+    public void ShowValidTransparentStructure(GameObject prefab)
+    {
+        m_TransparentStructure = Instantiate(prefab, transform.position, Quaternion.identity, transform);
+        m_TransparentStructure.GetComponent<TransparencyController>().ShowValidPlacementColor();
+    }
+
+    public void ShowInvalidTransparentStructure(GameObject prefab)
+    {
+        m_TransparentStructure = Instantiate(prefab, transform.position, Quaternion.identity, transform);
+        m_TransparentStructure.GetComponent<TransparencyController>().ShowInvalidPlacementColor();
+    }
+
+    public void ClearTransparentStructure()
+    {
+        Destroy(m_TransparentStructure);
     }
 }
