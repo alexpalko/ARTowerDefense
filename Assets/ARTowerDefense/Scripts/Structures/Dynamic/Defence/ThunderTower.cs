@@ -23,6 +23,11 @@ public class ThunderTower : Tower
         {
             Destroy(bolt.Value);
         }
+
+        foreach (var target in m_Targets)
+        {
+            target.transform.parent.GetComponent<EnemyMovement>().MovementDebuffQueue.Dequeue();
+        }
     }
 
     protected override void Update()

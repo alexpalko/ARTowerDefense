@@ -1,15 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices.WindowsRuntime;
 using Assets.ARTowerDefense.Scripts;
-using Assets.ARTowerDefense.Scripts.Managers;
 using GoogleARCore;
-using GoogleARCore.Examples.Common;
-using TMPro;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using Random = System.Random;
 #if UNITY_EDITOR
 using Input = GoogleARCore.InstantPreviewInput;
