@@ -181,7 +181,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f54f37edc3d50e6498231227f01d26e0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  twr: {fileID: 3207479949339470985}
+  Tower: {fileID: 3207479949339470985}
 --- !u!1 &3828504755966057060
 GameObject:
   m_ObjectHideFlags: 0
@@ -262,9 +262,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8392ef2f44d046b40a6d062e034621cc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  HoverOutlineColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
-  SelectedOutlineColor: {r: 1, g: 0.75, b: 0, a: 1}
-  OutlineThickness: 3
 --- !u!1 &3828612834063675236
 GameObject:
   m_ObjectHideFlags: 0

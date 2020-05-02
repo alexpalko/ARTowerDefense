@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class ThunderTowerTrigger : MonoBehaviour
 {
-    public ThunderTower twr;
+    public ThunderTower Tower;
     private HashSet<GameObject> m_CurTargets;
 
     void Start()
@@ -17,7 +17,7 @@ public class ThunderTowerTrigger : MonoBehaviour
         if (other.CompareTag("enemyBug") && !m_CurTargets.Contains(other.gameObject))
         {
             m_CurTargets.Add(other.gameObject);
-            twr.AddTarget(other.gameObject);
+            Tower.AddTarget(other.gameObject);
         }
     }
 
@@ -29,7 +29,7 @@ public class ThunderTowerTrigger : MonoBehaviour
             m_CurTargets.RemoveWhere(t =>
             {
                 if (!t.CompareTag("Dead")) return false;
-                twr.RemoveTarget(t);
+                Tower.RemoveTarget(t);
                 return true;
 
             });
@@ -41,7 +41,7 @@ public class ThunderTowerTrigger : MonoBehaviour
         if (other.CompareTag("enemyBug") && m_CurTargets.Contains(other.gameObject))
         {
             m_CurTargets.Remove(other.gameObject);
-            twr.RemoveTarget(other.gameObject);
+            Tower.RemoveTarget(other.gameObject);
         }
     }
 }
