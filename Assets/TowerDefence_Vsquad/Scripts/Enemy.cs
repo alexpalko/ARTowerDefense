@@ -52,7 +52,7 @@ public class Enemy1 : MonoBehaviour {
        // {           
             GameObject с = GameObject.Instantiate(bullet, shootElement.position, Quaternion.identity) as GameObject;
             с.GetComponent<EnemyBullet>().target = target;
-            //с.GetComponent<EnemyBullet>().Tower = this;
+            //с.GetComponent<EnemyBullet>().twr = this;
        // }  
 
     }
