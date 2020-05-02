@@ -44,6 +44,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 42aeadf93daf5434f842292b04636d87, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  OutlineThickness: 0.0003
 --- !u!1 &8400734985299660931
 GameObject:
   m_ObjectHideFlags: 0

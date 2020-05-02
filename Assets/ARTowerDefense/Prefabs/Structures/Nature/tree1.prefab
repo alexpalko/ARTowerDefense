@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 3264944218691221881}
   - component: {fileID: 5770359931517600591}
   - component: {fileID: 227685371965276086}
+  - component: {fileID: 9038728437260682318}
   m_Layer: 0
   m_Name: tree1
   m_TagString: Untagged
@@ -79,3 +80,18 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!114 &9038728437260682318
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1951238066754079594}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8392ef2f44d046b40a6d062e034621cc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  HoverOutlineColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  SelectedOutlineColor: {r: 1, g: 0.75, b: 0, a: 1}
+  OutlineThickness: 3

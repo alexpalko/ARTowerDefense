@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Assets.ARTowerDefense;
+using UnityEngine;
 
 public class BuildingDivision : MonoBehaviour
 {
@@ -38,5 +39,35 @@ public class BuildingDivision : MonoBehaviour
         Destroy(m_ContainedStructure);
         m_ContainedStructure = null;
         HasBuilding = HasNature = false;
+    }
+
+    public void ShowHoverOutline()
+    {
+        if (m_ContainedStructure == null) return;
+        var outlineControllers = m_ContainedStructure.GetComponentsInChildren<OutlineController>();
+        foreach (var outlineController in outlineControllers)
+        {
+            outlineController.ShowHoverOutline();
+        }
+    }
+
+    public void ShowSelectedOutline()
+    {
+        if (m_ContainedStructure == null) return;
+        var outlineControllers = m_ContainedStructure.GetComponentsInChildren<OutlineController>();
+        foreach (var outlineController in outlineControllers)
+        {
+            outlineController.ShowSelectedOutline();
+        }
+    }
+
+    public void HideOutline()
+    {
+        if (m_ContainedStructure == null) return;
+        var outlineControllers = m_ContainedStructure.GetComponentsInChildren<OutlineController>();
+        foreach (var outlineController in outlineControllers)
+        {
+            outlineController.HideOutline();
+        }
     }
 }

@@ -67,6 +67,10 @@ public class BuildingManager : MonoBehaviour
         BuildButton.SetActive(false);
         SelectButton.SetActive(false);
         DemolishButton.SetActive(m_SelectedBuildingDivision != null);
+        if (m_FocusedDivision != null && !m_FocusedDivision.Equals(m_SelectedBuildingDivision))
+        {
+            m_FocusedDivision.HideOutline();
+        }
         m_FocusedDivision = null;
 
         if (m_Divisions.Contains(hit.collider.transform.parent.GetComponent<BuildingDivision>()))
@@ -85,6 +89,10 @@ public class BuildingManager : MonoBehaviour
         else if (m_FocusedDivision.HasNature || m_FocusedDivision.HasBuilding)
         {
             SelectButton.SetActive(true);
+            if (!m_FocusedDivision.Equals(m_SelectedBuildingDivision))
+            {
+                m_FocusedDivision.ShowHoverOutline();
+            }
         }
     }
 
@@ -196,7 +204,12 @@ public class BuildingManager : MonoBehaviour
     public void Select()
     {
         if(m_FocusedDivision.IsLocked) return;
+        if (m_SelectedBuildingDivision != null)
+        {
+            m_SelectedBuildingDivision.HideOutline();
+        }
         m_SelectedBuildingDivision = m_FocusedDivision;
+        m_FocusedDivision.ShowSelectedOutline();
         DemolishButton.SetActive(true);
     }
 

@@ -448,7 +448,7 @@ namespace ARTowerDefense
             
             //front = m_HomeBaseDivision.Center - m_HomeBase.transform.forward * -1;
             m_PathEnd = DivisionGameObjectDictionary.SingleOrDefault(div => div.Key.Includes(front)).Key;
-            // TODO: may crash if placed in a division with a single neighbor, investigate! Also, fix rotation of base to always face path
+            // TODO: may crash if placed in a division with a single neighbor! Also, fix rotation of base to always face path
         }
 
         private Division _GeneratePath()
@@ -559,7 +559,7 @@ namespace ARTowerDefense
             var direction = currentDivision.Center - previousDivision.Center;
             m_SpawnerDivision =
                 DivisionGameObjectDictionary.FirstOrDefault(kvp => kvp.Key.Includes(currentDivision.Center + direction))
-                    .Key; // TODO: Rethink this
+                    .Key; // TODO: Refactor this
             if (m_SpawnerDivision == null) return false;
             DivisionGameObjectDictionary[m_SpawnerDivision].AddBuilding(SpawnerPrefab);
             DivisionGameObjectDictionary[m_SpawnerDivision].Lock();
@@ -586,7 +586,7 @@ namespace ARTowerDefense
                 PathWaypoints[index++] = DivisionGameObjectDictionary[pathDivision].transform;
             }
 
-            PathWaypoints[index] = DivisionGameObjectDictionary[m_HomeBaseDivision].transform; // TODO: what is going on here?
+            PathWaypoints[index] = DivisionGameObjectDictionary[m_HomeBaseDivision].transform; // TODO: Refactor
         }
 
         #region GAME LOOP

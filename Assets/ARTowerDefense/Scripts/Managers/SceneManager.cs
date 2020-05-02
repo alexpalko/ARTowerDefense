@@ -1,10 +1,10 @@
 ﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class SceneSwapper : MonoBehaviour
+public class SceneManager : MonoBehaviour
 {
     public void SwapScene(int sceneId)
     {
-        SceneManager.LoadScene(sceneId);
+        UnityEngine.SceneManagement.SceneManager.LoadScene(sceneId);
     }
 }
