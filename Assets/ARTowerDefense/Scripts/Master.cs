@@ -624,7 +624,7 @@ namespace ARTowerDefense
         }
 
         #endregion
-
+        
         private void _UpdateApplicationLifecycle()
         {
             // Exit the app when the 'back' button is pressed.

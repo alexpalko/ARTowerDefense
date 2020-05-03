@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using ARTowerDefense;
 using UnityEngine;
@@ -14,21 +13,13 @@ public class BuildingManager : MonoBehaviour
     public GameObject DemolishButton;
     public GameObject BuildingsPanel;
     public List<GameObject> BuildingInfoPanels;
-    public bool UseDivisionHoverHighlight;
+
+    public GameObject[] BuildingPrefabs;
+    public GameObject[] TransparentBuildingPrefabs;
+    public int[] PriceList = {25, 60, 150, 50, 80, 200};
     public int NatureRemovalCost;
 
-    public GameObject CannonTowerPrefab;
-    public GameObject CrossbowTowerPrefab;
-    public GameObject ThunderTowerPrefab;
-    public GameObject CropFarmPrefab;
-    public GameObject ChickenFarmPrefab;
-    public GameObject MillPrefab;
-
-    public GameObject[] TransparentBuildingPrefabs;
-    private readonly int[] m_PriceList = {25, 60, 150, 50, 80, 200};
-
     private List<BuildingDivision> m_Divisions;
-
     private BuildingDivision m_FocusedDivision; 
     private int m_BuildingToConstructId = -1;
     private BuildingDivision m_SelectedBuildingDivision;
@@ -43,10 +34,6 @@ public class BuildingManager : MonoBehaviour
     {
         if (!TryGetDivisionHit(out var hit)) return;
         _UpdateButtonStates(hit);
-        if (UseDivisionHoverHighlight)
-        {
-            _HighlightDivisions();
-        }
     }
 
     private bool TryGetDivisionHit(out RaycastHit hit)
@@ -112,7 +99,8 @@ public class BuildingManager : MonoBehaviour
                 m_FocusedDivision.ShowInvalidTransparentStructure(TransparentBuildingPrefabs[m_BuildingToConstructId]);
             }
         }
-        else if (m_FocusedDivision.HasNature || m_FocusedDivision.HasBuilding)
+
+        if (m_FocusedDivision.HasNature || m_FocusedDivision.HasBuilding)
         {
             SelectButton.SetActive(true);
             if (!m_FocusedDivision.Equals(m_SelectedBuildingDivision))
@@ -120,58 +108,6 @@ public class BuildingManager : MonoBehaviour
                 m_FocusedDivision.ShowHoverOutline();
             }
         }
-    }
-
-    private void _HighlightDivisions()
-    {
-        foreach (var division in m_Divisions)
-        {
-            _ClearDivisionHighlight(division.GetComponentInChildren<Renderer>());
-        }
-
-        if (m_FocusedDivision == null) return;
-
-        foreach (var division in m_Divisions)
-        {
-            var distance = _GetMagnitude(division.transform, m_FocusedDivision.transform);
-            if (distance <= .1 * Math.Sqrt(2) / 2)
-            {
-                _HighlightDivision(division.GetComponentInChildren<Renderer>(), .5f);
-            }
-            else if (distance <= .1 * Math.Sqrt(2) / 2 + .1 * Math.Sqrt(2))
-            {
-                _HighlightDivision(division.GetComponentInChildren<Renderer>(), .1f);
-            }
-            else if (distance <= .1 * Math.Sqrt(2) / 2 + .1 * Math.Sqrt(2) * 2)
-            {
-                _HighlightDivision(division.GetComponentInChildren<Renderer>(), .005f);
-            }
-        }
-    }
-
-    private void _HighlightDivision(Renderer rend, float alpha)
-    {
-        if (!m_FocusedDivision.HasNature &&
-            !m_FocusedDivision.HasBuilding)
-        {
-            rend.material.color = new Color(0, 255, 0, alpha);
-        }
-        else
-        {
-            rend.material.color = new Color(255, 0, 0, alpha);
-        }
-
-        rend.enabled = true;
-    }
-
-    private void _ClearDivisionHighlight(Renderer rend)
-    {
-        rend.enabled = false;
-    }
-
-    private float _GetMagnitude(Transform t1, Transform t2)
-    {
-        return (t1.position - t2.position).magnitude;
     }
 
     public void SelectBuildingToConstruct(int x)
@@ -186,46 +122,12 @@ public class BuildingManager : MonoBehaviour
 
     public void Construct()
     {
-        GameObject buildingToConstruct; 
-        switch(m_BuildingToConstructId)
-        {
-            case 0:
-                buildingToConstruct = CrossbowTowerPrefab;
-                break;
-            case 1:
-                buildingToConstruct = CannonTowerPrefab;
-                break;
-            case 2:
-                buildingToConstruct = ThunderTowerPrefab;
-                break;
-            case 3:
-                buildingToConstruct = CropFarmPrefab;
-                break;
-            case 4:
-                buildingToConstruct = ChickenFarmPrefab;
-                break;
-            case 5:
-                buildingToConstruct = MillPrefab;
-                break;
-            default:
-                buildingToConstruct = null;
-                break;
-        }
-
-        if (buildingToConstruct == null)
-        {
-            Debug.LogError("Building prefab was null");
-            m_BuildingToConstructId = -1;
-        }
-
-        if (!CoinManager.RemoveCoins(m_PriceList[m_BuildingToConstructId]))
+        if (!CoinManager.RemoveCoins(PriceList[m_BuildingToConstructId]))
         {
             return;
         }
-
-        m_FocusedDivision.GetComponent<BuildingDivision>().AddBuilding(buildingToConstruct);
+        m_FocusedDivision.GetComponent<BuildingDivision>().AddBuilding(BuildingPrefabs[m_BuildingToConstructId]);
         m_FocusedDivision.ClearTransparentStructure();
-        //m_FocusedDivision = null;
     }
 
     public void Select()
@@ -238,6 +140,7 @@ public class BuildingManager : MonoBehaviour
         m_SelectedBuildingDivision = m_FocusedDivision;
         m_FocusedDivision.ShowSelectedOutline();
         DemolishButton.SetActive(true);
+        m_BuildingToConstructId = -1;
     }
 
     public void Demolish()
