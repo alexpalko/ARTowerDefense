@@ -2461,7 +2461,7 @@ MonoBehaviour:
   DefeatText: {fileID: 256098380}
   HomeBasePrefab: {fileID: 2678552160550302294, guid: f94295e6b2c49cc40a56ca91e7cfbd62,
     type: 3}
-  SpawnerPrefab: {fileID: 8895986631548008031, guid: bfb93cbb9a1c7f645bc2e3b4cc09d871,
+  SpawnerPrefab: {fileID: 1729832785365762877, guid: 4324ebeea7a2b2b44b41559f5e199c5a,
     type: 3}
   PathPrefab: {fileID: 5844872373206071705, guid: 5e9d38320353ad64e939e30c8fe54a6d,
     type: 3}

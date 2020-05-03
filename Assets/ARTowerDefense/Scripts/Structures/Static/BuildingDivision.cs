@@ -18,21 +18,27 @@ public class BuildingDivision : MonoBehaviour
 
     public void AddBuilding(GameObject buildingPrefab)
     {
-        if (!AddContainedStructure(buildingPrefab)) return;
+        if (!AddContainedStructure(buildingPrefab, 0)) return;
+        HasBuilding = true;
+    }
+
+    public void AddBuilding(GameObject buildingPrefab, float yAxisRotation)
+    {
+        if (!AddContainedStructure(buildingPrefab, yAxisRotation)) return;
         HasBuilding = true;
     }
    
     public void AddNature(GameObject naturePrefab)
     {
-        if (!AddContainedStructure(naturePrefab)) return;
+        if (!AddContainedStructure(naturePrefab, 0)) return;
         m_ContainedStructure.transform.Rotate(0,new System.Random().Next(360),0);
         HasNature = true;
     }
 
-    private bool AddContainedStructure(GameObject buildingPrefab)
+    private bool AddContainedStructure(GameObject buildingPrefab, float yAxisRotation)
     {
         if (IsLocked || HasNature || HasBuilding) return false;
-        m_ContainedStructure = Instantiate(buildingPrefab, transform.position, Quaternion.identity, transform);
+        m_ContainedStructure = Instantiate(buildingPrefab, transform.position, Quaternion.Euler(0, yAxisRotation, 0), transform);
         return true;
     }
     

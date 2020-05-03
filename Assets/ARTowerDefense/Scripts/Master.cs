@@ -553,9 +553,11 @@ namespace ARTowerDefense
             var direction = currentDivision.Center - previousDivision.Center;
             m_SpawnerDivision =
                 DivisionGameObjectDictionary.FirstOrDefault(kvp => kvp.Key.Includes(currentDivision.Center + direction))
-                    .Key; // TODO: Refactor this
+                    .Key;
             if (m_SpawnerDivision == null) return false;
-            DivisionGameObjectDictionary[m_SpawnerDivision].AddBuilding(SpawnerPrefab);
+            // Sets the rotation to 90 degrees if the path reaches the spawner from its side 
+            float rotation = Math.Abs(direction.z) < k_Epsilon ? 90 : 0; 
+            DivisionGameObjectDictionary[m_SpawnerDivision].AddBuilding(SpawnerPrefab, rotation);
             DivisionGameObjectDictionary[m_SpawnerDivision].Lock();
             return true;
 
