@@ -38,7 +38,8 @@ public class BuildingDivision : MonoBehaviour
     private bool AddContainedStructure(GameObject buildingPrefab, float yAxisRotation)
     {
         if (IsLocked || HasNature || HasBuilding) return false;
-        m_ContainedStructure = Instantiate(buildingPrefab, transform.position, Quaternion.Euler(0, yAxisRotation, 0), transform);
+        m_ContainedStructure = Instantiate(buildingPrefab, transform.position, Quaternion.identity, transform);
+        m_ContainedStructure.transform.eulerAngles = new Vector3(0, yAxisRotation, 0);
         return true;
     }
     

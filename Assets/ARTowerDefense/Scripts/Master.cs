@@ -26,6 +26,7 @@ namespace ARTowerDefense
         [SerializeField] private GameObject HomeBasePrefab;
         [SerializeField] private GameObject SpawnerPrefab;
         [SerializeField] private GameObject PathPrefab;
+        [SerializeField] private GameObject CurvedPathPrefab;
 
         #endregion
 
@@ -184,7 +185,6 @@ namespace ARTowerDefense
                     if (_GeneratePath() != null)
                     {
                         _BuildPath();
-                        //m_HomeBase.transform.Rotate(0, 180 ,0);
                         AdvanceGameState();
                     }
                     break;
@@ -574,12 +574,45 @@ namespace ARTowerDefense
             Debug.Log($"Started path building. The path contains {m_PathDivisions.Count} path divisions.");
             PathWaypoints = new Transform[m_PathDivisions.Count + 2];
             PathWaypoints[0] = DivisionGameObjectDictionary[m_SpawnerDivision].transform;
+            var pathDivisionsArray = m_PathDivisions.ToArray();
             int index = 1;
-            foreach (Division pathDivision in m_PathDivisions)
+            var prevDiv = m_SpawnerDivision;
+            for(int i = 0; i < pathDivisionsArray.Length; i++)
             {
-                DivisionGameObjectDictionary[pathDivision].AddBuilding(PathPrefab);
-                DivisionGameObjectDictionary[pathDivision].Lock();
-                PathWaypoints[index++] = DivisionGameObjectDictionary[pathDivision].transform;
+                var nextDiv = i + 1 != pathDivisionsArray.Length ? pathDivisionsArray[i+1] : m_HomeBaseDivision;
+                var currDiv = pathDivisionsArray[i];
+                var diff1 = currDiv.Center - prevDiv.Center;
+                var diff2 = currDiv.Center - nextDiv.Center;
+                var diff3 = prevDiv.Center - nextDiv.Center;
+
+                if (Math.Abs(diff1.x - diff2.x) < k_Epsilon)
+                {
+                    DivisionGameObjectDictionary[currDiv].AddBuilding(PathPrefab, 90);
+                }
+                else if (Math.Abs(diff1.z - diff2.z) < k_Epsilon)
+                {
+                    DivisionGameObjectDictionary[currDiv].AddBuilding(PathPrefab);
+                }
+                else if (diff1.z < 0 && diff2.x < 0 && diff3.x < diff3.z || diff1.x < 0 && diff2.z < 0 && diff3.x > diff3.z)
+                {
+                    DivisionGameObjectDictionary[currDiv].AddBuilding(CurvedPathPrefab);
+                }
+                else if (diff3.x > 0 && diff1.z < 0 && diff2.x > 0 || diff3.x < 0 && diff1.x > 0 && diff2.z < 0)
+                {
+                    DivisionGameObjectDictionary[currDiv].AddBuilding(CurvedPathPrefab, -90);
+                }
+                else if (diff3.x > 0 && diff1.x < 0 && diff2.z > 0 || diff3.x < 0 && diff1.z > 0 && diff2.x < 0)
+                {
+                    DivisionGameObjectDictionary[currDiv].AddBuilding(CurvedPathPrefab, 90);
+                }
+                else
+                {
+                    DivisionGameObjectDictionary[currDiv].AddBuilding(CurvedPathPrefab, 180);
+                }
+
+                DivisionGameObjectDictionary[currDiv].Lock();
+                PathWaypoints[index++] = DivisionGameObjectDictionary[currDiv].transform;
+                prevDiv = currDiv;
             }
 
             PathWaypoints[index] = DivisionGameObjectDictionary[m_HomeBaseDivision].transform; // TODO: Refactor

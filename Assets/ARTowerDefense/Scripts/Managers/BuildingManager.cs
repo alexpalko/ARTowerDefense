@@ -2,20 +2,22 @@
 using System.Linq;
 using ARTowerDefense;
 using UnityEngine;
+using UnityEngine.UI;
 using Debug = UnityEngine.Debug;
 
 public class BuildingManager : MonoBehaviour
 {
     public Camera FirstPersonCamera;
-    public GameObject TriggerBuildingsPanelButton;
     public GameObject BuildButton;
     public GameObject SelectButton;
     public GameObject DemolishButton;
-    public GameObject BuildingsPanel;
+    public GameObject BuildingsCatalog;
+    public GameObject CatalogSelectionButton;
     public List<GameObject> BuildingInfoPanels;
 
     public GameObject[] BuildingPrefabs;
     public GameObject[] TransparentBuildingPrefabs;
+    public Sprite[] CatalogImages;
     public int[] PriceList = {25, 60, 150, 50, 80, 200};
     public int NatureRemovalCost;
 
@@ -26,7 +28,6 @@ public class BuildingManager : MonoBehaviour
 
     void OnEnable()
     {
-        TriggerBuildingsPanelButton.SetActive(true);
         m_Divisions = Master.DivisionGameObjectDictionary.Values.ToList();
     }
 
@@ -118,6 +119,8 @@ public class BuildingManager : MonoBehaviour
             return;
         }
         m_BuildingToConstructId = x;
+        CatalogSelectionButton.SetActive(true);
+        CatalogSelectionButton.GetComponent<Image>().sprite = CatalogImages[m_BuildingToConstructId];
     }
 
     public void Construct()
@@ -141,6 +144,7 @@ public class BuildingManager : MonoBehaviour
         m_FocusedDivision.ShowSelectedOutline();
         DemolishButton.SetActive(true);
         m_BuildingToConstructId = -1;
+        CatalogSelectionButtonAction();
     }
 
     public void Demolish()
@@ -160,10 +164,17 @@ public class BuildingManager : MonoBehaviour
         m_SelectedBuildingDivision = null;
     }
 
-    public void UpdateBuildingsPanelStatus()
+    public void ToggleCatalog()
     {
-        BuildingsPanel.SetActive(!BuildingsPanel.activeSelf);
-        Debug.Log($"Set buildings panel status to: {BuildingsPanel.activeSelf}");
+        BuildingsCatalog.SetActive(!BuildingsCatalog.activeSelf);
+        Debug.Log($"Set buildings panel status to: {BuildingsCatalog.activeSelf}");
+    }
+
+    public void CatalogSelectionButtonAction()
+    {
+        m_BuildingToConstructId = -1;
+        CatalogSelectionButton.GetComponent<Image>().sprite = null;
+        CatalogSelectionButton.SetActive(false);
     }
 
     public void UpdateBuildingInfoPanelsStatus(GameObject currentInfoPanel)
