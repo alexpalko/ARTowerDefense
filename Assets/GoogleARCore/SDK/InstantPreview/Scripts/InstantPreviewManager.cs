@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------
 // <copyright file="InstantPreviewManager.cs" company="Google">
 //
-// Copyright 2017 Google Inc. All Rights Reserved.
+// Copyright 2017 Google LLC. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -94,8 +94,11 @@ namespace GoogleARCoreInternal
         {
             get
             {
-                return Application.isEditor &&
-                    ARCoreProjectSettings.Instance.IsInstantPreviewEnabled;
+#if UNITY_EDITOR
+                return ARCoreProjectSettings.Instance.IsInstantPreviewEnabled;
+#else
+                return false;
+#endif
             }
         }
 
@@ -227,7 +230,7 @@ namespace GoogleARCoreInternal
                         "<unknown>" : string.Format("{0}x", minGameViewScale);
                     Debug.LogWarningFormat(
                         "Instant Preview disabled, {0} minimum Game view scale unsupported for " +
-                        "Target build platform '{1}'.\n" +
+                        "target build platform '{1}'.\n" +
                         "To use Instant Preview, switch build platform to '{2}' from the 'Build " +
                         "settings' window.",
                         viewScaleText,
@@ -383,7 +386,7 @@ namespace GoogleARCoreInternal
                     needToStartActivity = false;
                 }
 
-                // Creates a Target texture to capture the preview window onto.
+                // Creates a target texture to capture the preview window onto.
                 // Some video encoders prefer the dimensions to be a multiple of 16.
                 var targetWidth = RoundUpToNearestMultipleOf16(Screen.width);
                 var targetHeight = RoundUpToNearestMultipleOf16(Screen.height);
@@ -444,7 +447,7 @@ namespace GoogleARCoreInternal
                 }
 
                 NativeApi.SendFrame(targetTexture.GetNativeTexturePtr());
-                GL.IssuePluginEvent(renderEventFunc, 1);
+                GL.IssuePluginEvent(renderEventFunc, (int)ApiRenderEvent.UpdateCubemapTexture);
             }
         }
 

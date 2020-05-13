@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------
 // <copyright file="CameraConfig.cs" company="Google">
 //
-// Copyright 2018 Google Inc. All Rights Reserved.
+// Copyright 2018 Google LLC. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -71,12 +71,12 @@ namespace GoogleARCore
         public Vector2 TextureSize { get; private set; }
 
         /// <summary>
-        /// Gets minimum Target camera capture frame rate for this camera config.
+        /// Gets minimum target camera capture frame rate for this camera config.
         /// </summary>
         public int MinFPS { get; private set; }
 
         /// <summary>
-        /// Gets maximum Target camera capture frame rate for this camera config.
+        /// Gets maximum target camera capture frame rate for this camera config.
         /// </summary>
         public int MaxFPS { get; private set; }
 

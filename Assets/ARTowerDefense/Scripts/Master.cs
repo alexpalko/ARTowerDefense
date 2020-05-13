@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Assets.ARTowerDefense.Scripts;
@@ -13,9 +14,11 @@ namespace ARTowerDefense
 {
     public class Master : MonoBehaviour
     {
+        [SerializeField] private Camera FirstPersonCamera;
+        [SerializeField] private GameObject ARCoreDevice;
+        
         #region Prefabs
 
-        [SerializeField] private Camera FirstPersonCamera;
         [SerializeField] private GameObject GridGenerator;
         [SerializeField] private GameObject PointCloud;
         [SerializeField] private GameObject ToBasePlacementButton;
@@ -172,7 +175,6 @@ namespace ARTowerDefense
                             DivisionGameObjectDictionary[m_HomeBaseDivision].Clear();
                         }
                         m_HomeBaseDivision = m_DivisionPlacedOn;
-                        //AvailableDivisionObjects.Remove(DivisionGameObjectDictionary[m_HomeBaseDivision]);
                         ToGameLoopButton.SetActive(true);
                     }
                     break;

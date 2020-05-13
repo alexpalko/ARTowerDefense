@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------
 // <copyright file="FrameApi.cs" company="Google">
 //
-// Copyright 2017 Google Inc. All Rights Reserved.
+// Copyright 2017 Google LLC. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -190,6 +190,7 @@ namespace GoogleARCoreInternal
                 IntPtr trackableHandle =
                     m_NativeSession.TrackableListApi.AcquireItem(listHandle, i);
 
+                // TODO:: Remove conditional when b/75291352 is fixed.
                 ApiTrackableType trackableType =
                     m_NativeSession.TrackableApi.GetType(trackableHandle);
                 if ((int)trackableType == 0x41520105)
@@ -211,6 +212,7 @@ namespace GoogleARCoreInternal
 
             m_NativeSession.TrackableListApi.Destroy(listHandle);
         }
+
 
         private struct ExternApi
         {

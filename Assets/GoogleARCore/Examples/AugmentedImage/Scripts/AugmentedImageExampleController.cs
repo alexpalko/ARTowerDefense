@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------
 // <copyright file="AugmentedImageExampleController.cs" company="Google">
 //
-// Copyright 2018 Google Inc. All Rights Reserved.
+// Copyright 2018 Google LLC. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -31,7 +31,7 @@ namespace GoogleARCore.Examples.AugmentedImage
     /// </summary>
     /// <remarks>
     /// In this sample, we assume all images are static or moving slowly with
-    /// a large occupation of the screen. If the Target is actively moving,
+    /// a large occupation of the screen. If the target is actively moving,
     /// we recommend to check <see cref="AugmentedImage.TrackingMethod"/> and
     /// render only when the tracking method equals to
     /// <see cref="AugmentedImageTrackingMethod"/>.<c>FullTracking</c>.
@@ -60,7 +60,7 @@ namespace GoogleARCore.Examples.AugmentedImage
         /// </summary>
         public void Awake()
         {
-            // Enable ARCore to Target 60fps camera capture frame rate on supported devices.
+            // Enable ARCore to target 60fps camera capture frame rate on supported devices.
             // Note, Application.targetFrameRate is ignored when QualitySettings.vSyncCount != 0.
             Application.targetFrameRate = 60;
         }
