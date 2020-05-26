@@ -720,6 +720,14 @@ namespace ARTowerDefense
             }
         }
 
+        void OnApplicationPause(bool paused)
+        {
+            if (paused && m_GameState == GameState.GAME_LOOP)
+            {
+                Pause();
+            }
+        }
+
     }
 
 }
