@@ -11,6 +11,11 @@ public class GameInitManager : MonoBehaviour
     public GameObject GamePlanePrefab;
     public GameObject DivisionPrefab;
 
+    /// <summary>
+    /// The minimum allowed distance between boundaries not to require consolidation
+    /// </summary>
+    private readonly float m_BoundaryConsolidationThreshold = .2f;
+
     [SerializeField] private Master Master;
 
     public Vector3[] BindingVectors { get; private set; }
@@ -36,7 +41,7 @@ public class GameInitManager : MonoBehaviour
             var closeByVectorsIndexes = new List<int>();
             for (int j = i + 1; j < vectors.Count; j++)
             {
-                if (Vector3.Distance(vectors[i], vectors[j]) < .5f)
+                if (Vector3.Distance(vectors[i], vectors[j]) < m_BoundaryConsolidationThreshold)
                 {
                     closeByVectorsIndexes.Add(j);
                 }
@@ -175,5 +180,4 @@ public class GameInitManager : MonoBehaviour
 
         Debug.Log($"Division count after trimming: {divisions.Count}");
     }
-
 }

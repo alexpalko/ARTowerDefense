@@ -327,5 +327,6 @@ public class PointCloudVisualizer : MonoBehaviour
             Size = size;
             CreationTime = creationTime;
         }
+
     }
 }
