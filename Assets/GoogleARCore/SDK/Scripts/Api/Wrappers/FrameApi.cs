@@ -190,7 +190,6 @@ namespace GoogleARCoreInternal
                 IntPtr trackableHandle =
                     m_NativeSession.TrackableListApi.AcquireItem(listHandle, i);
 
-                // TODO:: Remove conditional when b/75291352 is fixed.
                 ApiTrackableType trackableType =
                     m_NativeSession.TrackableApi.GetType(trackableHandle);
                 if ((int)trackableType == 0x41520105)

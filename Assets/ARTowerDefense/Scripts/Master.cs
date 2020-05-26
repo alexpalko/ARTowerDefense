@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Assets.ARTowerDefense.Scripts;
+using Assets.ARTowerDefense.Scripts.Managers;
 using GoogleARCore;
 using GoogleARCore.Examples.Common;
 using UnityEngine;
@@ -60,18 +62,6 @@ namespace ARTowerDefense
         /// The length of a division
         /// </summary>
         public const float k_DivisionLength = .1f;
-        /// <summary>
-        /// The time iteration limit after which the threshold increases
-        /// </summary>
-        private const float k_IncreaseThresholdCountLimit = 2000;
-        /// <summary>
-        /// The percentage by which the threshold increases
-        /// </summary>
-        private const float k_IncreaseThresholdSize = .1f;
-        /// <summary>
-        /// Precision used for floating point comparison
-        /// </summary>
-        private const float k_Epsilon = 1e-5f;
 
         #endregion
 
@@ -117,27 +107,6 @@ namespace ARTowerDefense
         /// </summary>
         private Division m_PathEnd;
 
-        /// <summary>
-        /// A collection of divisions used for the path generation phase.
-        /// Stores divisions that are not occupied by the path or divisions that are not adjacent to a path.
-        /// </summary>
-        private HashSet<Division> m_AvailableDivisionsForPathGeneration;
-
-        /// <summary>
-        /// The initial desired rate of divisions not containing by paths and that are
-        /// not divisions adjacent to a path 
-        /// </summary>
-        private float m_AvailableDivisionsThreshold = .3f;
-
-        /// <summary>
-        /// Each time this field reached a value equal to k_IncreaseThresholdCountLimit, the m_AvailableDivisionsThreshold is modified
-        /// </summary>
-        private float m_IncreaseThresholdCount = 1;
-
-        /// <summary>
-        /// A collection of 4 vectors depicting movement forward, backward, leftward and rightward on the horizontal plane
-        /// </summary>
-        private Vector3[] m_Moves;
 
         public static Transform[] PathWaypoints { get; private set; }
 
@@ -198,16 +167,16 @@ namespace ARTowerDefense
                     }
                     break;
                 case GameState.PATH_GENERATION:
-                    if (m_Moves == null)
+                    var pathGenMan = new PathGenerationManager(DivisionGameObjectDictionary, m_HomeBaseDivision, m_PathEnd, SpawnerPrefab, PathPrefab, CurvedPathPrefab);
+
+                    while (m_SpawnerDivision == null)
                     {
-                        _InitializeMoves();
+                        m_SpawnerDivision = pathGenMan.GeneratePath();
                     }
 
-                    if (_GeneratePath() != null)
-                    {
-                        _BuildPath();
-                        AdvanceGameState();
-                    }
+                    PathWaypoints = pathGenMan.BuildPath();
+
+                    AdvanceGameState();
                     break;
                 case GameState.GAME_LOOP:
                     GameLoopPanel.SetActive(true);
@@ -248,18 +217,9 @@ namespace ARTowerDefense
                     m_GameState = GameState.GAME_LOOP;
                     _InitializeGameLoop();
                     break;
-                case GameState.GAME_LOOP:
-                    throw new InvalidOperationException(
-                        "Method should not be accessed when the session is in GAME_LOOP state.");
-                case GameState.GAME_OVER:
-                    throw new InvalidOperationException(
-                        "Method should not be accessed when the session is in GAME_OVER state.");
-                case GameState.PAUSED:
-                    throw new InvalidOperationException(
-                        "Method should not be accessed when the session is in PAUSED state.");
                 default:
                     throw new InvalidOperationException(
-                        $"The session is in an undefined state. Current state: {m_GameState}");
+                        $"Method should not be accessed when the session is in {m_GameState} state.");
             }
             Debug.Log($"Game stage changed to {m_GameState}");
         }
@@ -314,24 +274,10 @@ namespace ARTowerDefense
         {
             if (m_DivisionPlacedOn != null)
             {
-                try
-                {
-                    //Destroy(m_PlacedGameObject);
-                    DivisionGameObjectDictionary[m_DivisionPlacedOn].Clear();
-                }
-                catch (Exception ex)
-                {
-
-                }
-
-                //AvailableDivisions.Add(m_DivisionPlacedOn);
+                DivisionGameObjectDictionary[m_DivisionPlacedOn].Clear();
             }
 
-            //GameObject newGameObject = Instantiate(m_GameObjectToBePlaced,
-            //    m_DivisionToPlaceOn.Center, Quaternion.identity,
-            //    DivisionGameObjectDictionary[m_DivisionToPlaceOn].transform);
             DivisionGameObjectDictionary[m_DivisionToPlaceOn].AddBuilding(m_GameObjectToBePlaced);
-            //m_PlacedGameObject = newGameObject;
             m_DivisionPlacedOn = m_DivisionToPlaceOn;
             Debug.Log("Placed game object");
         }
@@ -480,228 +426,26 @@ namespace ARTowerDefense
         {
             m_HomeBaseDivision = default;
             m_DivisionPlacedOn = default;
-            m_AvailableDivisionsForPathGeneration = default;
-            m_AvailableDivisionsThreshold = default;
             m_DivisionToPlaceOn = default;
             m_GameObjectToBePlaced = default;
-            m_IncreaseThresholdCount = default;
             m_IsQuitting = default;
             m_PathDivisions = default;
             m_PathEnd = default;
             m_SpawnerDivision = default;
-            m_Moves = default;
-        }
-
-        private void _GameSpaceInitializationLogic()
-        {
-            //List<Vector3> bindingVectorsList = BindingVectors.ToList();
-            //_ConsolidateBoundaries(bindingVectorsList);
-            //BindingVectors = bindingVectorsList.ToArray();
-
-            //if (BindingWalls == null)
-            //{
-            //    _SpawnBoundaries();
-            //}
-
-            //if (GamePlane == null)
-            //{
-            //    _SpawnGamePlane();
-            //}
-
-            //GameInitManager.SetActive(true);
-            //GameInitManager script = GameInitManager.GetComponent<GameInitManager>();
-            // Binding vectors may be consolidated by the game init manager
-            //BindingVectors = script.BindingVectors;
-            //BindingTowers = script.BindingTowers;
-            //BindingWalls = script.BindingWalls;
-            //GamePlane = script.GamePlane;
-
-            //_PlaceBaseMarker();
+            EnemyReachedBase = default;
+            LastWave = default;
         }
 
         private void _GeneratePathEnd()
         {
             Vector3 front = m_HomeBaseDivision.Center - DivisionGameObjectDictionary[m_HomeBaseDivision].transform.forward * k_DivisionLength;
             m_PathEnd = DivisionGameObjectDictionary.SingleOrDefault(div => div.Key.Includes(front)).Key;
-            
+
             if (m_PathEnd != null) return;
-            
+
             //front = m_HomeBaseDivision.Center - m_HomeBase.transform.forward * -1;
             m_PathEnd = DivisionGameObjectDictionary.SingleOrDefault(div => div.Key.Includes(front)).Key;
             // TODO: may crash if placed in a division with a single neighbor! Also, fix rotation of base to always face path
-        }
-
-        private Division _GeneratePath()
-        {
-            Debug.Log("Started generating m_PathDivisions.");
-            m_AvailableDivisionsForPathGeneration = new HashSet<Division>(DivisionGameObjectDictionary
-                .Where(kvp => !kvp.Value.HasBuilding)
-                .Select(kvp => kvp.Key));
-            m_PathDivisions = new Stack<Division>();
-            return _GenerateRandomPath(m_PathEnd);
-        }
-
-        private void _InitializeMoves()
-        {
-            m_Moves = new[]
-            {
-                new Vector3(k_DivisionLength, 0, 0),
-                new Vector3(-k_DivisionLength, 0, 0),
-                new Vector3(0, 0, k_DivisionLength),
-                new Vector3(0, 0, -k_DivisionLength)
-            };
-        }
-
-        private Division _GenerateRandomPath(Division currentDivision)
-        {
-            // After each 2000 calls on this method the number of divisions which were
-            // not covered by paths increases in order to reduce path generation time
-            if (Math.Abs(m_IncreaseThresholdCount++ % k_IncreaseThresholdCountLimit) < k_Epsilon)
-            {
-                m_AvailableDivisionsThreshold += k_IncreaseThresholdSize;
-            }
-
-            if (m_AvailableDivisionsForPathGeneration.Count < m_AvailableDivisionsThreshold * DivisionGameObjectDictionary.Count &&
-                _TryPlaceSpawner(currentDivision))
-            {
-                m_PathDivisions.Push(currentDivision);
-                return currentDivision;
-            }
-
-            Debug.Log("Started generating random m_PathDivisions.");
-
-            Division previousDivision = null;
-
-            // Remove neighbors of previous m_PathDivisions
-            if (m_PathDivisions.Any())
-            {
-                previousDivision = m_PathDivisions.Peek();
-            }
-
-            List<Division> markedDivisions = new List<Division>();
-
-            if (previousDivision != null)
-            {
-                Debug.Log("Previous division found.");
-                foreach (Vector3 move in m_Moves)
-                {
-                    var neighborCenter = move + previousDivision.Center;
-                    var neighborDivision = m_AvailableDivisionsForPathGeneration.FirstOrDefault(div => div.Includes(neighborCenter));
-                    if (neighborDivision != null)
-                    {
-                        markedDivisions.Add(neighborDivision);
-                    }
-                }
-            }
-
-            m_AvailableDivisionsForPathGeneration.RemoveWhere(div => markedDivisions.Contains(div));
-
-            IEnumerable<Division> possibleNextDivisions = _RandomizeNextDivisions(currentDivision);
-            m_PathDivisions.Push(currentDivision);
-            Debug.Log($"The m_PathDivisions contains {m_PathDivisions.Count} divisions.");
-            foreach (Division nextDivision in possibleNextDivisions)
-            {
-                m_AvailableDivisionsForPathGeneration.Remove(nextDivision);
-                var res = _GenerateRandomPath(nextDivision);
-                if (res != null) return res;
-                m_AvailableDivisionsForPathGeneration.Add(nextDivision);
-            }
-
-            foreach (Division markedDivision in markedDivisions)
-            {
-                m_AvailableDivisionsForPathGeneration.Add(markedDivision);
-            }
-
-            m_PathDivisions.Pop();
-            return null;
-        }
-
-        private IEnumerable<Division> _RandomizeNextDivisions(Division currentDivision)
-        {
-            List<Vector3> centers = m_Moves.Select(mov => currentDivision.Center + mov).ToList();
-            List<Division> divisions = new List<Division>();
-            foreach (Vector3 center in centers)
-            {
-                var nextDivision = m_AvailableDivisionsForPathGeneration.FirstOrDefault(div => div.Includes(center));
-                if (nextDivision != null)
-                {
-                    divisions.Add(nextDivision);
-                }
-            }
-
-            Random random = new Random();
-            return divisions.OrderBy(_ => random.Next());
-        }
-
-        private bool _TryPlaceSpawner(Division currentDivision)
-        {
-            var previousDivision = m_PathDivisions.Peek();
-            var direction = currentDivision.Center - previousDivision.Center;
-            m_SpawnerDivision =
-                DivisionGameObjectDictionary.FirstOrDefault(kvp => kvp.Key.Includes(currentDivision.Center + direction))
-                    .Key;
-            if (m_SpawnerDivision == null) return false;
-            // Sets the rotation to 90 degrees if the path reaches the spawner from its side 
-            float rotation = Math.Abs(direction.z) < k_Epsilon ? 90 : 0; 
-            DivisionGameObjectDictionary[m_SpawnerDivision].AddBuilding(SpawnerPrefab, rotation);
-            DivisionGameObjectDictionary[m_SpawnerDivision].Lock();
-            return true;
-
-        }
-
-        //private bool ColliderContainsPoint(Transform colliderTransform, Vector3 point)
-        //{
-        //    Vector3 localPos = colliderTransform.InverseTransformPoint(point);
-        //    return Mathf.Abs(localPos.x) < 0.5f && Mathf.Abs(localPos.y) < 0.5f && Mathf.Abs(localPos.z) < 0.5f;
-        //}
-
-        private void _BuildPath()
-        {
-            Debug.Log($"Started path building. The path contains {m_PathDivisions.Count} path divisions.");
-            PathWaypoints = new Transform[m_PathDivisions.Count + 2];
-            PathWaypoints[0] = DivisionGameObjectDictionary[m_SpawnerDivision].transform;
-            var pathDivisionsArray = m_PathDivisions.ToArray();
-            int index = 1;
-            var prevDiv = m_SpawnerDivision;
-            for(int i = 0; i < pathDivisionsArray.Length; i++)
-            {
-                var nextDiv = i + 1 != pathDivisionsArray.Length ? pathDivisionsArray[i+1] : m_HomeBaseDivision;
-                var currDiv = pathDivisionsArray[i];
-                var diff1 = currDiv.Center - prevDiv.Center;
-                var diff2 = currDiv.Center - nextDiv.Center;
-                var diff3 = prevDiv.Center - nextDiv.Center;
-
-                if (Math.Abs(diff1.x - diff2.x) < k_Epsilon)
-                {
-                    DivisionGameObjectDictionary[currDiv].AddBuilding(PathPrefab, 90);
-                }
-                else if (Math.Abs(diff1.z - diff2.z) < k_Epsilon)
-                {
-                    DivisionGameObjectDictionary[currDiv].AddBuilding(PathPrefab);
-                }
-                else if (diff1.z < 0 && diff2.x < 0 && diff3.x < diff3.z || diff1.x < 0 && diff2.z < 0 && diff3.x > diff3.z)
-                {
-                    DivisionGameObjectDictionary[currDiv].AddBuilding(CurvedPathPrefab);
-                }
-                else if (diff3.x > 0 && diff1.z < 0 && diff2.x > 0 || diff3.x < 0 && diff1.x > 0 && diff2.z < 0)
-                {
-                    DivisionGameObjectDictionary[currDiv].AddBuilding(CurvedPathPrefab, -90);
-                }
-                else if (diff3.x > 0 && diff1.x < 0 && diff2.z > 0 || diff3.x < 0 && diff1.z > 0 && diff2.x < 0)
-                {
-                    DivisionGameObjectDictionary[currDiv].AddBuilding(CurvedPathPrefab, 90);
-                }
-                else
-                {
-                    DivisionGameObjectDictionary[currDiv].AddBuilding(CurvedPathPrefab, 180);
-                }
-
-                DivisionGameObjectDictionary[currDiv].Lock();
-                PathWaypoints[index++] = DivisionGameObjectDictionary[currDiv].transform;
-                prevDiv = currDiv;
-            }
-
-            PathWaypoints[index] = DivisionGameObjectDictionary[m_HomeBaseDivision].transform; // TODO: Refactor
         }
 
         #region GAME LOOP

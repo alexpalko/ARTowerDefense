@@ -53,6 +53,10 @@ public class EnemyMovement : MonoBehaviour
     private void _GetNextWaypoint()
     {
         m_WaypointIndex++;
-        m_Target = m_Waypoints[m_WaypointIndex].position;
+        if (m_WaypointIndex < m_Waypoints.Length)
+        {
+            m_Target = m_Waypoints[m_WaypointIndex].position;
+        }
+
     }
 }
