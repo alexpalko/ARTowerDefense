@@ -104,6 +104,7 @@ namespace Assets.ARTowerDefense.Scripts
             //Master.MarkedPlane = MarkedPlane;
             Destroy(m_PlaneSelectionMarker);
             GridDetectionPanel.SetActive(false);
+            ConfirmButton.SetActive(false);
         }
 
     }

@@ -37,6 +37,12 @@ public class BuildingManager : MonoBehaviour
         _UpdateButtonStates(hit);
     }
 
+    public void ResetManager()
+    {
+        BuildingsCatalog.SetActive(false);
+        CatalogSelectionButtonAction();
+    }
+
     private bool TryGetDivisionHit(out RaycastHit hit)
     {
         var ray = new Ray(FirstPersonCamera.transform.position, FirstPersonCamera.transform.forward);

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Assets.ARTowerDefense.Scripts;
 using GoogleARCore;
+using GoogleARCore.Examples.Common;
 using UnityEngine;
 using Random = System.Random;
 #if UNITY_EDITOR
@@ -19,7 +20,6 @@ namespace ARTowerDefense
         
         #region Prefabs
 
-        [SerializeField] private GameObject GridGenerator;
         [SerializeField] private GameObject PointCloud;
         [SerializeField] private GameObject ToBasePlacementButton;
         [SerializeField] private GameObject ToGameLoopButton;
@@ -35,6 +35,7 @@ namespace ARTowerDefense
 
         #region Managers
 
+        [SerializeField] private GameObject GridGenerator;
         [SerializeField] private GameObject GridDetectionManager;
         [SerializeField] private GameObject GameInitManager;
         [SerializeField] private GameObject BuildingManager;
@@ -45,6 +46,7 @@ namespace ARTowerDefense
 
         #region Panels
 
+        [SerializeField] private GameObject MainMenuPanel;
         [SerializeField] private GameObject GameInitializationPanel;
         [SerializeField] private GameObject GameLoopPanel;
         [SerializeField] private GameObject GamePausedPanel;
@@ -54,6 +56,9 @@ namespace ARTowerDefense
 
         #region Constants
 
+        /// <summary>
+        /// The length of a division
+        /// </summary>
         public const float k_DivisionLength = .1f;
         /// <summary>
         /// The time iteration limit after which the threshold increases
@@ -81,40 +86,49 @@ namespace ARTowerDefense
         /// Represents the current free division to which the camera center is pointing.
         /// </summary>
         private Division m_DivisionToPlaceOn;
+
         /// <summary>
         /// Represents the game object prefab corresponding to the current context that should be placed
         /// </summary>
         private GameObject m_GameObjectToBePlaced;
+
         /// <summary>
         /// Represents the division to which the previously placed game object belongs to
         /// </summary>
         private Division m_DivisionPlacedOn;
+
         /// <summary>
         /// An anchor to the center of the marked plane
         /// </summary>
         public Transform AnchorTransform { get; set; }
+
         /// <summary>
         /// A dictionary of divisions and their corresponding division game object instance
         /// </summary>
         public static Dictionary<Division, BuildingDivision> DivisionGameObjectDictionary { get; private set; }
+
         /// <summary>
         /// A set of all divisions that will contain paths
         /// </summary>
         private Stack<Division> m_PathDivisions;
+
         /// <summary>
         /// The final path division, leading to the home base
         /// </summary>
         private Division m_PathEnd;
+
         /// <summary>
         /// A collection of divisions used for the path generation phase.
         /// Stores divisions that are not occupied by the path or divisions that are not adjacent to a path.
         /// </summary>
         private HashSet<Division> m_AvailableDivisionsForPathGeneration;
+
         /// <summary>
         /// The initial desired rate of divisions not containing by paths and that are
         /// not divisions adjacent to a path 
         /// </summary>
         private float m_AvailableDivisionsThreshold = .3f;
+
         /// <summary>
         /// Each time this field reached a value equal to k_IncreaseThresholdCountLimit, the m_AvailableDivisionsThreshold is modified
         /// </summary>
@@ -129,7 +143,7 @@ namespace ARTowerDefense
 
         private enum GameState
         {
-            STARTED,
+            MAIN_MENU,
             GRID_DETECTION,
             GAME_SPACE_INSTANTIATION,
             BASE_PLACEMENT,
@@ -139,13 +153,19 @@ namespace ARTowerDefense
             GAME_LOOP
         }
 
-        private GameState m_GameState = GameState.STARTED;
+        private GameState m_GameState;
 
         private bool m_IsQuitting;
 
-        public void Awake()
+        void Awake()
         {
             Application.targetFrameRate = 60;
+        }
+
+        void Start()
+        {
+            m_GameState = GameState.MAIN_MENU;
+            MainMenuPanel.SetActive(true);
         }
 
         // Update is called once per frame
@@ -155,14 +175,13 @@ namespace ARTowerDefense
 
             switch (m_GameState)
             {
-                case GameState.STARTED:
-                    AdvanceGameState();
+                case GameState.MAIN_MENU:
+                    // Wait for user to press PLAY
                     break;
                 case GameState.GRID_DETECTION:
                     // TODO: Add grid detection logic
                     break;
                 case GameState.GAME_SPACE_INSTANTIATION:
-                    _GameSpaceInitializationLogic();
                     AdvanceGameState();
                     break;
                 case GameState.BASE_PLACEMENT:
@@ -209,7 +228,7 @@ namespace ARTowerDefense
             PlacePrefabButton.SetActive(false);
             switch (m_GameState)
             {
-                case GameState.STARTED:
+                case GameState.MAIN_MENU:
                     m_GameState = GameState.GRID_DETECTION;
                     _InitializeGridDetection();
                     break;
@@ -230,19 +249,17 @@ namespace ARTowerDefense
                     _InitializeGameLoop();
                     break;
                 case GameState.GAME_LOOP:
-                    m_GameState = GameState.GAME_OVER;
-                    _InitializeGameOver();
-                    break;
+                    throw new InvalidOperationException(
+                        "Method should not be accessed when the session is in GAME_LOOP state.");
                 case GameState.GAME_OVER:
-                    m_GameState = GameState.GRID_DETECTION;
-                    //_InitializeGridDetection();
-                    break;
+                    throw new InvalidOperationException(
+                        "Method should not be accessed when the session is in GAME_OVER state.");
                 case GameState.PAUSED:
                     throw new InvalidOperationException(
                         "Method should not be accessed when the session is in PAUSED state.");
                 default:
                     throw new InvalidOperationException(
-                        "The session is in an undefined state. Current state: {m_GameStage}");
+                        $"The session is in an undefined state. Current state: {m_GameState}");
             }
             Debug.Log($"Game stage changed to {m_GameState}");
         }
@@ -297,8 +314,16 @@ namespace ARTowerDefense
         {
             if (m_DivisionPlacedOn != null)
             {
-                //Destroy(m_PlacedGameObject);
-                DivisionGameObjectDictionary[m_DivisionPlacedOn].Clear();
+                try
+                {
+                    //Destroy(m_PlacedGameObject);
+                    DivisionGameObjectDictionary[m_DivisionPlacedOn].Clear();
+                }
+                catch (Exception ex)
+                {
+
+                }
+
                 //AvailableDivisions.Add(m_DivisionPlacedOn);
             }
 
@@ -313,7 +338,7 @@ namespace ARTowerDefense
 
         public void ToStartState()
         {
-            m_GameState = GameState.STARTED;
+            m_GameState = GameState.MAIN_MENU;
         }
 
         public void ToGameSpaceInstantiationState()
@@ -347,6 +372,14 @@ namespace ARTowerDefense
             m_GameState = GameState.GAME_LOOP;
         }
 
+        private void _InitializeGridDetection()
+        {
+            MainMenuPanel.SetActive(false);
+            _SetGridsVisibility(true);
+            _SetPointCloudVisibility(true);
+            GridDetectionManager.SetActive(true);
+        }
+
         private void _InitializeGameSpaceInstantiation()
         {
             Debug.Log($"Initializing {GameState.GAME_SPACE_INSTANTIATION} state");
@@ -364,9 +397,8 @@ namespace ARTowerDefense
                                   " )");
             }
 
-            //GridGenerator.SetActive(false);
-            ToggleGrids(false);
-            PointCloud.SetActive(false);
+            _SetGridsVisibility(false);
+            _SetPointCloudVisibility(false);
             Debug.Log("Grid generation disabled");
             ToBasePlacementButton.SetActive(false);
             Debug.Log("ConfirmButton disabled");
@@ -392,6 +424,7 @@ namespace ARTowerDefense
 
         private void _InitializeGameLoop()
         {
+            ToGameLoopButton.SetActive(false);
             NatureManager.SetActive(true);
             CoinManager.SetActive(true);
             BuildingManager.SetActive(true);
@@ -399,14 +432,64 @@ namespace ARTowerDefense
             Debug.Log("Game loop initialized");
         }
 
-        private void _InitializeGameOver()
+        private void _InitializeGameOver(bool victory)
         {
-            throw new NotImplementedException();
+            Time.timeScale = 0;
+            GameLoopPanel.SetActive(false);
+            m_GameState = GameState.GAME_OVER;
+            GameOverPanel.SetActive(true);
+            if (victory)
+            {
+                VictoryText.SetActive(true);
+            }
+            else
+            {
+                DefeatText.SetActive(true);
+            }
         }
-        
-        private void _InitializeGridDetection()
+
+        public void InitializeMainMenu()
         {
-            GridDetectionManager.SetActive(true);
+            if (m_GameState == GameState.GAME_OVER)
+            {
+                GameOverPanel.SetActive(false);
+            }
+            else if (m_GameState == GameState.PAUSED)
+            {
+                GamePausedPanel.SetActive(false);
+            }
+            else
+            {
+                throw new InvalidOperationException(
+                    $"A new game should only be initialized if the game state is GameState.PAUSED or GameState.GAME_OVER. Current state: {m_GameState}.");
+                // TODO: Force Reset to main menu
+            }
+            
+            Time.timeScale = 1;
+            Destroy(AnchorTransform.gameObject);
+            BuildingManager.SetActive(false);
+            CoinManager.SetActive(false);
+            NatureManager.SetActive(false);
+            ResetFields();
+            BuildingManager.GetComponent<BuildingManager>().ResetManager();
+            m_GameState = GameState.MAIN_MENU;
+            MainMenuPanel.SetActive(true);
+        }
+
+        private void ResetFields()
+        {
+            m_HomeBaseDivision = default;
+            m_DivisionPlacedOn = default;
+            m_AvailableDivisionsForPathGeneration = default;
+            m_AvailableDivisionsThreshold = default;
+            m_DivisionToPlaceOn = default;
+            m_GameObjectToBePlaced = default;
+            m_IncreaseThresholdCount = default;
+            m_IsQuitting = default;
+            m_PathDivisions = default;
+            m_PathEnd = default;
+            m_SpawnerDivision = default;
+            m_Moves = default;
         }
 
         private void _GameSpaceInitializationLogic()
@@ -627,40 +710,17 @@ namespace ARTowerDefense
         {
             if (EnemyReachedBase)
             {
-                GameOver(false);
+                _InitializeGameOver(false);
             }
 
             if (LastWave && !GameObject.FindGameObjectsWithTag("enemyBug").Any())
             {
-                GameOver(true);
+                _InitializeGameOver(true);
             }
         }
 
         #endregion
 
-        #region GAME OVER
-        private void _GameOverLogic()
-        {
-        }
-
-        public void GameOver(bool victory)
-        {
-            Time.timeScale = 0;
-            GameLoopPanel.SetActive(false);
-            m_GameState = GameState.GAME_OVER;
-            GameOverPanel.SetActive(true);
-            if (victory)
-            {
-                VictoryText.SetActive(true);
-            }
-            else
-            {
-                DefeatText.SetActive(true);
-            }
-        }
-
-        #endregion
-        
         private void _UpdateApplicationLifecycle()
         {
             // Exit the app when the 'back' button is pressed.
@@ -729,7 +789,12 @@ namespace ARTowerDefense
             }
         }
 
-        public void ToggleGrids(bool active)
+        private void _SetPointCloudVisibility(bool active)
+        {
+            PointCloud.GetComponent<PointcloudVisualizer>().SetMeshRendererActive(active);
+        }
+
+        private void _SetGridsVisibility(bool active)
         {
             if (active)
             {
