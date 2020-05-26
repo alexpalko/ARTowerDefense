@@ -45,7 +45,7 @@ public class GridVisualizer : MonoBehaviour
             m_MeshRenderer.enabled = false;
         }
 
-        m_MeshRenderer.enabled = true;
+        //m_MeshRenderer.enabled = true;
 
         _UpdateMeshIfNeeded();
     }
@@ -175,5 +175,14 @@ public class GridVisualizer : MonoBehaviour
         }
 
         return true;
+    }
+
+    /// <summary>
+    /// Shows/hides the grid's mesh.
+    /// </summary>
+    /// <param name="active"></param>
+    public void SetMeshRendererActive(bool active)
+    {
+        m_MeshRenderer.enabled = active;
     }
 }

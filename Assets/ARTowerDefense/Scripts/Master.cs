@@ -364,7 +364,8 @@ namespace ARTowerDefense
                                   " )");
             }
 
-            GridGenerator.SetActive(false);
+            //GridGenerator.SetActive(false);
+            ToggleGrids(false);
             PointCloud.SetActive(false);
             Debug.Log("Grid generation disabled");
             ToBasePlacementButton.SetActive(false);
@@ -728,6 +729,17 @@ namespace ARTowerDefense
             }
         }
 
+        public void ToggleGrids(bool active)
+        {
+            if (active)
+            {
+                GridGenerator.GetComponent<GridGenerator>().ShowGrids();
+            }
+            else
+            {
+                GridGenerator.GetComponent<GridGenerator>().HideGrids();
+            }
+        }
     }
 
 }
