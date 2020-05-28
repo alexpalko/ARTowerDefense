@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Assets.ARTowerDefense
+namespace ARTowerDefense.Structures.Dynamic
 {
     class OutlineController: MonoBehaviour
     {
@@ -17,6 +17,7 @@ namespace Assets.ARTowerDefense
 
         public void ShowHoverOutline()
         {
+            if (m_Renderers == null) return; // TODO: fix this properly, null exception thrown when placing a new structure
             foreach (var meshRenderer in m_Renderers)
             {
                 foreach (var material in meshRenderer.materials)
@@ -41,6 +42,7 @@ namespace Assets.ARTowerDefense
 
         public void HideOutline()
         {
+            if (m_Renderers == null) return; // TODO: fix this properly, null exception thrown when placing a new structure
             foreach (var meshRenderer in m_Renderers)
             {
                 foreach (var material in meshRenderer.materials)

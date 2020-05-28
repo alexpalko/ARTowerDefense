@@ -794,12 +794,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 2358473443761111954}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 153dd393b80768d4d8587c484df95783, type: 3}
+  m_Script: {fileID: 11500000, guid: 9db23131ada1d0e49b9fb74c5d34d422, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Enemybug: {fileID: 2358481304910086670}
+  Enemybug: {fileID: 0}
   m_Animator: {fileID: 0}
-  EnemyHealth: {fileID: 0}
+  EnemyHealth: {fileID: 2104546881254709604}
 --- !u!1 &2358481304910086670
 GameObject:
   m_ObjectHideFlags: 0

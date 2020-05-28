@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using ARTowerDefense.Enemies;
 
 public class CTower : MonoBehaviour {
     public bool Catcher = false;

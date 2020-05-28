@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Assets.ARTowerDefense.Scripts
+namespace ARTowerDefense.Managers
 {
     public class Division
     {

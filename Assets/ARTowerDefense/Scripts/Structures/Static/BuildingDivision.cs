@@ -1,5 +1,4 @@
-﻿using Assets.ARTowerDefense;
-using Assets.ARTowerDefense.Scripts.Structures.Dynamic;
+﻿using ARTowerDefense.Structures.Dynamic;
 using UnityEngine;
 
 public class BuildingDivision : MonoBehaviour

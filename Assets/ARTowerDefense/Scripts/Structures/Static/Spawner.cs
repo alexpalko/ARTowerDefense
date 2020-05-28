@@ -21,7 +21,7 @@ public class Spawner : MonoBehaviour
     void Start()
     {
         m_AnchorTransform = GameObject.Find("Master").GetComponent<Master>().AnchorTransform;
-        m_SpawnerTransform = Master.PathWaypoints[0];
+        m_SpawnerTransform = Master.PathWayPoints[0];
     }
 
     void Update()

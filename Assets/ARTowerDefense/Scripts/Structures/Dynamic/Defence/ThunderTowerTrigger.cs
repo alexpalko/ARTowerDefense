@@ -2,46 +2,49 @@
 using System.Linq;
 using UnityEngine;
 
-public class ThunderTowerTrigger : MonoBehaviour
+namespace ARTowerDefense.Structures.Dynamic.Defense
 {
-    public ThunderTower Tower;
-    private HashSet<GameObject> m_CurTargets;
-
-    void Start()
+    public class ThunderTowerTrigger : MonoBehaviour
     {
-        m_CurTargets = new HashSet<GameObject>();
-    }
+        public ThunderTower Tower;
+        private HashSet<GameObject> m_CurTargets;
 
-    void OnTriggerEnter(Collider other)
-    {
-        if (other.CompareTag("enemyBug") && !m_CurTargets.Contains(other.gameObject))
+        void Start()
         {
-            m_CurTargets.Add(other.gameObject);
-            Tower.AddTarget(other.gameObject);
+            m_CurTargets = new HashSet<GameObject>();
         }
-    }
 
-    void Update()
-    {
-        if (m_CurTargets.Any())
+        void OnTriggerEnter(Collider other)
         {
-
-            m_CurTargets.RemoveWhere(t =>
+            if (other.CompareTag("enemyBug") && !m_CurTargets.Contains(other.gameObject))
             {
-                if (!t.CompareTag("Dead")) return false;
-                Tower.RemoveTarget(t);
-                return true;
-
-            });
+                m_CurTargets.Add(other.gameObject);
+                Tower.AddTarget(other.gameObject);
+            }
         }
-    }
 
-    void OnTriggerExit(Collider other)
-    {
-        if (other.CompareTag("enemyBug") && m_CurTargets.Contains(other.gameObject))
+        void Update()
         {
-            m_CurTargets.Remove(other.gameObject);
-            Tower.RemoveTarget(other.gameObject);
+            if (m_CurTargets.Any())
+            {
+
+                m_CurTargets.RemoveWhere(t =>
+                {
+                    if (!t.CompareTag("Dead")) return false;
+                    Tower.RemoveTarget(t);
+                    return true;
+
+                });
+            }
+        }
+
+        void OnTriggerExit(Collider other)
+        {
+            if (other.CompareTag("enemyBug") && m_CurTargets.Contains(other.gameObject))
+            {
+                m_CurTargets.Remove(other.gameObject);
+                Tower.RemoveTarget(other.gameObject);
+            }
         }
     }
 }

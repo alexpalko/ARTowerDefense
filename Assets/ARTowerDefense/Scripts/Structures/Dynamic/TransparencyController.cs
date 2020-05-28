@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Assets.ARTowerDefense.Scripts.Structures.Dynamic
+namespace ARTowerDefense.Structures.Dynamic
 {
     class TransparencyController : MonoBehaviour
     {

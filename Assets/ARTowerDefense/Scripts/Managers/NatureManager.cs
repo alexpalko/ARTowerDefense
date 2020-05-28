@@ -1,10 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using ARTowerDefense;
 using UnityEngine;
 using Random = System.Random;
 
-namespace Assets.ARTowerDefense.Scripts.Managers
+namespace ARTowerDefense.Managers
 {
     class NatureManager : MonoBehaviour
     {

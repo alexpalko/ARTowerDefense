@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using ARTowerDefense.Structures.Dynamic.Defense;
 
 public class TowerBullet : MonoBehaviour {
 

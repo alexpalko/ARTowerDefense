@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using ARTowerDefense.Structures.Dynamic.Defense;
 
 public class TowerTrigger : MonoBehaviour {
 

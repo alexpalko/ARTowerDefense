@@ -4,7 +4,7 @@ using System.Linq;
 using UnityEngine;
 using Random = System.Random;
 
-namespace Assets.ARTowerDefense.Scripts.Managers
+namespace ARTowerDefense.Managers
 {
     class PathGenerationManager
     {

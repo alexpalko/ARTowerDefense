@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using ARTowerDefense;
 using GoogleARCore;
 using TMPro;
 using UnityEngine;
@@ -10,7 +9,7 @@ using UnityEngine.EventSystems;
 using Input = GoogleARCore.InstantPreviewInput;
 #endif
 
-namespace Assets.ARTowerDefense.Scripts
+namespace ARTowerDefense.Managers
 {
     class GridDetectionManager : MonoBehaviour
     {

@@ -1,31 +1,36 @@
 ﻿using System.Collections;
+using ARTowerDefense.Structures.Dynamic.Defense;
+using ARTowerDefense.Structures.Dynamic.Defense.Ammo;
 using UnityEngine;
 
-public class CrossbowTower : Tower
+namespace ARTowerDefense.Managers
 {
-    private Animator m_Animator;
-
-    protected override void Start()
+    public class CrossbowTower : Tower
     {
-        base.Start();
-        m_Animator = LookAtObj.GetComponent<Animator>();
-        m_Animator.speed = 2;
-    }
+        private Animator m_Animator;
 
-    protected override IEnumerator shoot()
-    {
-        m_IsShooting = true;
-        yield return new WaitForSeconds(ShootDelay);
-
-        if (Target)
+        protected override void Start()
         {
-            m_Animator.SetTrigger("Shoot");
-            GameObject b = Instantiate(Ammo, ShootElement.position, Quaternion.identity);
-            b.transform.LookAt(Target.transform);
-            b.GetComponent<CrossbowBolt>().target = Target;
-            b.GetComponent<CrossbowBolt>().twr = this;
+            base.Start();
+            m_Animator = LookAtObj.GetComponent<Animator>();
+            m_Animator.speed = 2;
         }
 
-        m_IsShooting = false;
+        protected override IEnumerator shoot()
+        {
+            m_IsShooting = true;
+            yield return new WaitForSeconds(ShootDelay);
+
+            if (Target)
+            {
+                m_Animator.SetTrigger("Shoot");
+                GameObject b = Instantiate(Ammo, ShootElement.position, Quaternion.identity);
+                b.transform.LookAt(Target.transform);
+                b.GetComponent<CrossbowBolt>().target = Target;
+                b.GetComponent<CrossbowBolt>().twr = this;
+            }
+
+            m_IsShooting = false;
+        }
     }
 }

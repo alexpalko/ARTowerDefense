@@ -1,57 +1,61 @@
 ﻿using System.Collections;
+using ARTowerDefense.Structures.Dynamic.Defense.Ammo;
 using UnityEngine;
 
-public class Tower : MonoBehaviour
+namespace ARTowerDefense.Structures.Dynamic.Defense
 {
-    public Transform ShootElement;
-    public Transform LookAtObj;
-    public GameObject Ammo;
-    public Transform Target;
-    public int Damage = 10;
-    public float ShootDelay;
-    protected bool m_IsShooting;
-    protected float m_HomeY;
-
-    protected virtual void Start()
+    public class Tower : MonoBehaviour
     {
-        m_HomeY = LookAtObj.transform.localRotation.eulerAngles.y;
-    }
+        public Transform ShootElement;
+        public Transform LookAtObj;
+        public GameObject Ammo;
+        public Transform Target;
+        public int Damage = 10;
+        public float ShootDelay;
+        protected bool m_IsShooting;
+        protected float m_HomeY;
 
-    protected virtual void Update()
-    {
-        // Rotation
-        if (Target)
+        protected virtual void Start()
         {
-            Vector3 dir = Target.transform.position - LookAtObj.transform.position;
-            dir.y = 0;
-            Quaternion rot = Quaternion.LookRotation(dir);
-            LookAtObj.transform.rotation = Quaternion.Slerp(LookAtObj.transform.rotation, rot, 5 * Time.deltaTime);
-        }
-        else
-        {
-            Quaternion home = new Quaternion(0, m_HomeY, 0, 1);
-            LookAtObj.transform.rotation = Quaternion.Slerp(LookAtObj.transform.rotation, home, Time.deltaTime);
+            m_HomeY = LookAtObj.transform.localRotation.eulerAngles.y;
         }
 
-        // Shooting
-        if (!m_IsShooting)
+        protected virtual void Update()
         {
-            StartCoroutine(shoot());
+            // Rotation
+            if (Target)
+            {
+                Vector3 dir = Target.transform.position - LookAtObj.transform.position;
+                dir.y = 0;
+                Quaternion rot = Quaternion.LookRotation(dir);
+                LookAtObj.transform.rotation = Quaternion.Slerp(LookAtObj.transform.rotation, rot, 5 * Time.deltaTime);
+            }
+            else
+            {
+                Quaternion home = new Quaternion(0, m_HomeY, 0, 1);
+                LookAtObj.transform.rotation = Quaternion.Slerp(LookAtObj.transform.rotation, home, Time.deltaTime);
+            }
+
+            // Shooting
+            if (!m_IsShooting)
+            {
+                StartCoroutine(shoot());
+            }
         }
-    }
 
-    protected virtual IEnumerator shoot()
-    {
-        m_IsShooting = true;
-        yield return new WaitForSeconds(ShootDelay);
-
-        if (Target)
+        protected virtual IEnumerator shoot()
         {
-            GameObject b = Instantiate(Ammo, ShootElement.position, Quaternion.identity);
-            b.GetComponent<CannonBall>().target = Target;
-            b.GetComponent<CannonBall>().twr = this;
-        }
+            m_IsShooting = true;
+            yield return new WaitForSeconds(ShootDelay);
 
-        m_IsShooting = false;
+            if (Target)
+            {
+                GameObject b = Instantiate(Ammo, ShootElement.position, Quaternion.identity);
+                b.GetComponent<CannonBall>().target = Target;
+                b.GetComponent<CannonBall>().twr = this;
+            }
+
+            m_IsShooting = false;
+        }
     }
 }

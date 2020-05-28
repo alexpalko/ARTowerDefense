@@ -3,7 +3,16 @@ guid: f936174bd09a0c54990d7571eeb1eebb
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - BindingWallPrefab: {fileID: 7778782416957837993, guid: 280c54fa3061964449f6b0ac48916a50,
+      type: 3}
+  - BindingTowerPrefab: {fileID: 1770514590405088, guid: 1cace56ba420dd64c9171c422c8e9aaa,
+      type: 3}
+  - GamePlanePrefab: {fileID: 2571624567956541521, guid: fc6219a69d819aa45a74a8763fd62055,
+      type: 3}
+  - DivisionPrefab: {fileID: 8337470342546997709, guid: 69f0ebf8b99b7fc45a960de1740b46be,
+      type: 3}
+  - Master: {instanceID: 0}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

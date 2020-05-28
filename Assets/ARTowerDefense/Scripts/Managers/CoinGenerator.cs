@@ -1,26 +1,29 @@
 ﻿using UnityEngine;
 
-public class CoinGenerator : MonoBehaviour
+namespace ARTowerDefense.Managers
 {
-    public int Amount;
-    public float TimeInterval;
-
-    private float m_TimeSinceLastGeneration;
-
-    void Start()
+    public class CoinGenerator : MonoBehaviour
     {
-        m_TimeSinceLastGeneration = TimeInterval;
-    }
+        public int Amount;
+        public float TimeInterval;
 
-    void Update()
-    {
-        if (m_TimeSinceLastGeneration <= 0)
+        private float m_TimeSinceLastGeneration;
+
+        void Start()
         {
-            CoinManager.AddCoins(Amount);
             m_TimeSinceLastGeneration = TimeInterval;
-            return;
         }
 
-        m_TimeSinceLastGeneration -= Time.deltaTime;
+        void Update()
+        {
+            if (m_TimeSinceLastGeneration <= 0)
+            {
+                CoinManager.AddCoins(Amount);
+                m_TimeSinceLastGeneration = TimeInterval;
+                return;
+            }
+
+            m_TimeSinceLastGeneration -= Time.deltaTime;
+        }
     }
 }
