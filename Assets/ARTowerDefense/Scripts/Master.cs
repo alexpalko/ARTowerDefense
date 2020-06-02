@@ -17,6 +17,8 @@ using Input = GoogleARCore.InstantPreviewInput;
 
 namespace ARTowerDefense
 {
+    /// <summary></summary>
+    /// <remarks></remarks>
     public class Master : MonoBehaviour
     {
         #region #References
@@ -43,8 +45,8 @@ namespace ARTowerDefense
 
         #region #Managers
 
-        [SerializeField] private GameObject GridGenerator;
-        [SerializeField] private GameObject GridDetectionManager;
+        [SerializeField] private GameObject PlaneGenerator;
+        [SerializeField] private GameObject PlaneSelectionManager;
         [SerializeField] private GameObject GameInitManager;
         [SerializeField] private GameObject BuildingManager;
         [SerializeField] private GameObject CoinManager;
@@ -75,8 +77,7 @@ namespace ARTowerDefense
 
         public static bool LastWave { get; set; }
         public static bool EnemyReachedBase { get; set; }
-        public DetectedPlane MarkedPlane { get; set; }
-        public Vector3[] BindingVectors { get; private set; }
+        public List<Vector3> BindingVectors { get; private set; }
         private Division m_HomeBaseDivision;
         private Division m_SpawnerDivision;
 
@@ -98,7 +99,7 @@ namespace ARTowerDefense
         /// <summary>
         /// A dictionary of divisions and their corresponding division game object instance
         /// </summary>
-        public static Dictionary<Division, BuildingDivision> DivisionGameObjectDictionary { get; private set; }
+        public static Dictionary<Division, BuildingDivision> DivisionGameObjectDictionary { get; set; }
 
         /// <summary>
         /// The final path division, leading to the home base
@@ -106,7 +107,7 @@ namespace ARTowerDefense
         private Division m_PathEnd;
 
         public static Transform[] PathWayPoints { get; private set; }
-        
+
         private GameState m_GameState;
 
         private bool m_IsQuitting;
@@ -119,13 +120,13 @@ namespace ARTowerDefense
         {
             Application.targetFrameRate = 60;
         }
-
+        
         void Start()
         {
             m_GameState = GameState.MAIN_MENU;
             MainMenuPanel.SetActive(true);
         }
-        
+
         void Update()
         {
             _UpdateApplicationLifecycle();
@@ -134,11 +135,11 @@ namespace ARTowerDefense
                 case GameState.MAIN_MENU:
                     // Wait for user to press PLAY
                     break;
-                case GameState.GRID_DETECTION:
-                    // Wait for user to choose grid
+                case GameState.PLANE_SELECTION:
+                    // Wait for user to choose a plane
                     break;
                 case GameState.GAME_SPACE_INSTANTIATION:
-                    AdvanceGameState();
+                    _GameSpaceInstantiationLogic();
                     break;
                 case GameState.BASE_PLACEMENT:
                     _BasePlacementLogic();
@@ -150,8 +151,10 @@ namespace ARTowerDefense
                     _GameLoopLogic();
                     break;
                 case GameState.PAUSED:
+                    // Wait for user to resume or go to main menu
                     break;
                 case GameState.GAME_OVER:
+                    // Wait for user to go to main menu
                     break;
                 default:
                     throw new InvalidOperationException(
@@ -169,18 +172,18 @@ namespace ARTowerDefense
 
         #endregion
 
-        #region Public Metods
-        
+        #region Game Progression
+
         public void AdvanceGameState()
         {
             PlacePrefabButton.SetActive(false);
             switch (m_GameState)
             {
                 case GameState.MAIN_MENU:
-                    m_GameState = GameState.GRID_DETECTION;
-                    _InitializeGridDetection();
+                    m_GameState = GameState.PLANE_SELECTION;
+                    _InitializePlaneSelection();
                     break;
-                case GameState.GRID_DETECTION:
+                case GameState.PLANE_SELECTION:
                     m_GameState = GameState.GAME_SPACE_INSTANTIATION;
                     _InitializeGameSpaceInstantiation();
                     break;
@@ -205,14 +208,13 @@ namespace ARTowerDefense
 
         #endregion
 
-        #region #GRID_DETECTION
+        #region #PLANE_SELECTION
 
-        private void _InitializeGridDetection()
+        private void _InitializePlaneSelection()
         {
             MainMenuPanel.SetActive(false);
-            _SetGridsVisibility(true);
-            _SetPointCloudVisibility(true);
-            GridDetectionManager.SetActive(true);
+            _SetARCoreElementsVisibility(true);
+            PlaneSelectionManager.SetActive(true);
         }
 
         #endregion
@@ -222,26 +224,38 @@ namespace ARTowerDefense
         private void _InitializeGameSpaceInstantiation()
         {
             Debug.Log($"Initializing {GameState.GAME_SPACE_INSTANTIATION} state");
-            GridDetectionManager.SetActive(false);
-            List<Vector3> boundaryPolygons = new List<Vector3>();
-            var script = GridDetectionManager.GetComponent<GridDetectionManager>();
-            AnchorTransform = script.AnchorTransform;
-            MarkedPlane = script.MarkedPlane;
-            MarkedPlane.GetBoundaryPolygon(boundaryPolygons);
-            BindingVectors = boundaryPolygons.ToArray();
+            PlaneSelectionManager.SetActive(false);
+            _GetPlaneData();
+            _SetARCoreElementsVisibility(false);
+            Debug.Log("Plane generation manager disabled");
+            ToBasePlacementButton.SetActive(false);
+            Debug.Log("ConfirmButton disabled");
+            GameInitManager.SetActive(true);
+        }
 
+        private void _GetPlaneData()
+        {
+            List<Vector3> boundaryPolygons = new List<Vector3>();
+            var manager = PlaneSelectionManager.GetComponent<PlaneSelectionManager>();
+            AnchorTransform = manager.AnchorTransform;
+            var selectedPlane = manager.MarkedPlane;
+            selectedPlane.GetBoundaryPolygon(boundaryPolygons);
+            BindingVectors = boundaryPolygons;
             foreach (Vector3 boundaryPolygon in boundaryPolygons)
             {
                 Console.WriteLine("( " + boundaryPolygon.x + ", " + boundaryPolygon.y + ", " + boundaryPolygon.z +
                                   " )");
             }
+        }
 
-            _SetGridsVisibility(false);
-            _SetPointCloudVisibility(false);
-            Debug.Log("Grid generation disabled");
-            ToBasePlacementButton.SetActive(false);
-            Debug.Log("ConfirmButton disabled");
-            GameInitManager.SetActive(true);
+        private void _GameSpaceInstantiationLogic()
+        {
+            // Wait for the game init manager to finish creating divisions and assigning them to Master
+            // and advance to next state
+            if (AnchorTransform != null && DivisionGameObjectDictionary != null)
+            {
+                AdvanceGameState();
+            }
         }
 
         #endregion
@@ -250,12 +264,8 @@ namespace ARTowerDefense
 
         private void _InitializeBasePlacement()
         {
-            ToBasePlacementButton.SetActive(false);
-            var script = GameInitManager.GetComponent<GameInitManager>();
-            DivisionGameObjectDictionary = script.DivisionsDictionary;
             GameInitManager.SetActive(false);
             GameInitializationPanel.SetActive(true);
-            Debug.Log("ConfirmButton disabled");
         }
 
         private void _BasePlacementLogic()
@@ -263,10 +273,10 @@ namespace ARTowerDefense
             _UpdatePlaceButtonState();
             if (m_DivisionPlacedOn != null)
             {
-                if (m_HomeBaseDivision != null && m_HomeBaseDivision != m_DivisionPlacedOn)
-                {
-                    DivisionGameObjectDictionary[m_HomeBaseDivision].Clear();
-                }
+                //if (m_HomeBaseDivision != null && m_HomeBaseDivision != m_DivisionPlacedOn)
+                //{
+                //    DivisionGameObjectDictionary[m_HomeBaseDivision].Clear();
+                //}
 
                 m_HomeBaseDivision = m_DivisionPlacedOn;
                 ToGameLoopButton.SetActive(true);
@@ -342,7 +352,7 @@ namespace ARTowerDefense
             GameInitializationPanel.SetActive(false);
             _GeneratePathEnd();
         }
-        
+
         private void _GeneratePathEnd()
         {
             Vector3 front = m_HomeBaseDivision.Center - DivisionGameObjectDictionary[m_HomeBaseDivision].transform.forward * k_DivisionLength;
@@ -356,15 +366,15 @@ namespace ARTowerDefense
 
         private void _PathGenerationLogic()
         {
-            var pathGenMan = new PathGenerationManager(DivisionGameObjectDictionary, m_HomeBaseDivision, m_PathEnd,
+            var manager = new PathGenerationManager(DivisionGameObjectDictionary, m_HomeBaseDivision, m_PathEnd,
                 SpawnerPrefab, PathPrefab, CurvedPathPrefab);
 
             while (m_SpawnerDivision == null)
             {
-                m_SpawnerDivision = pathGenMan.GeneratePath();
+                m_SpawnerDivision = manager.GeneratePath();
             }
 
-            PathWayPoints = pathGenMan.BuildPath();
+            PathWayPoints = manager.BuildPath();
 
             AdvanceGameState();
         }
@@ -500,20 +510,26 @@ namespace ARTowerDefense
 
         #region #ARElementsFunctions
 
+        private void _SetARCoreElementsVisibility(bool active)
+        {
+            _SetPointCloudVisibility(active);
+            _SetPlanesVisibility(active);
+        }
+
         private void _SetPointCloudVisibility(bool active)
         {
             PointCloud.GetComponent<PointcloudVisualizer>().SetMeshRendererActive(active);
         }
 
-        private void _SetGridsVisibility(bool active)
+        private void _SetPlanesVisibility(bool active)
         {
             if (active)
             {
-                GridGenerator.GetComponent<GridGenerator>().ShowGrids();
+                PlaneGenerator.GetComponent<PlaneGenerator>().ShowPlanes();
             }
             else
             {
-                GridGenerator.GetComponent<GridGenerator>().HideGrids();
+                PlaneGenerator.GetComponent<PlaneGenerator>().HidePlanes();
             }
         }
 
@@ -588,7 +604,7 @@ namespace ARTowerDefense
         private enum GameState
         {
             MAIN_MENU,
-            GRID_DETECTION,
+            PLANE_SELECTION,
             GAME_SPACE_INSTANTIATION,
             BASE_PLACEMENT,
             PATH_GENERATION,

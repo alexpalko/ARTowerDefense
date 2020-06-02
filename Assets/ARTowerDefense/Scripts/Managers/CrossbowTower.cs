@@ -16,21 +16,21 @@ namespace ARTowerDefense.Managers
             m_Animator.speed = 2;
         }
 
-        protected override IEnumerator shoot()
+        protected override IEnumerator Shoot()
         {
-            m_IsShooting = true;
-            yield return new WaitForSeconds(ShootDelay);
+            IsShooting = true;
+            yield return new WaitForSeconds(ShotDelay);
 
             if (Target)
             {
                 m_Animator.SetTrigger("Shoot");
-                GameObject b = Instantiate(Ammo, ShootElement.position, Quaternion.identity);
+                GameObject b = Instantiate(Ammo, ShootPosition.position, Quaternion.identity);
                 b.transform.LookAt(Target.transform);
                 b.GetComponent<CrossbowBolt>().target = Target;
                 b.GetComponent<CrossbowBolt>().twr = this;
             }
 
-            m_IsShooting = false;
+            IsShooting = false;
         }
     }
 }

@@ -27,12 +27,13 @@ namespace ARTowerDefense.Managers
 
         void OnEnable()
         {
-            List<Vector3> bindingVectorsList = Master.BindingVectors.ToList();
+            List<Vector3> bindingVectorsList = Master.BindingVectors;
             _ConsolidateBoundaries(bindingVectorsList);
             BindingVectors = bindingVectorsList.ToArray();
             _SpawnBoundaries();
             _SpawnGamePlane();
             _SplitPlane();
+            Master.DivisionGameObjectDictionary = DivisionsDictionary;
         }
 
         private void _ConsolidateBoundaries(List<Vector3> vectors)

@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 2235371550812671995}
   - component: {fileID: 4095002501553235177}
   m_Layer: 0
-  m_Name: Grid
+  m_Name: Plane Visualizer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -18,7 +18,6 @@ namespace ARTowerDefense.Enemies
         {
             if (EnemyHealth.EnemyHP <= 0)
             {
-                //Speed = 0;
                 Destroy(gameObject, 5f);
                 m_Animator.SetBool("Death", true);
             }

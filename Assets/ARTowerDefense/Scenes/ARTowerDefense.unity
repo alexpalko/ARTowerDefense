@@ -2673,8 +2673,8 @@ MonoBehaviour:
     type: 3}
   CurvedPathPrefab: {fileID: 2363604512678049284, guid: 20a115aa53da04e4385bd72d051fbd81,
     type: 3}
-  GridGenerator: {fileID: 458280759}
-  GridDetectionManager: {fileID: 1614171763}
+  PlaneGenerator: {fileID: 458280759}
+  PlaneSelectionManager: {fileID: 1614171763}
   GameInitManager: {fileID: 433131841}
   BuildingManager: {fileID: 465185648}
   CoinManager: {fileID: 1014380655}
@@ -3307,7 +3307,7 @@ RectTransform:
   - {fileID: 311125612}
   - {fileID: 268110168}
   m_Father: {fileID: 0}
-  m_RootOrder: 12
+  m_RootOrder: 11
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -3482,7 +3482,7 @@ GameObject:
   - component: {fileID: 433131843}
   - component: {fileID: 433131842}
   m_Layer: 0
-  m_Name: GameInitManager
+  m_Name: Game Init Manager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3521,7 +3521,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 10
+  m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &458280759
 GameObject:
@@ -3534,7 +3534,7 @@ GameObject:
   - component: {fileID: 458280760}
   - component: {fileID: 458280761}
   m_Layer: 0
-  m_Name: GridGenerator
+  m_Name: Plane Generator
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3566,7 +3566,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0c051a4f45368f5459d407ec7d32407b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GridPrefab: {fileID: 2235371550812671994, guid: 638ece8b53d9d83499ba847eb8d903ba,
+  PlaneVisualizerPrefab: {fileID: 2235371550812671994, guid: 638ece8b53d9d83499ba847eb8d903ba,
     type: 3}
 --- !u!1 &465185648
 GameObject:
@@ -3579,7 +3579,7 @@ GameObject:
   - component: {fileID: 465185650}
   - component: {fileID: 465185649}
   m_Layer: 0
-  m_Name: BuildingManager
+  m_Name: Building Manager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5041,7 +5041,7 @@ GameObject:
   m_Component:
   - component: {fileID: 609224170}
   m_Layer: 5
-  m_Name: Grid Detection Animation
+  m_Name: Plane Detection Animation
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5281,7 +5281,7 @@ GameObject:
   - component: {fileID: 687422977}
   - component: {fileID: 687422978}
   m_Layer: 5
-  m_Name: Grid Detection Panel
+  m_Name: Plane Selection Panel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6087,7 +6087,7 @@ GameObject:
   - component: {fileID: 841520702}
   - component: {fileID: 841520701}
   m_Layer: 0
-  m_Name: NatureManager
+  m_Name: Nature Manager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6122,7 +6122,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 11
+  m_RootOrder: 10
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &847657586
 GameObject:
@@ -6815,7 +6815,7 @@ GameObject:
   - component: {fileID: 1014380657}
   - component: {fileID: 1014380656}
   m_Layer: 0
-  m_Name: CoinManager
+  m_Name: Coin Manager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -10868,7 +10868,7 @@ GameObject:
   - component: {fileID: 1614171765}
   - component: {fileID: 1614171764}
   m_Layer: 0
-  m_Name: GridDetectionManager
+  m_Name: Plane Selection Manager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -10891,7 +10891,7 @@ MonoBehaviour:
   HelperMessage: {fileID: 2019298702}
   ConfirmButton: {fileID: 1400755101}
   HelperAnimation: {fileID: 609224169}
-  GridDetectionPanel: {fileID: 687422976}
+  PlaneSelectionPanel: {fileID: 687422976}
   MarkerPrefab: {fileID: 1533428177928048, guid: b7953b6cbdfc4db4a84db0ca292913cd,
     type: 3}
 --- !u!4 &1614171765
@@ -10906,7 +10906,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 9
+  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1619442261
 GameObject:
@@ -12904,49 +12904,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1898483080}
   m_CullTransparentMesh: 0
---- !u!1 &1915654611
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1915654613}
-  - component: {fileID: 1915654612}
-  m_Layer: 0
-  m_Name: SceneSwapper
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1915654612
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1915654611}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 15a4dd924b464fd49947caddbc1ada90, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!4 &1915654613
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1915654611}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1453.4597, y: 779.23444, z: -1513.5592}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 8
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1975189024
 GameObject:
   m_ObjectHideFlags: 0

@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace ARTowerDefense.AR
 {
-    public class GridVisualizer : MonoBehaviour
+    public class PlaneVisualizer : MonoBehaviour
     {
         private DetectedPlane m_DetectedPlane;
 
@@ -180,7 +180,7 @@ namespace ARTowerDefense.AR
         }
 
         /// <summary>
-        /// Shows/hides the grid's mesh.
+        /// Shows/hides the plane's mesh.
         /// </summary>
         /// <param name="active"></param>
         public void SetMeshRendererActive(bool active)

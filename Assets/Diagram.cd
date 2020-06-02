@@ -1,0 +1,212 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="ARTowerDefense.AR.PlaneGenerator" Collapsed="true">
+    <Position X="8.5" Y="4.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAIAAACAAAAAgEAMAAAAEBAAAEAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\ARTowerDefense\Scripts\AR\PlaneGenerator.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ARTowerDefense.AR.PlaneVisualizer" Collapsed="true">
+    <Position X="12" Y="4.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAAAQAIAABAgEAAAAEAAAQCAAAACiBAAEA=</HashCode>
+      <FileName>Assets\ARTowerDefense\Scripts\AR\PlaneVisualizer.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ARTowerDefense.AR.PointCloudVisualizer" Collapsed="true">
+    <Position X="13.75" Y="4.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAEAACQAAAFEIAARAECAAEECACAcAACADgRAAAA=</HashCode>
+      <FileName>Assets\ARTowerDefense\Scripts\AR\PointCloudVisualizer.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ARTowerDefense.Enemies.Enemy" Collapsed="true">
+    <Position X="12" Y="2.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAQAAACAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\ARTowerDefense\Scripts\Enemies\Enemy.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ARTowerDefense.Enemies.EnemyHealth" Collapsed="true">
+    <Position X="13.75" Y="2.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAACAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\ARTowerDefense\Scripts\Enemies\EnemyHealth.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ARTowerDefense.Enemies.EnemyMovement" Collapsed="true">
+    <Position X="6.75" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQACAAAAiAAABAAAAAAAAAAAAgAAQAAABAAAAAAAAA=</HashCode>
+      <FileName>Assets\ARTowerDefense\Scripts\Enemies\EnemyMovement.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ARTowerDefense.Helpers.Poly" Collapsed="true">
+    <Position X="6.75" Y="5.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABA=</HashCode>
+      <FileName>Assets\ARTowerDefense\Scripts\Helpers\Poly.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ARTowerDefense.Managers.BuildingManager" Collapsed="true">
+    <Position X="8.5" Y="1.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>BARAABCECAAAgAAgBADRJAAAAAAQAgAAEIRCQAAACEA=</HashCode>
+      <FileName>Assets\ARTowerDefense\Scripts\Managers\BuildingManager.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ARTowerDefense.Managers.CoinGenerator" Collapsed="true">
+    <Position X="13.75" Y="1.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAACAAAAAAAAAACACAAAAABAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\ARTowerDefense\Scripts\Managers\CoinGenerator.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ARTowerDefense.Managers.CoinManager" Collapsed="true">
+    <Position X="6.75" Y="2.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AASAAAAEAAQAAAAAgACACEAAAAAAIEACAAAAAAAACAA=</HashCode>
+      <FileName>Assets\ARTowerDefense\Scripts\Managers\CoinManager.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ARTowerDefense.Managers.CrossbowTower" Collapsed="true">
+    <Position X="3.25" Y="2.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAQAAACAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\ARTowerDefense\Scripts\Managers\CrossbowTower.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ARTowerDefense.Managers.Division" Collapsed="true">
+    <Position X="10.25" Y="2.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAgAAAwAAAAAAAAAAAAIAAAAAAAAAIAiA=</HashCode>
+      <FileName>Assets\ARTowerDefense\Scripts\Managers\Division.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ARTowerDefense.Managers.GameInitManager" Collapsed="true">
+    <Position X="8.5" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>hACAAQgAAQEAQACAAAAAQAAAACAABQAAAAAAFCEACAA=</HashCode>
+      <FileName>Assets\ARTowerDefense\Scripts\Managers\GameInitManager.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ARTowerDefense.Managers.NatureManager" Collapsed="true">
+    <Position X="12" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AEBAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAACAA=</HashCode>
+      <FileName>Assets\ARTowerDefense\Scripts\Managers\NatureManager.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ARTowerDefense.Managers.PathGenerationManager" Collapsed="true">
+    <Position X="6.75" Y="4.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QhABZAAAgQABIEgAgBAAAAAQAAAUAAAQAAAAAAACAIA=</HashCode>
+      <FileName>Assets\ARTowerDefense\Scripts\Managers\PathGenerationManager.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ARTowerDefense.Managers.PlaneSelectionManager" Collapsed="true">
+    <Position X="10.25" Y="4.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAwSAAAAAAAAAACACgACAAAAAAAAAAAIIQACAAAACAA=</HashCode>
+      <FileName>Assets\ARTowerDefense\Scripts\Managers\PlaneSelectionManager.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ARTowerDefense.Master">
+    <Position X="1.25" Y="5.75" Width="2.5" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+      <Compartment Name="Properties" Collapsed="true" />
+      <Compartment Name="Nested Types" Collapsed="false" />
+    </Compartments>
+    <NestedTypes>
+      <Enum Name="ARTowerDefense.Master.GameState" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Assets\ARTowerDefense\Scripts\Master.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Enum>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>gAYxZrAgsKQACEAEABIABQyRIAESIQhBgAFicIAVhUg=</HashCode>
+      <FileName>Assets\ARTowerDefense\Scripts\Master.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ARTowerDefense.Structures.Dynamic.Defense.Ammo.CannonBall" Collapsed="true">
+    <Position X="10.25" Y="1.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>gAQAAAAAAAAAAAAgIAAgAAABAAAACAAAYAAAAAAAAAA=</HashCode>
+      <FileName>Assets\ARTowerDefense\Scripts\Structures\Dynamic\Defence\Ammo\CannonBall.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ARTowerDefense.Structures.Dynamic.Defense.Ammo.CrossbowBolt" Collapsed="true">
+    <Position X="8.5" Y="2.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>gAQAAAAAAAAAAAAAIAAgAAABAAAACAAAYAAAAAAAAAA=</HashCode>
+      <FileName>Assets\ARTowerDefense\Scripts\Structures\Dynamic\Defence\Ammo\CrossbowBolt.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ARTowerDefense.Structures.Dynamic.Defense.ThunderTower" Collapsed="true">
+    <Position X="0.75" Y="1.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ACQBAAAgACAAAAAAAAAAAAAAAAAgAQEABAAAAAQAAAA=</HashCode>
+      <FileName>Assets\ARTowerDefense\Scripts\Structures\Dynamic\Defence\ThunderTower.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ARTowerDefense.Structures.Dynamic.Defense.ThunderTowerTrigger" Collapsed="true">
+    <Position X="10.25" Y="5.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAECAAAACAAAAAAAAAAAAAAIAAQAAAAAAAAAA=</HashCode>
+      <FileName>Assets\ARTowerDefense\Scripts\Structures\Dynamic\Defence\ThunderTowerTrigger.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ARTowerDefense.Structures.Dynamic.Defense.TorusCage" Collapsed="true">
+    <Position X="12" Y="5.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AEQABAAAAAAAgAAAAAAAAAAAEAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\ARTowerDefense\Scripts\Structures\Dynamic\Defence\TorusCage.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ARTowerDefense.Structures.Dynamic.Defense.Tower" Collapsed="true">
+    <Position X="3.25" Y="1.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ACQAAACAACIABAAAIAAAACAAAACAAAAAQAQAAAAAAAA=</HashCode>
+      <FileName>Assets\ARTowerDefense\Scripts\Structures\Dynamic\Defence\Tower.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ARTowerDefense.Structures.Dynamic.Economy.Chicken" Collapsed="true">
+    <Position X="12" Y="1.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQCAQAAACAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\ARTowerDefense\Scripts\Structures\Dynamic\Economy\Chicken.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ARTowerDefense.Structures.Dynamic.OutlineController" Collapsed="true">
+    <Position X="13.75" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AACAEAAIACAIAAAAAAAAAAAAAAAIAAEAAAAAAAAAQAA=</HashCode>
+      <FileName>Assets\ARTowerDefense\Scripts\Structures\Dynamic\OutlineController.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ARTowerDefense.Structures.Dynamic.TransparencyController" Collapsed="true">
+    <Position X="13.75" Y="5.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAIAACAAAAAAAAAAAIAAAAAAAAACAAAAAAAAA=</HashCode>
+      <FileName>Assets\ARTowerDefense\Scripts\Structures\Dynamic\TransparencyController.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="BuildingDivision" Collapsed="true">
+    <Position X="6.75" Y="1.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAGQGAAIAACIAwAACACAAgAAAAIAAAAAAAACAABAAAA=</HashCode>
+      <FileName>Assets\ARTowerDefense\Scripts\Structures\Static\BuildingDivision.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Spawner" Collapsed="true">
+    <Position X="8.5" Y="5.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AQQgAAIAACAAAAAAAACAgBAAAAAAEIAAgAAAGQAAAAA=</HashCode>
+      <FileName>Assets\ARTowerDefense\Scripts\Structures\Static\Spawner.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Arial" Size="9" />
+</ClassDiagram>

@@ -11,14 +11,14 @@ using Input = GoogleARCore.InstantPreviewInput;
 
 namespace ARTowerDefense.Managers
 {
-    class GridDetectionManager : MonoBehaviour
+    class PlaneSelectionManager : MonoBehaviour
     {
         [SerializeField] private Camera FirstPersonCamera;
         [SerializeField] private Master Master;
         [SerializeField] private GameObject HelperMessage;
         [SerializeField] private GameObject ConfirmButton;
         [SerializeField] private GameObject HelperAnimation;
-        [SerializeField] private GameObject GridDetectionPanel;
+        [SerializeField] private GameObject PlaneSelectionPanel;
 
         [SerializeField] private GameObject MarkerPrefab;
 
@@ -94,15 +94,13 @@ namespace ARTowerDefense.Managers
 
         private void OnEnable()
         {
-            GridDetectionPanel.SetActive(true);
+            PlaneSelectionPanel.SetActive(true);
         }
 
         private void OnDisable()
         {
-            //Master.AnchorTransform = AnchorTransform;
-            //Master.MarkedPlane = MarkedPlane;
             Destroy(m_PlaneSelectionMarker);
-            GridDetectionPanel.SetActive(false);
+            PlaneSelectionPanel.SetActive(false);
             ConfirmButton.SetActive(false);
         }
 

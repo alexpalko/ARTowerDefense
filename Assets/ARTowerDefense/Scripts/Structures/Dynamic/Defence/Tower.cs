@@ -6,18 +6,18 @@ namespace ARTowerDefense.Structures.Dynamic.Defense
 {
     public class Tower : MonoBehaviour
     {
-        public Transform ShootElement;
+        public Transform ShootPosition;
         public Transform LookAtObj;
         public GameObject Ammo;
         public Transform Target;
         public int Damage = 10;
-        public float ShootDelay;
-        protected bool m_IsShooting;
-        protected float m_HomeY;
+        public float ShotDelay;
+        protected bool IsShooting;
+        protected float HomeY;
 
         protected virtual void Start()
         {
-            m_HomeY = LookAtObj.transform.localRotation.eulerAngles.y;
+            HomeY = LookAtObj.transform.localRotation.eulerAngles.y;
         }
 
         protected virtual void Update()
@@ -32,30 +32,30 @@ namespace ARTowerDefense.Structures.Dynamic.Defense
             }
             else
             {
-                Quaternion home = new Quaternion(0, m_HomeY, 0, 1);
+                Quaternion home = new Quaternion(0, HomeY, 0, 1);
                 LookAtObj.transform.rotation = Quaternion.Slerp(LookAtObj.transform.rotation, home, Time.deltaTime);
             }
 
             // Shooting
-            if (!m_IsShooting)
+            if (!IsShooting)
             {
-                StartCoroutine(shoot());
+                StartCoroutine(Shoot());
             }
         }
 
-        protected virtual IEnumerator shoot()
+        protected virtual IEnumerator Shoot()
         {
-            m_IsShooting = true;
-            yield return new WaitForSeconds(ShootDelay);
+            IsShooting = true;
+            yield return new WaitForSeconds(ShotDelay);
 
             if (Target)
             {
-                GameObject b = Instantiate(Ammo, ShootElement.position, Quaternion.identity);
+                GameObject b = Instantiate(Ammo, ShootPosition.position, Quaternion.identity);
                 b.GetComponent<CannonBall>().target = Target;
                 b.GetComponent<CannonBall>().twr = this;
             }
 
-            m_IsShooting = false;
+            IsShooting = false;
         }
     }
 }
