@@ -17,7 +17,8 @@ namespace ARTowerDefense.Structures.Dynamic
 
         public void ShowHoverOutline()
         {
-            if (m_Renderers == null) return; // TODO: fix this properly, null exception thrown when placing a new structure
+            // Fixes null exception thrown when placing a new structure
+            if (m_Renderers == null) return; 
             foreach (var meshRenderer in m_Renderers)
             {
                 foreach (var material in meshRenderer.materials)
@@ -30,6 +31,7 @@ namespace ARTowerDefense.Structures.Dynamic
 
         public void ShowSelectedOutline()
         {
+            if (m_Renderers == null) return;
             foreach (var meshRenderer in m_Renderers)
             {
                 foreach (var material in meshRenderer.materials)
@@ -42,7 +44,7 @@ namespace ARTowerDefense.Structures.Dynamic
 
         public void HideOutline()
         {
-            if (m_Renderers == null) return; // TODO: fix this properly, null exception thrown when placing a new structure
+            if (m_Renderers == null) return;
             foreach (var meshRenderer in m_Renderers)
             {
                 foreach (var material in meshRenderer.materials)

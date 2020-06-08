@@ -797,8 +797,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9db23131ada1d0e49b9fb74c5d34d422, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Enemybug: {fileID: 0}
-  m_Animator: {fileID: 0}
   EnemyHealth: {fileID: 2104546881254709604}
 --- !u!1 &2358481304910086670
 GameObject:
@@ -816,7 +814,7 @@ GameObject:
   - component: {fileID: 2104546881254709604}
   m_Layer: 0
   m_Name: Enemy Health
-  m_TagString: enemyBug
+  m_TagString: EnemyHealth
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

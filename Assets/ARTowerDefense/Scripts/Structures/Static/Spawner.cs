@@ -14,8 +14,8 @@ public class Spawner : MonoBehaviour
     private int m_WaveSizeIncreaseMin = 1;
     private int m_WaveSizeIncreaseMax = 5;
     private int m_RemainingEnemiesToSpawn;
-    private Transform m_AnchorTransform;
 
+    private Transform m_AnchorTransform;
     private Transform m_SpawnerTransform;
 
     void Start()
@@ -28,7 +28,7 @@ public class Spawner : MonoBehaviour
     {
         if (m_RemainingWaves == 0)
         {
-            ARTowerDefense.Master.LastWave = true;
+            Master.LastWave = true;
             return;
         }
 

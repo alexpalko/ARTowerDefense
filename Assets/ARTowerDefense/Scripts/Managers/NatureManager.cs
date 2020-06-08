@@ -9,18 +9,16 @@ namespace ARTowerDefense.Managers
     {
         public float CoverageRate;
         public GameObject[] NaturePrefabs;
-
-        private List<BuildingDivision> m_Divisions;
         
         void OnEnable()
         {
-            m_Divisions = Master.DivisionGameObjectDictionary.Values.ToList();
+            List<BuildingDivision> divisions = Master.DivisionGameObjectDictionary.Values.Where(x => !x.IsLocked).ToList();
 
-            var unlockedDivisionsCount = m_Divisions.Count(x => !x.IsLocked);
+            var unlockedDivisionsCount = divisions.Count;
             var divisionsWithNatureCount = Mathf.CeilToInt(unlockedDivisionsCount * CoverageRate);
             
             var rand = new Random();
-            var divisionsToAddNature = m_Divisions.OrderBy(x => rand.Next()).Take(divisionsWithNatureCount);
+            var divisionsToAddNature = divisions.OrderBy(x => rand.Next()).Take(divisionsWithNatureCount);
 
             foreach (var division in divisionsToAddNature)
             {

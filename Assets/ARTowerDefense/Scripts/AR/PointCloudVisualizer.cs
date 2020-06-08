@@ -304,6 +304,15 @@ namespace ARTowerDefense.AR
         }
 
         /// <summary>
+        /// Shows/hides the point cloud's mesh.
+        /// </summary>
+        /// <param name="active"></param>
+        public void SetMeshRendererActive(bool active)
+        {
+            m_MeshRenderer.enabled = active;
+        }
+
+        /// <summary>
         /// Contains the information of a feature point.
         /// </summary>
         private struct PointInfo

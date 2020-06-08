@@ -391,12 +391,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1c92762c7d4888745a375d3fe2b88a1f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ShootElement: {fileID: 7640465072760706560}
+  ShootPosition: {fileID: 7640465072760706560}
   LookAtObj: {fileID: 7644559308151452096}
   Ammo: {fileID: 1240887441953726, guid: 8a976dcd328a4664c85144f33b9c46b0, type: 3}
   Target: {fileID: 0}
   Damage: 25
-  ShootDelay: 1.5
+  ShotDelay: 1
 --- !u!114 &9084843633776438839
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -409,9 +409,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8392ef2f44d046b40a6d062e034621cc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  HoverOutlineColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
-  SelectedOutlineColor: {r: 1, g: 0.75, b: 0, a: 1}
-  OutlineThickness: 3
 --- !u!1 &7646724305836691386
 GameObject:
   m_ObjectHideFlags: 0

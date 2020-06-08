@@ -57,7 +57,8 @@ namespace ARTowerDefense
         #region #Panels
 
         [SerializeField] private GameObject MainMenuPanel;
-        [SerializeField] private GameObject GameInitializationPanel;
+        [SerializeField] private GameObject PlaneSelectionPanel;
+        [SerializeField] private GameObject BasePlacementPanel;
         [SerializeField] private GameObject GameLoopPanel;
         [SerializeField] private GameObject GamePausedPanel;
         [SerializeField] private GameObject GameOverPanel;
@@ -80,6 +81,7 @@ namespace ARTowerDefense
         public List<Vector3> BindingVectors { get; private set; }
         private Division m_HomeBaseDivision;
         private Division m_SpawnerDivision;
+        private bool m_Victory;
 
         /// <summary>
         /// Represents the current free division to which the camera center is pointing.
@@ -172,7 +174,7 @@ namespace ARTowerDefense
 
         #endregion
 
-        #region Game Progression
+        #region #Game_Progression
 
         public void AdvanceGameState()
         {
@@ -199,11 +201,24 @@ namespace ARTowerDefense
                     m_GameState = GameState.GAME_LOOP;
                     _InitializeGameLoop();
                     break;
+                case GameState.GAME_LOOP:
+                    m_GameState = GameState.GAME_OVER;
+                    _InitializeGameOver();
+                    break;
                 default:
                     throw new InvalidOperationException(
                         $"Method should not be accessed when the session is in {m_GameState} state.");
             }
             Debug.Log($"Game stage changed to {m_GameState}");
+        }
+
+        #endregion
+
+        #region #MAIN_MENU
+
+        public void QuitApplication()
+        {
+            Application.Quit();
         }
 
         #endregion
@@ -214,6 +229,7 @@ namespace ARTowerDefense
         {
             MainMenuPanel.SetActive(false);
             _SetARCoreElementsVisibility(true);
+            PlaneSelectionPanel.SetActive(true);
             PlaneSelectionManager.SetActive(true);
         }
 
@@ -225,6 +241,7 @@ namespace ARTowerDefense
         {
             Debug.Log($"Initializing {GameState.GAME_SPACE_INSTANTIATION} state");
             PlaneSelectionManager.SetActive(false);
+            PlaneSelectionPanel.SetActive(false);
             _GetPlaneData();
             _SetARCoreElementsVisibility(false);
             Debug.Log("Plane generation manager disabled");
@@ -265,7 +282,7 @@ namespace ARTowerDefense
         private void _InitializeBasePlacement()
         {
             GameInitManager.SetActive(false);
-            GameInitializationPanel.SetActive(true);
+            BasePlacementPanel.SetActive(true);
         }
 
         private void _BasePlacementLogic()
@@ -349,7 +366,7 @@ namespace ARTowerDefense
         private void _InitializePathGeneration()
         {
             DivisionGameObjectDictionary[m_HomeBaseDivision].Lock();
-            GameInitializationPanel.SetActive(false);
+            BasePlacementPanel.SetActive(false);
             _GeneratePathEnd();
         }
 
@@ -397,12 +414,13 @@ namespace ARTowerDefense
         {
             if (EnemyReachedBase)
             {
-                _InitializeGameOver(false);
+                AdvanceGameState();
             }
 
-            if (LastWave && !GameObject.FindGameObjectsWithTag("enemyBug").Any())
+            if (LastWave && !GameObject.FindGameObjectsWithTag("EnemyHealth").Any())
             {
-                _InitializeGameOver(true);
+                m_Victory = true;
+                AdvanceGameState();
             }
         }
 
@@ -410,20 +428,13 @@ namespace ARTowerDefense
 
         #region #GAME_OVER
 
-        private void _InitializeGameOver(bool victory)
+        private void _InitializeGameOver()
         {
             _StopTime();
             GameLoopPanel.SetActive(false);
-            m_GameState = GameState.GAME_OVER;
             GameOverPanel.SetActive(true);
-            if (victory)
-            {
-                VictoryText.SetActive(true);
-            }
-            else
-            {
-                DefeatText.SetActive(true);
-            }
+            VictoryText.SetActive(m_Victory);
+            DefeatText.SetActive(!m_Victory);
         }
 
         #endregion
@@ -469,7 +480,6 @@ namespace ARTowerDefense
             _StartTime();
             Destroy(AnchorTransform.gameObject);
             _Reset();
-            BuildingManager.GetComponent<BuildingManager>().ResetManager();
             m_GameState = GameState.MAIN_MENU;
             MainMenuPanel.SetActive(true);
         }
@@ -487,6 +497,7 @@ namespace ARTowerDefense
             m_SpawnerDivision = default;
             EnemyReachedBase = default;
             LastWave = default;
+            m_Victory = default;
             BuildingManager.SetActive(false);
             CoinManager.SetActive(false);
             NatureManager.SetActive(false);
@@ -518,7 +529,7 @@ namespace ARTowerDefense
 
         private void _SetPointCloudVisibility(bool active)
         {
-            PointCloud.GetComponent<PointcloudVisualizer>().SetMeshRendererActive(active);
+            PointCloud.GetComponent<PointCloudVisualizer>().SetMeshRendererActive(active);
         }
 
         private void _SetPlanesVisibility(bool active)
@@ -537,32 +548,13 @@ namespace ARTowerDefense
 
         #region #Android
 
-        private void _ShowAndroidToastMessage(string message)
-        {
-            AndroidJavaClass unityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
-            AndroidJavaObject unityActivity =
-                unityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
-
-            if (unityActivity != null)
-            {
-                AndroidJavaClass toastClass = new AndroidJavaClass("android.widget.Toast");
-                unityActivity.Call("runOnUiThread", new AndroidJavaRunnable(() =>
-                {
-                    AndroidJavaObject toastObject =
-                        toastClass.CallStatic<AndroidJavaObject>(
-                            "makeText", unityActivity, message, 0);
-                    toastObject.Call("show");
-                }));
-            }
-        }
-
         private void _UpdateApplicationLifecycle()
         {
-            // Exit the app when the 'back' button is pressed.
-            if (Input.GetKey(KeyCode.Escape))
-            {
-                Application.Quit();
-            }
+            //// Exit the app when the 'back' button is pressed.
+            //if (Input.GetKey(KeyCode.Escape))
+            //{
+            //    Application.Quit();
+            //}
 
             // Only allow the screen to sleep when not tracking.
             Screen.sleepTimeout = Session.Status != SessionStatus.Tracking
@@ -580,21 +572,35 @@ namespace ARTowerDefense
             {
                 _ShowAndroidToastMessage("Camera permission is needed to run this application.");
                 m_IsQuitting = true;
-                Invoke("_DoQuit", 0.5f);
+                Invoke("QuitApplication", 0.5f);
             }
             else if (Session.Status.IsError())
             {
                 _ShowAndroidToastMessage(
                     "ARCore encountered a problem connecting.  Please start the app again.");
                 m_IsQuitting = true;
-                Invoke("_DoQuit", 0.5f);
+                Invoke("QuitApplication", 0.5f);
             }
 
         }
 
-        private void _DoQuit()
+        private void _ShowAndroidToastMessage(string message)
         {
-            Application.Quit();
+            AndroidJavaClass unityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
+            AndroidJavaObject unityActivity =
+                unityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
+
+            if (unityActivity != null)
+            {
+                AndroidJavaClass toastClass = new AndroidJavaClass("android.widget.Toast");
+                unityActivity.Call("runOnUiThread", new AndroidJavaRunnable(() =>
+                {
+                    AndroidJavaObject toastObject =
+                        toastClass.CallStatic<AndroidJavaObject>(
+                            "makeText", unityActivity, message, 0);
+                    toastObject.Call("show");
+                }));
+            }
         }
 
         #endregion

@@ -17,24 +17,24 @@ public class BuildingDivision : MonoBehaviour
 
     public void AddBuilding(GameObject buildingPrefab)
     {
-        if (!AddContainedStructure(buildingPrefab, 0)) return;
+        if (!_AddContainedStructure(buildingPrefab, 0)) return;
         HasBuilding = true;
     }
 
     public void AddBuilding(GameObject buildingPrefab, float yAxisRotation)
     {
-        if (!AddContainedStructure(buildingPrefab, yAxisRotation)) return;
+        if (!_AddContainedStructure(buildingPrefab, yAxisRotation)) return;
         HasBuilding = true;
     }
    
     public void AddNature(GameObject naturePrefab)
     {
-        if (!AddContainedStructure(naturePrefab, 0)) return;
+        if (!_AddContainedStructure(naturePrefab, 0)) return;
         m_ContainedStructure.transform.Rotate(0,new System.Random().Next(360),0);
         HasNature = true;
     }
 
-    private bool AddContainedStructure(GameObject buildingPrefab, float yAxisRotation)
+    private bool _AddContainedStructure(GameObject buildingPrefab, float yAxisRotation)
     {
         if (IsLocked || HasNature || HasBuilding) return false;
         m_ContainedStructure = Instantiate(buildingPrefab, transform.position, Quaternion.identity, transform);
@@ -48,6 +48,23 @@ public class BuildingDivision : MonoBehaviour
         Destroy(m_ContainedStructure);
         m_ContainedStructure = null;
         HasBuilding = HasNature = false;
+    }
+
+    public void ShowValidTransparentStructure(GameObject prefab)
+    {
+        m_TransparentStructure = Instantiate(prefab, transform.position, Quaternion.identity, transform);
+        m_TransparentStructure.GetComponent<TransparencyController>().ShowValidPlacementColor();
+    }
+
+    public void ShowInvalidTransparentStructure(GameObject prefab)
+    {
+        m_TransparentStructure = Instantiate(prefab, transform.position, Quaternion.identity, transform);
+        m_TransparentStructure.GetComponent<TransparencyController>().ShowInvalidPlacementColor();
+    }
+
+    public void ClearTransparentStructure()
+    {
+        Destroy(m_TransparentStructure);
     }
 
     public void ShowHoverOutline()
@@ -79,21 +96,5 @@ public class BuildingDivision : MonoBehaviour
             outlineController.HideOutline();
         }
     }
-
-    public void ShowValidTransparentStructure(GameObject prefab)
-    {
-        m_TransparentStructure = Instantiate(prefab, transform.position, Quaternion.identity, transform);
-        m_TransparentStructure.GetComponent<TransparencyController>().ShowValidPlacementColor();
-    }
-
-    public void ShowInvalidTransparentStructure(GameObject prefab)
-    {
-        m_TransparentStructure = Instantiate(prefab, transform.position, Quaternion.identity, transform);
-        m_TransparentStructure.GetComponent<TransparencyController>().ShowInvalidPlacementColor();
-    }
-
-    public void ClearTransparentStructure()
-    {
-        Destroy(m_TransparentStructure);
-    }
+    
 }

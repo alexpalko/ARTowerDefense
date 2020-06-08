@@ -17,5 +17,5 @@ MonoBehaviour:
   LightEstimationMode: 3
   CloudAnchorMode: 0
   AugmentedImageDatabase: {fileID: 0}
-  CameraFocusMode: 0
+  CameraFocusMode: 1
   AugmentedFaceMode: 0

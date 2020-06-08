@@ -16,7 +16,7 @@ namespace ARTowerDefense.Structures.Dynamic.Defense
 
         void OnTriggerEnter(Collider other)
         {
-            if (other.CompareTag("enemyBug") && !m_CurTargets.Contains(other.gameObject))
+            if (other.CompareTag("EnemyHealth") && !m_CurTargets.Contains(other.gameObject))
             {
                 m_CurTargets.Add(other.gameObject);
                 Tower.AddTarget(other.gameObject);
@@ -40,7 +40,7 @@ namespace ARTowerDefense.Structures.Dynamic.Defense
 
         void OnTriggerExit(Collider other)
         {
-            if (other.CompareTag("enemyBug") && m_CurTargets.Contains(other.gameObject))
+            if (other.CompareTag("EnemyHealth") && m_CurTargets.Contains(other.gameObject))
             {
                 m_CurTargets.Remove(other.gameObject);
                 Tower.RemoveTarget(other.gameObject);

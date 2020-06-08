@@ -15,7 +15,8 @@ namespace ARTowerDefense.Managers
         /// <summary>
         /// The minimum allowed distance between boundaries not to require consolidation
         /// </summary>
-        private readonly float m_BoundaryConsolidationThreshold = .2f;
+        private const float k_BoundaryConsolidationThreshold = .2f;
+
 
         [SerializeField] private Master Master;
 
@@ -30,8 +31,8 @@ namespace ARTowerDefense.Managers
             List<Vector3> bindingVectorsList = Master.BindingVectors;
             _ConsolidateBoundaries(bindingVectorsList);
             BindingVectors = bindingVectorsList.ToArray();
-            _SpawnBoundaries();
-            _SpawnGamePlane();
+            _InstantiateBoundaries();
+            _InstantiateGamePlane();
             _SplitPlane();
             Master.DivisionGameObjectDictionary = DivisionsDictionary;
         }
@@ -40,17 +41,20 @@ namespace ARTowerDefense.Managers
         {
             for (int i = 0; i < vectors.Count; i++)
             {
+                // Hold a list of all indexes of vectors that are close to the vector at index i
                 var closeByVectorsIndexes = new List<int>();
                 for (int j = i + 1; j < vectors.Count; j++)
                 {
-                    if (Vector3.Distance(vectors[i], vectors[j]) < m_BoundaryConsolidationThreshold)
+                    if (_VectorsTooClose(vectors[i], vectors[j]))
                     {
                         closeByVectorsIndexes.Add(j);
                     }
                 }
 
+                // If no vector that was close was detected continue to the next index
                 if (closeByVectorsIndexes.Count != 0)
                 {
+                    // The average of the vectors that are close by is made
                     var newVector = vectors[i];
                     foreach (int index in closeByVectorsIndexes)
                     {
@@ -59,17 +63,22 @@ namespace ARTowerDefense.Managers
 
                     newVector /= closeByVectorsIndexes.Count + 1;
 
+                    // The current vector is removed and replaced by the average calculated above
                     vectors.Remove(vectors[i]);
                     vectors.Insert(i, newVector);
+                    // All the vectors that are too close are removed from the list
                     vectors.RemoveAll(vect =>
                         closeByVectorsIndexes.Select(idx => vectors[idx]).Contains(vect));
-                    _ConsolidateBoundaries(vectors);
-                    return;
                 }
             }
         }
 
-        private void _SpawnBoundaries()
+        private bool _VectorsTooClose(Vector3 point1, Vector3 point2)
+        {
+            return Vector3.Distance(point1, point2) < k_BoundaryConsolidationThreshold;
+        }
+
+        private void _InstantiateBoundaries()
         {
             BindingTowers = BindingVectors
                 .Select(v => Instantiate(BindingTowerPrefab, v, Quaternion.identity, Master.AnchorTransform)).ToArray();
@@ -86,32 +95,34 @@ namespace ARTowerDefense.Managers
 
             for (int i = 0; i < BindingVectors.Length; i++)
             {
-                Vector3 point = BindingVectors[i];
-                Vector3 midPoint = BindingWalls[i].transform.position;
+                Vector3 point1 = BindingVectors[i];
+                Vector3 point2 = BindingVectors[(i + 1) % BindingVectors.Length];
 
-                Vector3 pointProjectionOntoX = Vector3.Project(point, Vector3.right);
-                Vector3 midPointProjectionOntoX = Vector3.Project(midPoint, Vector3.right);
-                Vector3 pointProjectionOntoZ = Vector3.Project(point, Vector3.forward);
-                Vector3 midPointProjectionOntoZ = Vector3.Project(midPoint, Vector3.forward);
+                Vector3 point1ProjectionOntoX = Vector3.Project(point1, Vector3.right);
+                Vector3 point2ProjectionOntoX = Vector3.Project(point2, Vector3.right);
+                Vector3 point1ProjectionOntoZ = Vector3.Project(point1, Vector3.forward);
+                Vector3 point2ProjectionOntoZ = Vector3.Project(point2, Vector3.forward);
 
-                float cath1 = Vector3.Distance(pointProjectionOntoX, midPointProjectionOntoX);
-                float cath2 = Vector3.Distance(pointProjectionOntoZ, midPointProjectionOntoZ);
+                float cath1 = Vector3.Distance(point1ProjectionOntoX, point2ProjectionOntoX);
+                float cath2 = Vector3.Distance(point1ProjectionOntoZ, point2ProjectionOntoZ);
                 float angle = Mathf.Atan2(cath2, cath1) * Mathf.Rad2Deg;
 
                 BindingWalls[i].transform.RotateAround(BindingWalls[i].transform.position, Vector3.up, angle);
-                Collider fieldCollider = BindingWalls[i].GetComponent<Collider>();
-                if (ColliderContainsPoint(fieldCollider.transform, point)) continue;
+                Debug.Break();
+                if (_WallIntersectsPoint(BindingWalls[i].transform, point1)) continue;
                 BindingWalls[i].transform.RotateAround(BindingWalls[i].transform.position, Vector3.up, -angle * 2);
             }
         }
 
-        private bool ColliderContainsPoint(Transform colliderTransform, Vector3 point)
+        private bool _WallIntersectsPoint(Transform colliderTransform, Vector3 point)
         {
+            // Returns a vector that represents the position of point relative to the transform's position
+            // The position of the transform becomes the origin of the coordinate system to which localpos belongs
             Vector3 localPos = colliderTransform.InverseTransformPoint(point);
-            return Mathf.Abs(localPos.x) < 0.5f && Mathf.Abs(localPos.y) < 0.5f && Mathf.Abs(localPos.z) < 0.5f;
+            return  Mathf.Abs(localPos.z) < 0.5f;
         }
 
-        private void _SpawnGamePlane()
+        private void _InstantiateGamePlane()
         {
 
             float maxX = BindingVectors.Select(v => v.x).Max();
@@ -174,10 +185,10 @@ namespace ARTowerDefense.Managers
             {
                 var polyPoints = BindingVectors.Select(x => new Vector2(x.x, x.z)).ToArray();
 
-                return !(Poly.ContainsPoint(polyPoints, new Vector2(div.Point1.x, div.Point1.z)) &&
-                         Poly.ContainsPoint(polyPoints, new Vector2(div.Point2.x, div.Point2.z)) &&
-                         Poly.ContainsPoint(polyPoints, new Vector2(div.Point1.x, div.Point2.z)) &&
-                         Poly.ContainsPoint(polyPoints, new Vector2(div.Point2.x, div.Point1.z)));
+                return !(Poly.PolyContainsPoint(polyPoints, new Vector2(div.Point1.x, div.Point1.z)) &&
+                         Poly.PolyContainsPoint(polyPoints, new Vector2(div.Point2.x, div.Point2.z)) &&
+                         Poly.PolyContainsPoint(polyPoints, new Vector2(div.Point1.x, div.Point2.z)) &&
+                         Poly.PolyContainsPoint(polyPoints, new Vector2(div.Point2.x, div.Point1.z)));
             });
 
             Debug.Log($"Division count after trimming: {divisions.Count}");

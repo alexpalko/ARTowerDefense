@@ -321,11 +321,6 @@ namespace GoogleARCore.Examples.Common
                               MeshTopology.Points, 0);
         }
 
-        public void SetMeshRendererActive(bool active)
-        {
-            m_MeshRenderer.enabled = active;
-        }
-
         /// <summary>
         /// Contains the information of a feature point.
         /// </summary>

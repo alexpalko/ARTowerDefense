@@ -14,7 +14,7 @@ public class TowerTrigger : MonoBehaviour {
 
     void OnTriggerEnter(Collider other)
 	{
-		if(other.CompareTag("enemyBug"))
+		if(other.CompareTag("EnemyHealth"))
 		{
             if (!lockE)
             {
@@ -62,7 +62,7 @@ public class TowerTrigger : MonoBehaviour {
 	}
 	void OnTriggerExit(Collider other)
 	{
-		if(other.CompareTag("enemyBug"))
+		if(other.CompareTag("EnemyHealth"))
 		{
             if (other.gameObject == curTarget)
             {

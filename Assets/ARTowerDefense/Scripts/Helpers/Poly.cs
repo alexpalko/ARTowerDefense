@@ -4,7 +4,8 @@ namespace ARTowerDefense.Helpers
 {
     public static class Poly
     {
-        public static bool ContainsPoint(Vector2[] polyPoints, Vector2 p)
+        // Author: Eric Haines, https://wiki.unity3d.com/index.php/PolyContainsPoint
+        public static bool PolyContainsPoint(Vector2[] polyPoints, Vector2 p)
         {
             var j = polyPoints.Length - 1;
             var inside = false;

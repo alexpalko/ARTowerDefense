@@ -34,36 +34,11 @@ namespace ARTowerDefense.Managers
 
         void Update()
         {
-            if (!TryGetDivisionHit(out var hit)) return;
-            _UpdateButtonStates(hit);
-        }
-
-        public void ResetManager()
-        {
-            BuildingsCatalog.SetActive(false);
-            CatalogSelectionButtonAction();
-        }
-
-        private bool TryGetDivisionHit(out RaycastHit hit)
-        {
-            var ray = new Ray(FirstPersonCamera.transform.position, FirstPersonCamera.transform.forward);
-            var any = false;
-            hit = Physics.RaycastAll(ray).FirstOrDefault(h =>
-            {
-                if (!h.collider.CompareTag("Division")) return false;
-                any = true;
-                return true;
-
-            });
-
-            return any;
-        }
-
-        private void _UpdateButtonStates(RaycastHit hit)
-        {
             BuildButton.SetActive(false);
             SelectButton.SetActive(false);
             DemolishButton.SetActive(m_SelectedBuildingDivision != null);
+            if (!_TryGetDivisionHit(out var hit)) return;
+
             if (m_FocusedDivision != null)
             {
                 m_FocusedDivision.ClearTransparentStructure();
@@ -118,16 +93,25 @@ namespace ARTowerDefense.Managers
             }
         }
 
-        public void SelectBuildingToConstruct(int x)
+        void OnDisable()
         {
-            if (x < 0 || x > 7)
+            BuildingsCatalog.SetActive(false);
+            CatalogSelectionButtonAction();
+        }
+
+        private bool _TryGetDivisionHit(out RaycastHit hit)
+        {
+            var ray = new Ray(FirstPersonCamera.transform.position, FirstPersonCamera.transform.forward);
+            var any = false;
+            hit = Physics.RaycastAll(ray).FirstOrDefault(h =>
             {
-                Debug.LogError($"Invalid building code: {x}");
-                return;
-            }
-            m_BuildingToConstructId = x;
-            CatalogSelectionButton.SetActive(true);
-            CatalogSelectionButton.GetComponent<Image>().sprite = CatalogImages[m_BuildingToConstructId];
+                if (!h.collider.CompareTag("Division")) return false;
+                any = true;
+                return true;
+
+            });
+
+            return any;
         }
 
         public void Construct()
@@ -175,6 +159,18 @@ namespace ARTowerDefense.Managers
         {
             BuildingsCatalog.SetActive(!BuildingsCatalog.activeSelf);
             Debug.Log($"Set buildings panel status to: {BuildingsCatalog.activeSelf}");
+        }
+
+        public void SelectBuildingToConstruct(int x)
+        {
+            if (x < 0 || x > 7)
+            {
+                Debug.LogError($"Invalid building code: {x}");
+                return;
+            }
+            m_BuildingToConstructId = x;
+            CatalogSelectionButton.SetActive(true);
+            CatalogSelectionButton.GetComponent<Image>().sprite = CatalogImages[m_BuildingToConstructId];
         }
 
         public void CatalogSelectionButtonAction()

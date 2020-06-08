@@ -183,7 +183,8 @@ MonoBehaviour:
   CoinManager: {fileID: 0}
   NatureManager: {fileID: 0}
   MainMenuPanel: {fileID: 0}
-  GameInitializationPanel: {fileID: 0}
+  PlaneSelectionPanel: {fileID: 0}
+  BasePlacementPanel: {fileID: 0}
   GameLoopPanel: {fileID: 0}
   GamePausedPanel: {fileID: 0}
   GameOverPanel: {fileID: 0}

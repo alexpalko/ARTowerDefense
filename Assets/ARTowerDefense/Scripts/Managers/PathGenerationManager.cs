@@ -52,7 +52,7 @@ namespace ARTowerDefense.Managers
         /// A collection of divisions used for the path generation.
         /// Stores divisions that are not occupied by the path or divisions that are not adjacent to a path.
         /// </summary>
-        private readonly HashSet<Division> m_AvailableDivisionsForPathGeneration;
+        private readonly HashSet<Division> m_AvailableDivisions;
 
         /// <summary>
         /// A set of all divisions that will contain paths
@@ -90,7 +90,7 @@ namespace ARTowerDefense.Managers
         {
             _InitializeMoves();
 
-            m_AvailableDivisionsForPathGeneration = new HashSet<Division>(divisionGameObjectDict
+            m_AvailableDivisions = new HashSet<Division>(divisionGameObjectDict
                 .Where(kvp => !kvp.Value.HasBuilding)
                 .Select(kvp => kvp.Key));
 
@@ -134,7 +134,7 @@ namespace ARTowerDefense.Managers
                 m_AvailableDivisionsThreshold += k_IncreaseThresholdSize;
             }
 
-            if (m_AvailableDivisionsForPathGeneration.Count < m_AvailableDivisionsThreshold * DivisionGameObjectDictionary.Count &&
+            if (m_AvailableDivisions.Count < m_AvailableDivisionsThreshold * DivisionGameObjectDictionary.Count &&
                 _TryPlaceSpawner(currentDivision))
             {
                 m_PathDivisions.Push(currentDivision);
@@ -159,7 +159,7 @@ namespace ARTowerDefense.Managers
                 foreach (Vector3 move in m_Moves)
                 {
                     var neighborCenter = move + previousDivision.Center;
-                    var neighborDivision = m_AvailableDivisionsForPathGeneration.FirstOrDefault(div => div.Includes(neighborCenter));
+                    var neighborDivision = m_AvailableDivisions.FirstOrDefault(div => div.Includes(neighborCenter));
                     if (neighborDivision != null)
                     {
                         markedDivisions.Add(neighborDivision);
@@ -167,22 +167,22 @@ namespace ARTowerDefense.Managers
                 }
             }
 
-            m_AvailableDivisionsForPathGeneration.RemoveWhere(div => markedDivisions.Contains(div));
+            m_AvailableDivisions.RemoveWhere(div => markedDivisions.Contains(div));
 
             IEnumerable<Division> possibleNextDivisions = _RandomizeNextDivisions(currentDivision);
             m_PathDivisions.Push(currentDivision);
             Debug.Log($"The m_PathDivisions contains {m_PathDivisions.Count} divisions.");
             foreach (Division nextDivision in possibleNextDivisions)
             {
-                m_AvailableDivisionsForPathGeneration.Remove(nextDivision);
+                m_AvailableDivisions.Remove(nextDivision);
                 var res = _GenerateRandomPath(nextDivision);
                 if (res != null) return res;
-                m_AvailableDivisionsForPathGeneration.Add(nextDivision);
+                m_AvailableDivisions.Add(nextDivision);
             }
 
             foreach (Division markedDivision in markedDivisions)
             {
-                m_AvailableDivisionsForPathGeneration.Add(markedDivision);
+                m_AvailableDivisions.Add(markedDivision);
             }
 
             m_PathDivisions.Pop();
@@ -195,7 +195,7 @@ namespace ARTowerDefense.Managers
             List<Division> divisions = new List<Division>();
             foreach (Vector3 center in centers)
             {
-                var nextDivision = m_AvailableDivisionsForPathGeneration.FirstOrDefault(div => div.Includes(center));
+                var nextDivision = m_AvailableDivisions.FirstOrDefault(div => div.Includes(center));
                 if (nextDivision != null)
                 {
                     divisions.Add(nextDivision);

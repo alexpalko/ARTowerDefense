@@ -51,7 +51,7 @@ namespace ARTowerDefense.Structures.Dynamic.Defense.Ammo
             }
 
             // Special Cannon Ball Behavior
-            var enemies = GameObject.FindGameObjectsWithTag("enemyBug");
+            var enemies = GameObject.FindGameObjectsWithTag("EnemyHealth");
             foreach (var enemy in enemies)
             {
                 if (enemy.transform == target) continue;
