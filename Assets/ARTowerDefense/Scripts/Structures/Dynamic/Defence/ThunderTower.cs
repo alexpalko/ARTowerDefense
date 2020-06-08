@@ -12,7 +12,7 @@ namespace ARTowerDefense.Structures.Dynamic.Defense
         public GameObject CenterPoint;
         public GameObject Ammo;
         
-        public float MovementDebuff = .4f;
+        public float MovementDebuff = .7f;
 
         void Start()
         {
@@ -30,7 +30,7 @@ namespace ARTowerDefense.Structures.Dynamic.Defense
 
             foreach (var target in m_Targets)
             {
-                target.transform.parent.GetComponent<EnemyMovement>().MovementDebuffQueue.Dequeue();
+                target.transform.GetComponent<Enemy>().MovementDebuffQueue.Dequeue();
             }
         }
 
@@ -53,8 +53,8 @@ namespace ARTowerDefense.Structures.Dynamic.Defense
             script.StartObject = CenterPoint;
             script.EndObject = target;
             m_Bolts.Add(target, newBolt);
-            var enemyMovement = target.transform.parent.GetComponent<EnemyMovement>();
-            enemyMovement.MovementDebuffQueue.Enqueue(MovementDebuff);
+            var enemy = target.transform.GetComponent<Enemy>();
+            enemy.MovementDebuffQueue.Enqueue(MovementDebuff);
         }
 
         public void RemoveTarget(GameObject target)
@@ -62,7 +62,7 @@ namespace ARTowerDefense.Structures.Dynamic.Defense
             m_Targets.Remove(target);
             Destroy(m_Bolts[target]);
             m_Bolts.Remove(target);
-            var enemyMovement = target.transform.parent.GetComponent<EnemyMovement>();
+            var enemyMovement = target.transform.GetComponent<Enemy>();
             enemyMovement.MovementDebuffQueue.Dequeue();
         }
     }

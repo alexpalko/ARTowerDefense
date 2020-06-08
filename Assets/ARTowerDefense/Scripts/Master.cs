@@ -417,7 +417,7 @@ namespace ARTowerDefense
                 AdvanceGameState();
             }
 
-            if (LastWave && !GameObject.FindGameObjectsWithTag("EnemyHealth").Any())
+            if (LastWave && !GameObject.FindGameObjectsWithTag("Enemy").Any())
             {
                 m_Victory = true;
                 AdvanceGameState();

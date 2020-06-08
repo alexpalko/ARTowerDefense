@@ -35,7 +35,7 @@ namespace ARTowerDefense.Structures.Dynamic.Defense.Ammo
         {
             if (other.gameObject.transform == target)
             {
-                target.GetComponent<EnemyHealth>().DoDamage(twr.Damage);
+                target.GetComponent<Enemy>().DoDamage(twr.Damage);
                 Destroy(gameObject, i);
             }
         }

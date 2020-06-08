@@ -1,31 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
   <Class Name="ARTowerDefense.Enemies.Enemy">
-    <Position X="0.75" Y="5.5" Width="1.5" />
+    <Position X="1" Y="4.5" Width="2" />
     <TypeIdentifier>
-      <HashCode>AAQAAQAAACAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAQACQAAAiAAABAAAAACAAAAAAgAAQAAABAAAAAAAAA=</HashCode>
       <FileName>Assets\ARTowerDefense\Scripts\Enemies\Enemy.cs</FileName>
     </TypeIdentifier>
-    <ShowAsAssociation>
-      <Field Name="EnemyHealth" />
-    </ShowAsAssociation>
-  </Class>
-  <Class Name="ARTowerDefense.Enemies.EnemyHealth">
-    <Position X="2.25" Y="3.25" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAQAAAACAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>Assets\ARTowerDefense\Scripts\Enemies\EnemyHealth.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="ARTowerDefense.Enemies.EnemyMovement">
-    <Position X="4" Y="5.25" Width="2" />
-    <TypeIdentifier>
-      <HashCode>AAQACAAAAiAAABAAAAAAAAAAAAgAAQAAABAAAAAAAAA=</HashCode>
-      <FileName>Assets\ARTowerDefense\Scripts\Enemies\EnemyMovement.cs</FileName>
-    </TypeIdentifier>
-    <ShowAsAssociation>
-      <Field Name="Health" />
-    </ShowAsAssociation>
   </Class>
   <Class Name="ARTowerDefense.Managers.CoinGenerator" Collapsed="true">
     <Position X="10.75" Y="2.5" Width="1.5" />

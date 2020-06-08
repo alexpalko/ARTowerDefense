@@ -108,7 +108,6 @@ namespace ARTowerDefense.Managers
                 float angle = Mathf.Atan2(cath2, cath1) * Mathf.Rad2Deg;
 
                 BindingWalls[i].transform.RotateAround(BindingWalls[i].transform.position, Vector3.up, angle);
-                Debug.Break();
                 if (_WallIntersectsPoint(BindingWalls[i].transform, point1)) continue;
                 BindingWalls[i].transform.RotateAround(BindingWalls[i].transform.position, Vector3.up, -angle * 2);
             }

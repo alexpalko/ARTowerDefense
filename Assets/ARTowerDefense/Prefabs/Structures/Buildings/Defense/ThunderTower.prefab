@@ -167,7 +167,7 @@ SphereCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 4
+  m_Radius: 2.5
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &7030972455858994136
 MonoBehaviour:
@@ -242,13 +242,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4b2fca7b485aa9f4693f006e37b6c446, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ShootElement: {fileID: 7978308415421150280}
-  LookAtObj: {fileID: 7978308415421150280}
-  Ammo: {fileID: 106988, guid: 15dec7b07032b2f4aa6f855bfbe120f7, type: 3}
-  Target: {fileID: 0}
-  Damage: 10
-  ShootDelay: 0
   CenterPoint: {fileID: 7741747655622190368}
+  Ammo: {fileID: 106988, guid: 15dec7b07032b2f4aa6f855bfbe120f7, type: 3}
   MovementDebuff: 0.4
 --- !u!114 &7741927709760690192
 MonoBehaviour:

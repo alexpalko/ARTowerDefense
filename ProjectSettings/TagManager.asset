@@ -14,8 +14,8 @@ TagManager:
   - CannonTower
   - Dead
   - Enemy
-  - EnemyHealth
   - CoinManager
+  - DeadEnemy
   layers:
   - Default
   - TransparentFX

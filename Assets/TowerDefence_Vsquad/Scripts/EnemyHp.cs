@@ -16,7 +16,7 @@ public class EnemyHp : MonoBehaviour {
 
         if (EnemyHP <= 0)
         {
-            gameObject.tag = "Dead"; // send it to TowerTrigger to stop the shooting
+            gameObject.tag = "DeadEnemy"; // send it to TowerTrigger to stop the shooting
            
         }
     }

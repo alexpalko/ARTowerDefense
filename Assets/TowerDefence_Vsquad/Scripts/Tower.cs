@@ -36,7 +36,7 @@ public class CTower : MonoBehaviour {
     {
         if (target)
         {
-            target.GetComponent<EnemyHealth>().DoDamage(dmg);
+            target.GetComponent<Enemy>().DoDamage(dmg);
         }
     }
 
@@ -79,7 +79,7 @@ public class CTower : MonoBehaviour {
         
         if (Catcher == true)
         {
-            if (!target || target.CompareTag("Dead"))
+            if (!target || target.CompareTag("DeadEnemy"))
             {
 
                 StopCatcherAttack();

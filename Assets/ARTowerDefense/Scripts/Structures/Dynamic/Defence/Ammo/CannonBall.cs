@@ -43,7 +43,7 @@ namespace ARTowerDefense.Structures.Dynamic.Defense.Ammo
         {
             if (other.gameObject.transform == target)
             {
-                target.GetComponent<EnemyHealth>().DoDamage(twr.Damage);
+                target.GetComponent<Enemy>().DoDamage(twr.Damage);
                 Destroy(gameObject, i); 
                 impactParticle = Instantiate(impactParticle, target.transform.position, Quaternion.FromToRotation(Vector3.up, impactNormal));
                 impactParticle.transform.parent = target.transform;
@@ -51,14 +51,14 @@ namespace ARTowerDefense.Structures.Dynamic.Defense.Ammo
             }
 
             // Special Cannon Ball Behavior
-            var enemies = GameObject.FindGameObjectsWithTag("EnemyHealth");
+            var enemies = GameObject.FindGameObjectsWithTag("Enemy");
             foreach (var enemy in enemies)
             {
                 if (enemy.transform == target) continue;
 
-                if (Vector3.Distance(enemy.transform.parent.position, target.position) < .2f)
+                if (Vector3.Distance(enemy.transform.position, target.position) < .2f)
                 {
-                    enemy.GetComponent<EnemyHealth>().DoDamage(5);
+                    enemy.GetComponent<Enemy>().DoDamage(5);
                 }
             }
         }
