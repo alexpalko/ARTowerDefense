@@ -71,7 +71,7 @@ namespace GoogleARCoreInternal
         public static extern void glGenTextures(int n, int[] textures);
 
         [Import(ApiConstants.GLESApi)]
-        public static extern void glBindTexture(Target target, int texture);
+        public static extern void glBindTexture(Target Target, int texture);
 #pragma warning restore 626
 #endif // !UNITY_EDITOR
     }

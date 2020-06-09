@@ -18,12 +18,6 @@ namespace ARTowerDefense.Enemies
 
         public Queue<float> MovementDebuffQueue { get; set; }
 
-
-        public void DoDamage(int amount)
-        {
-            Health -= amount;
-        }
-
         void Start()
         {
             m_Animator = GetComponent<Animator>();
@@ -63,7 +57,7 @@ namespace ARTowerDefense.Enemies
 
             Vector3 dir = m_Target - transform.position;
             transform.Translate(
-                dir.normalized * (MovementSpeed - MovementDebuffQueue.FirstOrDefault() * MovementSpeed) *
+                dir.normalized * (1 - MovementDebuffQueue.FirstOrDefault()) * MovementSpeed *
                 Time.deltaTime, Space.World);
 
             if (Vector3.Distance(transform.position, m_Target) <= .04f)
@@ -71,6 +65,11 @@ namespace ARTowerDefense.Enemies
                 _GetNextWaypoint();
                 transform.LookAt(m_Target);
             }
+        }
+
+        public void DoDamage(int amount)
+        {
+            Health -= amount;
         }
 
         private void _GetNextWaypoint()

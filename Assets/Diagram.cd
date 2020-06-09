@@ -1,66 +1,31 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
-  <Class Name="ARTowerDefense.Enemies.Enemy">
-    <Position X="1" Y="4.5" Width="2" />
-    <TypeIdentifier>
-      <HashCode>AAQACQAAAiAAABAAAAACAAAAAAgAAQAAABAAAAAAAAA=</HashCode>
-      <FileName>Assets\ARTowerDefense\Scripts\Enemies\Enemy.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="ARTowerDefense.Managers.CoinGenerator" Collapsed="true">
-    <Position X="10.75" Y="2.5" Width="1.5" />
+  <Class Name="ARTowerDefense.Managers.CoinGenerator">
+    <Position X="6.25" Y="2.75" Width="2.25" />
     <TypeIdentifier>
       <HashCode>AAQAAAAAACAAAAAAAAAACACAAAAABAAAAAAAAAAAAAA=</HashCode>
       <FileName>Assets\ARTowerDefense\Scripts\Managers\CoinGenerator.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="ARTowerDefense.Managers.CrossbowTower" Collapsed="true">
-    <Position X="2.5" Y="2" Width="1.5" />
+  <Class Name="ARTowerDefense.Structures.Dynamic.Defense.Ammo.CannonBall">
+    <Position X="9.25" Y="7" Width="2" />
     <TypeIdentifier>
-      <HashCode>AAAAAQAAACAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>Assets\ARTowerDefense\Scripts\Managers\CrossbowTower.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="ARTowerDefense.Structures.Dynamic.Defense.Ammo.CannonBall" Collapsed="true">
-    <Position X="8.5" Y="0.5" Width="2" />
-    <TypeIdentifier>
-      <HashCode>gAQAAAAAAAAAAAAgIAAgAAABAAAACAAAYAAAAAAAAAA=</HashCode>
+      <HashCode>CAAAAAAAAAAAAAAAAAAAEAAAAACAAAAAAAAAAAAAACA=</HashCode>
       <FileName>Assets\ARTowerDefense\Scripts\Structures\Dynamic\Defence\Ammo\CannonBall.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="ARTowerDefense.Structures.Dynamic.Defense.Ammo.CrossbowBolt" Collapsed="true">
-    <Position X="8.5" Y="1.5" Width="1.5" />
+  <Class Name="ARTowerDefense.Structures.Dynamic.Defense.Ammo.CrossbowBolt">
+    <Position X="11.5" Y="7" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>gAQAAAAAAAAAAAAAIAAgAAABAAAACAAAYAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Assets\ARTowerDefense\Scripts\Structures\Dynamic\Defence\Ammo\CrossbowBolt.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="ARTowerDefense.Structures.Dynamic.Defense.ThunderTower" Collapsed="true">
-    <Position X="0.75" Y="0.5" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>ACQBAAAgACAAAAAAAAAAAAAAAAAgAQEABAAAAAQAAAA=</HashCode>
-      <FileName>Assets\ARTowerDefense\Scripts\Structures\Dynamic\Defence\ThunderTower.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="ARTowerDefense.Structures.Dynamic.Defense.ThunderTowerTrigger" Collapsed="true">
-    <Position X="8.5" Y="2.5" Width="2" />
+  <Class Name="ARTowerDefense.Structures.Dynamic.Defense.ThunderTowerTrigger">
+    <Position X="3" Y="4.75" Width="2" />
     <TypeIdentifier>
       <HashCode>AAQAAAAAECAAAACAAAAAAAAAAAAAAIAAQAAAAAAAAAA=</HashCode>
       <FileName>Assets\ARTowerDefense\Scripts\Structures\Dynamic\Defence\ThunderTowerTrigger.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="ARTowerDefense.Structures.Dynamic.Defense.TorusCage" Collapsed="true">
-    <Position X="11" Y="0.5" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AEQABAAAAAAAgAAAAAAAAAAAEAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>Assets\ARTowerDefense\Scripts\Structures\Dynamic\Defence\TorusCage.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="ARTowerDefense.Structures.Dynamic.Defense.Tower" Collapsed="true">
-    <Position X="2.5" Y="0.5" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>ACQAAACAACIABAAAIAAAACAAAACAAAAAQAQAAAAAAAA=</HashCode>
-      <FileName>Assets\ARTowerDefense\Scripts\Structures\Dynamic\Defence\Tower.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="ARTowerDefense.Structures.Dynamic.Economy.Chicken" Collapsed="true">
@@ -70,11 +35,18 @@
       <FileName>Assets\ARTowerDefense\Scripts\Structures\Dynamic\Economy\Chicken.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="ARTowerDefense.Structures.Dynamic.TransparencyController">
-    <Position X="5" Y="1.5" Width="2.25" />
+  <Class Name="ARTowerDefense.Structures.Dynamic.Defence.TowerTrigger">
+    <Position X="0.75" Y="4.75" Width="2" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAIAACAAAAAAAAAAAIAAAAAAAAACAAAAAAAAA=</HashCode>
-      <FileName>Assets\ARTowerDefense\Scripts\Structures\Dynamic\TransparencyController.cs</FileName>
+      <HashCode>AAQAAACAECAAAAAAEAAAEAAAAAAAAIAAQAAAAAAAAAA=</HashCode>
+      <FileName>Assets\ARTowerDefense\Scripts\Structures\Dynamic\Defence\TowerTrigger.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Assets.ARTowerDefense.Scripts.Structures.Dynamic.Defense.Ammo.Ammo">
+    <Position X="10.5" Y="3.75" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>CAQAAAAAEAAAAAAAAAAAEGABAAAAAAAAQAAAAAAAAAA=</HashCode>
+      <FileName>Assets\ARTowerDefense\Scripts\Structures\Dynamic\Defence\Ammo\Ammo.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Font Name="Arial" Size="9" />

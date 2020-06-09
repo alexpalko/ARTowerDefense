@@ -7,11 +7,12 @@ namespace ARTowerDefense.Structures.Dynamic.Defense
 {
     public class ThunderTower : MonoBehaviour
     {
+        public GameObject Shooter;
+        public GameObject Ammo;
+
         private HashSet<GameObject> m_Targets;
         private Dictionary<GameObject, GameObject> m_Bolts;
-        public GameObject CenterPoint;
-        public GameObject Ammo;
-        
+
         public float MovementDebuff = .7f;
 
         void Start()
@@ -50,7 +51,7 @@ namespace ARTowerDefense.Structures.Dynamic.Defense
             m_Targets.Add(target);
             var newBolt = Instantiate(Ammo);
             var script = newBolt.GetComponent<LightningBoltScript>();
-            script.StartObject = CenterPoint;
+            script.StartObject = Shooter;
             script.EndObject = target;
             m_Bolts.Add(target, newBolt);
             var enemy = target.transform.GetComponent<Enemy>();

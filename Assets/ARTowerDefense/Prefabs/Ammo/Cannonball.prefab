@@ -29,7 +29,7 @@ Transform:
   m_GameObject: {fileID: 1240887441953726}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.3, y: 0.3, z: 0.3}
+  m_LocalScale: {x: 0.2, y: 0.2, z: 0.2}
   m_Children:
   - {fileID: 4718672092507590}
   - {fileID: 4571428054930038}
@@ -58,6 +58,7 @@ MeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
@@ -108,11 +109,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Speed: 10
-  target: {fileID: 0}
-  impactParticle: {fileID: 1015959161999642, guid: 5bfd32998278cc44ea4a331c04bd5e45,
+  Target: {fileID: 0}
+  ImpactParticle: {fileID: 1015959161999642, guid: 5bfd32998278cc44ea4a331c04bd5e45,
     type: 3}
-  impactNormal: {x: 0, y: 0, z: 0}
-  twr: {fileID: 0}
+  ImpactNormal: {x: 0, y: 0, z: 0}
+  Tower: {fileID: 0}
 --- !u!1 &1420486808462880
 GameObject:
   m_ObjectHideFlags: 0
@@ -4818,6 +4819,7 @@ ParticleSystemRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 0
   m_ReflectionProbeUsage: 0
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
@@ -9571,6 +9573,7 @@ ParticleSystemRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 0
   m_ReflectionProbeUsage: 0
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:

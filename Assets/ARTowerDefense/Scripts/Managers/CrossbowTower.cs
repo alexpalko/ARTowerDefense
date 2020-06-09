@@ -12,7 +12,7 @@ namespace ARTowerDefense.Managers
         protected override void Start()
         {
             base.Start();
-            m_Animator = LookAtObj.GetComponent<Animator>();
+            m_Animator = Shooter.GetComponent<Animator>();
             m_Animator.speed = 2;
         }
 
@@ -26,8 +26,8 @@ namespace ARTowerDefense.Managers
                 m_Animator.SetTrigger("Shoot");
                 GameObject b = Instantiate(Ammo, ShootPosition.position, Quaternion.identity);
                 b.transform.LookAt(Target.transform);
-                b.GetComponent<CrossbowBolt>().target = Target;
-                b.GetComponent<CrossbowBolt>().twr = this;
+                b.GetComponent<CrossbowBolt>().Target = Target;
+                b.GetComponent<CrossbowBolt>().Tower = this;
             }
 
             IsShooting = false;

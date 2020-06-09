@@ -560,7 +560,7 @@ namespace GoogleARCore
             }
 
             /// <summary>
-            /// Transforms a coordinate between the <c>source</c> and <c>target</c> display UV
+            /// Transforms a coordinate between the <c>source</c> and <c>Target</c> display UV
             /// coordinate types.
             /// </summary>
             /// <remarks>
@@ -570,9 +570,9 @@ namespace GoogleARCore
             /// <param name="coordinate">The coordinate to transform.</param>
             /// <param name="sourceType">The source type of the desired transformation
             /// matrix.</param>
-            /// <param name="targetType">The target type of the desired transformation
+            /// <param name="targetType">The Target type of the desired transformation
             /// matrix.</param>
-            /// <returns>A corresponding position in the target frame.</returns>
+            /// <returns>A corresponding position in the Target frame.</returns>
             public static Vector2 TransformCoordinate(
                 Vector2 coordinate, DisplayUvCoordinateType sourceType,
                 DisplayUvCoordinateType targetType)

@@ -71,12 +71,12 @@ namespace GoogleARCore
         public Vector2 TextureSize { get; private set; }
 
         /// <summary>
-        /// Gets minimum target camera capture frame rate for this camera config.
+        /// Gets minimum Target camera capture frame rate for this camera config.
         /// </summary>
         public int MinFPS { get; private set; }
 
         /// <summary>
-        /// Gets maximum target camera capture frame rate for this camera config.
+        /// Gets maximum Target camera capture frame rate for this camera config.
         /// </summary>
         public int MaxFPS { get; private set; }
 

@@ -61,7 +61,7 @@ public class EnemyBullet : MonoBehaviour
     {
         if (other.gameObject.transform == target)
         {
-            //target.GetComponent<TowerHP>().Dmg_2(Tower.Creature_Damage);
+            //Target.GetComponent<TowerHP>().Dmg_2(Tower.Creature_Damage);
             Destroy(gameObject, i); // destroy Ammo
             impactParticle = Instantiate(impactParticle, transform.position, Quaternion.FromToRotation(Vector3.up, impactNormal)) as GameObject;
             impactParticle.transform.parent = target.transform;

@@ -136,7 +136,7 @@ GameObject:
   - component: {fileID: 3803095952137815736}
   - component: {fileID: 7030972455858994136}
   m_Layer: 8
-  m_Name: Zone1
+  m_Name: Range
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

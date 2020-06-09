@@ -446,7 +446,7 @@ GameObject:
   - component: {fileID: 7724929085315194999}
   - component: {fileID: 7728906655855035369}
   m_Layer: 8
-  m_Name: Zone1
+  m_Name: Range
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -491,9 +491,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5c40027982a518f4c877ed8b22c18b9d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  twr: {fileID: 1396897573404490766}
-  lockE: 0
-  curTarget: {fileID: 0}
+  Tower: {fileID: 1396897573404490766}
+  LockEnemy: 0
+  CurrentTarget: {fileID: 7697405237424635051}
 --- !u!1 &7697405237424635051
 GameObject:
   m_ObjectHideFlags: 0
@@ -554,7 +554,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShootPosition: {fileID: 3461494419582495381}
-  LookAtObj: {fileID: 5597770910860265517}
+  Shooter: {fileID: 5597770910860265517}
   Ammo: {fileID: 1756512607606164535, guid: c2f4bd3fb8d6c49448ef761a0a902d03, type: 3}
   Target: {fileID: 0}
   Damage: 10

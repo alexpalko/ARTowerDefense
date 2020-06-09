@@ -3,60 +3,27 @@ using UnityEngine;
 
 namespace ARTowerDefense.Structures.Dynamic.Defense.Ammo
 {
-    public class CannonBall : MonoBehaviour
+    public class CannonBall : Assets.ARTowerDefense.Scripts.Structures.Dynamic.Defense.Ammo.Ammo
     {
-        public float Speed;
-        public Transform target;
-        public GameObject impactParticle;
+        public GameObject ImpactParticle;
 
-        public Vector3 impactNormal;
-        Vector3 lastBulletPosition;
-        public Tower twr;
-        readonly float i = 0.05f;
+        public Vector3 ImpactNormal;
 
-        void Update()
+        protected override void ImpactParticleEffects()
         {
-            if (target)
-            {
-                transform.LookAt(target);
-                transform.position = Vector3.MoveTowards(transform.position, target.position, Time.deltaTime * Speed);
-                lastBulletPosition = target.transform.position;
-            }
-            else
-            {
-                transform.position = Vector3.MoveTowards(transform.position, lastBulletPosition, Time.deltaTime * Speed);
-                if (transform.position == lastBulletPosition)
-                {
-                    Destroy(gameObject, i);
-
-                    if (impactParticle != null)
-                    {
-                        impactParticle = Instantiate(impactParticle, transform.position,
-                            Quaternion.FromToRotation(Vector3.up, impactNormal));
-                        Destroy(impactParticle, 3);
-                    }
-                }
-            }
+            ImpactParticle = Instantiate(ImpactParticle, transform.position,
+                Quaternion.FromToRotation(Vector3.up, ImpactNormal));
+            Destroy(ImpactParticle, 3);
         }
 
-        void OnTriggerEnter(Collider other)
+        protected override void OtherCollisionEffects()
         {
-            if (other.gameObject.transform == target)
-            {
-                target.GetComponent<Enemy>().DoDamage(twr.Damage);
-                Destroy(gameObject, i); 
-                impactParticle = Instantiate(impactParticle, target.transform.position, Quaternion.FromToRotation(Vector3.up, impactNormal));
-                impactParticle.transform.parent = target.transform;
-                Destroy(impactParticle, 3);
-            }
-
-            // Special Cannon Ball Behavior
             var enemies = GameObject.FindGameObjectsWithTag("Enemy");
             foreach (var enemy in enemies)
             {
-                if (enemy.transform == target) continue;
+                if (enemy.transform == Target) continue;
 
-                if (Vector3.Distance(enemy.transform.position, target.position) < .2f)
+                if (Vector3.Distance(enemy.transform.position, Target.position) < .2f)
                 {
                     enemy.GetComponent<Enemy>().DoDamage(5);
                 }

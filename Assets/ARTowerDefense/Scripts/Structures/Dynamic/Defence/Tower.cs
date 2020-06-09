@@ -7,7 +7,7 @@ namespace ARTowerDefense.Structures.Dynamic.Defense
     public class Tower : MonoBehaviour
     {
         public Transform ShootPosition;
-        public Transform LookAtObj;
+        public Transform Shooter;
         public GameObject Ammo;
         public Transform Target;
         public int Damage = 10;
@@ -17,7 +17,7 @@ namespace ARTowerDefense.Structures.Dynamic.Defense
 
         protected virtual void Start()
         {
-            HomeY = LookAtObj.transform.localRotation.eulerAngles.y;
+            HomeY = Shooter.transform.localRotation.eulerAngles.y;
         }
 
         protected virtual void Update()
@@ -25,16 +25,16 @@ namespace ARTowerDefense.Structures.Dynamic.Defense
             // Rotation
             if (Target)
             {
-                Vector3 dir = Target.transform.position - LookAtObj.transform.position;
+                Vector3 dir = Target.transform.position - Shooter.transform.position;
                 dir.y = 0;
-                Quaternion rot = Quaternion.LookRotation(dir);
-                LookAtObj.transform.rotation = Quaternion.Slerp(LookAtObj.transform.rotation, rot, 5 * Time.deltaTime);
+                Shooter.transform.rotation = Quaternion.Slerp(Shooter.transform.rotation,
+                    Quaternion.LookRotation(dir), 5 * Time.deltaTime);
             }
-            else
-            {
-                Quaternion home = new Quaternion(0, HomeY, 0, 1);
-                LookAtObj.transform.rotation = Quaternion.Slerp(LookAtObj.transform.rotation, home, Time.deltaTime);
-            }
+            //else
+            //{
+            //    Shooter.transform.rotation = Quaternion.Slerp(Shooter.transform.rotation,
+            //        new Quaternion(0, HomeY, 0, 1), Time.deltaTime);
+            //}
 
             // Shooting
             if (!IsShooting)
@@ -47,14 +47,14 @@ namespace ARTowerDefense.Structures.Dynamic.Defense
         {
             IsShooting = true;
             yield return new WaitForSeconds(ShotDelay);
-
+            
             if (Target)
             {
                 GameObject b = Instantiate(Ammo, ShootPosition.position, Quaternion.identity);
-                b.GetComponent<CannonBall>().target = Target;
-                b.GetComponent<CannonBall>().twr = this;
+                b.GetComponent<CannonBall>().Target = Target;
+                b.GetComponent<CannonBall>().Tower = this;
             }
-
+            
             IsShooting = false;
         }
     }
