@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using UnityEngine;
 using Random = System.Random;
 
@@ -18,7 +19,7 @@ namespace ARTowerDefense.Managers
         /// <summary>
         /// The time iteration limit after which the threshold increases
         /// </summary>
-        private const float k_IncreaseThresholdCountLimit = 2000;
+        private const float k_IncreaseThresholdCountLimit = 500;
         /// <summary>
         /// The percentage by which the threshold increases
         /// </summary>
@@ -46,7 +47,7 @@ namespace ARTowerDefense.Managers
         /// <summary>
         /// A dictionary of divisions and their corresponding division game object instance
         /// </summary>
-        public Dictionary<Division, BuildingDivision> DivisionGameObjectDictionary { get; set; }
+        private readonly Dictionary<Division, BuildingDivision> m_DivisionGameObjectDictionary;
 
         /// <summary>
         /// A collection of divisions used for the path generation.
@@ -83,7 +84,7 @@ namespace ARTowerDefense.Managers
         /// <summary>
         /// The division containing the spawner
         /// </summary>
-        private Division m_SpawnerDivision;
+        public volatile Division SpawnerDivision;
 
         public PathGenerationManager(Dictionary<Division, BuildingDivision> divisionGameObjectDict, Division homeBaseDivision, 
             Division pathEnd, GameObject spawnerPrefab, GameObject pathPrefab, GameObject curvedPathPrefab)
@@ -93,17 +94,11 @@ namespace ARTowerDefense.Managers
             m_AvailableDivisions = new HashSet<Division>(divisionGameObjectDict
                 .Where(kvp => !kvp.Value.HasBuilding)
                 .Select(kvp => kvp.Key));
-
             m_PathDivisions = new Stack<Division>();
-
             m_HomeBaseDivision = homeBaseDivision;
-
-            DivisionGameObjectDictionary = divisionGameObjectDict;
-
+            m_DivisionGameObjectDictionary = divisionGameObjectDict;
             m_SpawnerPrefab = spawnerPrefab;
-
             m_PathPrefab = pathPrefab;
-
             m_CurvedPathPrefab = curvedPathPrefab;
             m_PathEnd = pathEnd;
         }
@@ -119,10 +114,11 @@ namespace ARTowerDefense.Managers
             };
         }
 
-        public Division GeneratePath()
+
+        public void GeneratePath()
         {
             Debug.Log("Started generating m_PathDivisions.");
-            return _GenerateRandomPath(m_PathEnd);
+            _GenerateRandomPath(m_PathEnd);
         }
 
         private Division _GenerateRandomPath(Division currentDivision)
@@ -134,7 +130,7 @@ namespace ARTowerDefense.Managers
                 m_AvailableDivisionsThreshold += k_IncreaseThresholdSize;
             }
 
-            if (m_AvailableDivisions.Count < m_AvailableDivisionsThreshold * DivisionGameObjectDictionary.Count &&
+            if (m_AvailableDivisions.Count < m_AvailableDivisionsThreshold * m_DivisionGameObjectDictionary.Count &&
                 _TryPlaceSpawner(currentDivision))
             {
                 m_PathDivisions.Push(currentDivision);
@@ -206,29 +202,31 @@ namespace ARTowerDefense.Managers
             return divisions.OrderBy(_ => random.Next());
         }
 
+        private float m_SpawnerRotation;
+
         private bool _TryPlaceSpawner(Division currentDivision)
         {
             var previousDivision = m_PathDivisions.Peek();
             var direction = currentDivision.Center - previousDivision.Center;
-            m_SpawnerDivision =
-                DivisionGameObjectDictionary.FirstOrDefault(kvp => kvp.Key.Includes(currentDivision.Center + direction))
+            SpawnerDivision =
+                m_DivisionGameObjectDictionary.FirstOrDefault(kvp => kvp.Key.Includes(currentDivision.Center + direction))
                     .Key;
-            if (m_SpawnerDivision == null) return false;
+            if (SpawnerDivision == null) return false;
             // Sets the rotation to 90 degrees if the path reaches the spawner from its side 
-            float rotation = Math.Abs(direction.z) < k_Epsilon ? 90 : 0;
-            DivisionGameObjectDictionary[m_SpawnerDivision].AddBuilding(m_SpawnerPrefab, rotation);
-            DivisionGameObjectDictionary[m_SpawnerDivision].Lock();
+            m_SpawnerRotation = Math.Abs(direction.z) < k_Epsilon ? 90 : 0;
             return true;
         }
 
         public Transform[] BuildPath()
         {
+            m_DivisionGameObjectDictionary[SpawnerDivision].AddBuilding(m_SpawnerPrefab, m_SpawnerRotation);
+            m_DivisionGameObjectDictionary[SpawnerDivision].Lock();
             Debug.Log($"Started path building. The path contains {m_PathDivisions.Count} path divisions.");
             var pathWaypoints = new Transform[m_PathDivisions.Count + 2];
-            pathWaypoints[0] = DivisionGameObjectDictionary[m_SpawnerDivision].transform;
+            pathWaypoints[0] = m_DivisionGameObjectDictionary[SpawnerDivision].transform;
             var pathDivisionsArray = m_PathDivisions.ToArray();
             int index = 1;
-            var prevDiv = m_SpawnerDivision;
+            var prevDiv = SpawnerDivision;
             for (int i = 0; i < pathDivisionsArray.Length; i++)
             {
                 var nextDiv = i + 1 != pathDivisionsArray.Length ? pathDivisionsArray[i + 1] : m_HomeBaseDivision;
@@ -239,35 +237,35 @@ namespace ARTowerDefense.Managers
 
                 if (Math.Abs(diff1.x - diff2.x) < k_Epsilon)
                 {
-                    DivisionGameObjectDictionary[currDiv].AddBuilding(m_PathPrefab, 90);
+                    m_DivisionGameObjectDictionary[currDiv].AddBuilding(m_PathPrefab, 90);
                 }
                 else if (Math.Abs(diff1.z - diff2.z) < k_Epsilon)
                 {
-                    DivisionGameObjectDictionary[currDiv].AddBuilding(m_PathPrefab);
+                    m_DivisionGameObjectDictionary[currDiv].AddBuilding(m_PathPrefab);
                 }
                 else if (diff1.z < 0 && diff2.x < 0 && diff3.x < diff3.z || diff1.x < 0 && diff2.z < 0 && diff3.x > diff3.z)
                 {
-                    DivisionGameObjectDictionary[currDiv].AddBuilding(m_CurvedPathPrefab);
+                    m_DivisionGameObjectDictionary[currDiv].AddBuilding(m_CurvedPathPrefab);
                 }
                 else if (diff3.x > 0 && diff1.z < 0 && diff2.x > 0 || diff3.x < 0 && diff1.x > 0 && diff2.z < 0)
                 {
-                    DivisionGameObjectDictionary[currDiv].AddBuilding(m_CurvedPathPrefab, -90);
+                    m_DivisionGameObjectDictionary[currDiv].AddBuilding(m_CurvedPathPrefab, -90);
                 }
                 else if (diff3.x > 0 && diff1.x < 0 && diff2.z > 0 || diff3.x < 0 && diff1.z > 0 && diff2.x < 0)
                 {
-                    DivisionGameObjectDictionary[currDiv].AddBuilding(m_CurvedPathPrefab, 90);
+                    m_DivisionGameObjectDictionary[currDiv].AddBuilding(m_CurvedPathPrefab, 90);
                 }
                 else
                 {
-                    DivisionGameObjectDictionary[currDiv].AddBuilding(m_CurvedPathPrefab, 180);
+                    m_DivisionGameObjectDictionary[currDiv].AddBuilding(m_CurvedPathPrefab, 180);
                 }
 
-                DivisionGameObjectDictionary[currDiv].Lock();
-                pathWaypoints[index++] = DivisionGameObjectDictionary[currDiv].transform;
+                m_DivisionGameObjectDictionary[currDiv].Lock();
+                pathWaypoints[index++] = m_DivisionGameObjectDictionary[currDiv].transform;
                 prevDiv = currDiv;
             }
 
-            pathWaypoints[index] = DivisionGameObjectDictionary[m_HomeBaseDivision].transform;
+            pathWaypoints[index] = m_DivisionGameObjectDictionary[m_HomeBaseDivision].transform;
             return pathWaypoints;
         }
     }

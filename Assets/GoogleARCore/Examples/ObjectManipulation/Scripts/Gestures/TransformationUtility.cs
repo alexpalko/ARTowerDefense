@@ -293,7 +293,7 @@ namespace GoogleARCore.Examples.ObjectManipulationInternal
         }
 
         /// <summary>
-        /// Result of the function GetBestPlacementPosition that indicates if a placementPosition
+        /// PathStart of the function GetBestPlacementPosition that indicates if a placementPosition
         /// was found and information about the placement position.
         /// </summary>
         public struct Placement

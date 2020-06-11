@@ -49,5 +49,15 @@
       <FileName>Assets\ARTowerDefense\Scripts\Structures\Dynamic\Defence\Ammo\Ammo.cs</FileName>
     </TypeIdentifier>
   </Class>
+  <Class Name="ARTowerDefense.Managers.PlaneSelectionManager">
+    <Position X="5.5" Y="5.25" Width="2" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AAwSAAAAAAAAAACAEgACAQAAAAAAAAAIIQACAAAAAAA=</HashCode>
+      <FileName>Assets\ARTowerDefense\Scripts\Managers\PlaneSelectionManager.cs</FileName>
+    </TypeIdentifier>
+  </Class>
   <Font Name="Arial" Size="9" />
 </ClassDiagram>

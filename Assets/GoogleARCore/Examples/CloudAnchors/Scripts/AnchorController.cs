@@ -181,7 +181,7 @@ namespace GoogleARCore.Examples.CloudAnchors
                     return;
                 }
 
-                Debug.Log(string.Format(
+                 Debug.Log(string.Format(
                     "Cloud Anchor {0} was created and saved.", result.Anchor.CloudId));
                 CmdSetCloudAnchorId(result.Anchor.CloudId);
 
@@ -221,7 +221,7 @@ namespace GoogleARCore.Examples.CloudAnchors
                             return;
                         }
 
-                        Debug.Log(string.Format(
+                         Debug.Log(string.Format(
                             "Client successfully resolved Cloud Anchor {0}.",
                             cloudAnchorId));
 

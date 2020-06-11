@@ -226,7 +226,7 @@ namespace GoogleARCore
             /// The type could be checked in CameraMetadata.cs.
             /// </summary>
             /// <param name="metadataTag">Metadata type.</param>
-            /// <param name="outMetadataList">Result list of the requested values.</param>
+            /// <param name="outMetadataList">PathStart list of the requested values.</param>
             /// <returns><c>true</c> if getting metadata value successfully, otherwise
             /// <c>false</c>.</returns>
             public static bool TryGetValues(
@@ -254,7 +254,7 @@ namespace GoogleARCore
             /// <summary>
             /// Get all available tags in the current frame's metadata.
             /// </summary>
-            /// <param name="outMetadataTags">Result list of the tags.</param>
+            /// <param name="outMetadataTags">PathStart list of the tags.</param>
             /// <returns><c>true</c> if getting tags successfully, otherwise <c>false</c>.</returns>
             public static bool GetAllCameraMetadataTags(List<CameraMetadataTag> outMetadataTags)
             {

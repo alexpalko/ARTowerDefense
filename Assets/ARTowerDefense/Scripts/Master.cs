@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using ARTowerDefense.AR;
 using ARTowerDefense.Managers;
 using GoogleARCore;
@@ -51,6 +53,8 @@ namespace ARTowerDefense
         [SerializeField] private GameObject BuildingManager;
         [SerializeField] private GameObject CoinManager;
         [SerializeField] private GameObject NatureManager;
+        private PathGenerationManager m_PathGenerationManager;
+
 
         #endregion
 
@@ -59,6 +63,7 @@ namespace ARTowerDefense
         [SerializeField] private GameObject MainMenuPanel;
         [SerializeField] private GameObject PlaneSelectionPanel;
         [SerializeField] private GameObject BasePlacementPanel;
+        [SerializeField] private GameObject PathGenerationPanel;
         [SerializeField] private GameObject GameLoopPanel;
         [SerializeField] private GameObject GamePausedPanel;
         [SerializeField] private GameObject GameOverPanel;
@@ -292,7 +297,7 @@ namespace ARTowerDefense
             {
                 //if (m_HomeBaseDivision != null && m_HomeBaseDivision != m_DivisionPlacedOn)
                 //{
-                //    DivisionGameObjectDictionary[m_HomeBaseDivision].Clear();
+                //    m_DivisionGameObjectDictionary[m_HomeBaseDivision].Clear();
                 //}
 
                 m_HomeBaseDivision = m_DivisionPlacedOn;
@@ -367,6 +372,7 @@ namespace ARTowerDefense
         {
             DivisionGameObjectDictionary[m_HomeBaseDivision].Lock();
             BasePlacementPanel.SetActive(false);
+            PathGenerationPanel.SetActive(true);
             _GeneratePathEnd();
         }
 
@@ -383,17 +389,35 @@ namespace ARTowerDefense
 
         private void _PathGenerationLogic()
         {
-            var manager = new PathGenerationManager(DivisionGameObjectDictionary, m_HomeBaseDivision, m_PathEnd,
-                SpawnerPrefab, PathPrefab, CurvedPathPrefab);
-
-            while (m_SpawnerDivision == null)
+            if (m_PathGenerationManager == null)
             {
-                m_SpawnerDivision = manager.GeneratePath();
+                StartCoroutine(GeneratePath());
             }
 
-            PathWayPoints = manager.BuildPath();
+
+            while (m_SpawnerDivision != null)
+            {
+                return;
+            }
+
+            PathWayPoints = m_PathGenerationManager.BuildPath();
 
             AdvanceGameState();
+        }
+
+        private IEnumerator GeneratePath()
+        {
+            m_PathGenerationManager = new PathGenerationManager(DivisionGameObjectDictionary, m_HomeBaseDivision, m_PathEnd,
+                SpawnerPrefab, PathPrefab, CurvedPathPrefab);
+            var thread = new Thread(m_PathGenerationManager.GeneratePath);
+            thread.Start();
+            while (m_PathGenerationManager.SpawnerDivision == null)
+            {
+                yield return null;
+            }
+
+            m_SpawnerDivision = m_PathGenerationManager.SpawnerDivision;
+            thread.Join();
         }
 
         #endregion
@@ -406,7 +430,9 @@ namespace ARTowerDefense
             NatureManager.SetActive(true);
             CoinManager.SetActive(true);
             BuildingManager.SetActive(true);
+            PathGenerationPanel.SetActive(false);
             GameLoopPanel.SetActive(true);
+            m_PathGenerationManager = null;
             Debug.Log("Game loop initialized");
         }
 
